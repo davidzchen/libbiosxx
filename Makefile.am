@@ -6,7 +6,7 @@ debug:
 	$(MAKE) all "CFLAGS=-g -DDEBUG " $(AM_MAKEFLAGS)
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = bios.pc
+pkgconfig_DATA = bioinfo.pc
 
 # Doxygen
 if USE_DOXYGEN
