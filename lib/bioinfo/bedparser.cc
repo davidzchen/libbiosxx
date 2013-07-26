@@ -48,7 +48,7 @@ std::string Bed::ToString() {
 }
 
 BedParser::BedParser() {
-  current_bed_ = NULL;
+  stream_ = NULL;
 }
 
 BedParser::~BedParser() {
@@ -83,39 +83,39 @@ Bed* BedParser::NextEntry(void) {
     if (strStartsWithC(line, "track") || strStartsWithC(line, "browser")) {
       continue;
     }
-    current_bed_ = new Bed();
+    Bed* bed = new Bed();
     WordIter w = wordIterCreate(line, (char*)"\t", 1);
     std::string chromosome(wordNext(w));
-    current_bed_->set_chromosome(chromosome);
-    current_bed_->set_start(atoi(wordNext(w)));
-    current_bed_->set_end(atoi(wordNext(w)));
+    bed->set_chromosome(chromosome);
+    bed->set_start(atoi(wordNext(w)));
+    bed->set_end(atoi(wordNext(w)));
     char *next = wordNext(w);
     if (next != NULL) {
       std::string name(next);
-      current_bed_->set_name(name);
-      current_bed_->set_extended(true);
-      current_bed_->set_score(atoi(wordNext(w)));
-      current_bed_->set_strand(wordNext(w)[0]);
-      current_bed_->set_thick_start(atoi(wordNext(w)));
-      current_bed_->set_thick_end(atoi(wordNext(w)));
+      bed->set_name(name);
+      bed->set_extended(true);
+      bed->set_score(atoi(wordNext(w)));
+      bed->set_strand(wordNext(w)[0]);
+      bed->set_thick_start(atoi(wordNext(w)));
+      bed->set_thick_end(atoi(wordNext(w)));
       std::string item_rgb(wordNext(w));
-      current_bed_->set_item_rgb(item_rgb);
-      current_bed_->set_block_count(atoi(wordNext(w)));
+      bed->set_item_rgb(item_rgb);
+      bed->set_block_count(atoi(wordNext(w)));
       WordIter wsizes = wordIterCreate(wordNext(w), (char*)",", 1);
       WordIter wstarts = wordIterCreate(wordNext(w), (char*)",", 1); 
-      for (int i = 0; i < current_bed_->block_count(); ++i) {
+      for (int i = 0; i < bed->block_count(); ++i) {
         SubBlock sub_block;
         sub_block.size = atoi(wordNext(wsizes));
         sub_block.start = atoi(wordNext(wstarts));
-        current_bed_->AddSubBlock(sub_block);
+        bed->AddSubBlock(sub_block);
       }
       wordIterDestroy(wsizes);
       wordIterDestroy(wstarts);
     } else {
-      current_bed_->set_extended(false);
+      bed->set_extended(false);
     }
     wordIterDestroy(w);
-    return current_bed_;
+    return bed;
   }
   return NULL;
 }

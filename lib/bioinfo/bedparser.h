@@ -22,17 +22,17 @@ class Bed {
   ~Bed();
 
   // Getters.
-  std::string chromosome() { return chromosome_; }
-  uint32_t start() { return start_; }
-  uint32_t end() { return end_; }
-  bool extended() { return extended_; }
-  std::string name() { return name_; }
-  uint32_t score() { return score_; }
-  char strand() { return strand_; }
-  uint32_t thick_start() { return thick_start_; }
-  uint32_t thick_end() { return thick_end_; }
-  std::string item_rgb() { return item_rgb_; }
-  uint32_t block_count() { return block_count_; }
+  std::string chromosome() const { return chromosome_; }
+  uint32_t start() const { return start_; }
+  uint32_t end() const { return end_; }
+  bool extended() const { return extended_; }
+  std::string name() const { return name_; }
+  uint32_t score() const { return score_; }
+  char strand() const { return strand_; }
+  uint32_t thick_start() const { return thick_start_; }
+  uint32_t thick_end() const { return thick_end_; }
+  std::string item_rgb() const { return item_rgb_; }
+  uint32_t block_count() const { return block_count_; }
 
   // Setters.
   void set_chromosome(std::string chromosome) { chromosome_ = chromosome; }
@@ -91,7 +91,6 @@ class BedParser {
   std::vector<Bed> GetAllEntries();
 
  private:
-  Bed* current_bed_;
   LineStream stream_;
 };
 
