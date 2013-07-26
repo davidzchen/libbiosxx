@@ -15,6 +15,7 @@ AC_SUBST([bioinfo_SO_VERSION], [1:0:0])
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_LIBTOOL
 AC_CHECK_PROGS([DOXYGEN], [doxygen])
 if test -z "$DOXYGEN"; then

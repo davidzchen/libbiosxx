@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libbioinfo.la
 libbioinfo_la_SOURCES = bioinfo/array.c \
-		     bioinfo/bedParser.c \
+		     bioinfo/bedparser.cc \
 		     bioinfo/bgrParser.c \
 		     bioinfo/bits.c \
 		     bioinfo/blastParser.c \
@@ -35,7 +35,7 @@ libbioinfo_la_LIBADD = -lm -lgsl
 
 nobase_dist_include_HEADERS = bioinfo/args.h \
 		  bioinfo/array.h \
-		  bioinfo/bedParser.h \
+		  bioinfo/bedparser.h \
 		  bioinfo/bgrParser.h \
 		  bioinfo/bits.h \
 		  bioinfo/blastParser.h \
