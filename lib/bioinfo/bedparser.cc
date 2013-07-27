@@ -60,7 +60,7 @@ BedParser::~BedParser() {
  * @param[in] fileName File name, use "-" to denote stdin
  */
 void BedParser::InitFromFile(std::string filename) {
-  stream_ = ls_createFromFile((char*)filename.c_str());
+  stream_ = ls_createFromFile((char*) filename.c_str());
   ls_bufferSet(stream_, 1);
 }
 
@@ -69,7 +69,7 @@ void BedParser::InitFromFile(std::string filename) {
  * @param[in] command Command to be executed
  */
 void BedParser::InitFromCommand(std::string command) {
-  stream_ = ls_createFromPipe((char*)command.c_str());
+  stream_ = ls_createFromPipe((char*) command.c_str());
   ls_bufferSet(stream_, 1);
 }
 
@@ -84,7 +84,7 @@ Bed* BedParser::NextEntry(void) {
       continue;
     }
     Bed* bed = new Bed();
-    WordIter w = wordIterCreate(line, (char*)"\t", 1);
+    WordIter w = wordIterCreate(line, (char*) "\t", 1);
     std::string chromosome(wordNext(w));
     bed->set_chromosome(chromosome);
     bed->set_start(atoi(wordNext(w)));
@@ -101,8 +101,8 @@ Bed* BedParser::NextEntry(void) {
       std::string item_rgb(wordNext(w));
       bed->set_item_rgb(item_rgb);
       bed->set_block_count(atoi(wordNext(w)));
-      WordIter wsizes = wordIterCreate(wordNext(w), (char*)",", 1);
-      WordIter wstarts = wordIterCreate(wordNext(w), (char*)",", 1); 
+      WordIter wsizes = wordIterCreate(wordNext(w), (char*) ",", 1);
+      WordIter wstarts = wordIterCreate(wordNext(w), (char*) ",", 1); 
       for (int i = 0; i < bed->block_count(); ++i) {
         SubBlock sub_block;
         sub_block.size = atoi(wordNext(wsizes));

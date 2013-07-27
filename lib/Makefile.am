@@ -4,9 +4,9 @@ libbioinfo_la_SOURCES = \
 		     bioinfo/bedparser.cc \
 		     bioinfo/bgrparser.cc \
 		     bioinfo/bits.c \
-		     bioinfo/blastParser.c \
-		     bioinfo/blatParser.c \
-		     bioinfo/bowtieParser.c \
+		     bioinfo/blastparser.cc \
+		     bioinfo/blatparser.cc \
+		     bioinfo/bowtieparser.cc \
 		     bioinfo/common.c \
 		     bioinfo/dlist.c \
 		     bioinfo/elandMultiParser.c \
@@ -35,9 +35,9 @@ nobase_dist_include_HEADERS = \
 		  bioinfo/bedparser.h \
 		  bioinfo/bgrparser.h \
 		  bioinfo/bits.h \
-		  bioinfo/blastParser.h \
-		  bioinfo/blatParser.h \
-		  bioinfo/bowtieParser.h \
+		  bioinfo/blastparser.h \
+		  bioinfo/blatparser.h \
+		  bioinfo/bowtieparser.h \
 		  bioinfo/common.h \
 		  bioinfo/dlist.h \
 		  bioinfo/elandMultiParser.h \

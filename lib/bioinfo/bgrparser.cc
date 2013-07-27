@@ -31,7 +31,7 @@ void BedGraphParser::InitFromFile(std::string filename) {
  * @param[in] command Command to be executed
  */
 void BedGraphParser::InitFromPipe(std::string command) {
-  stream_ = ls_createFromPipe((char*)command.c_str());
+  stream_ = ls_createFromPipe((char*) command.c_str());
   ls_bufferSet(stream_, 1);
 }
 
@@ -43,7 +43,7 @@ BedGraph* BedGraphParser::NextEntry() {
     char* line = ls_nextLine(stream_);
     if (!strStartsWithC(line, "track")) {
       BedGraph* bed_graph = new BedGraph();
-      WordIter w = wordIterCreate(line, (char*)"\t", 1);
+      WordIter w = wordIterCreate(line, (char*) "\t", 1);
       std::string chromosome(wordNext(w));
       bed_graph->set_chromosome(chromosome);
       bed_graph->set_start(atoi(wordNext(w)));
@@ -115,7 +115,7 @@ std::vector<double> BedGraphParser::GetValuesForRegion(
       } 
     }
     if (num_occurances > 1) {
-      die((char*)"Expected only one BedGraph overlap per position");
+      die((char*) "Expected only one BedGraph overlap per position");
     }
   }
   return entries;
