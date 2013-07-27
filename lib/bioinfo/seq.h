@@ -13,15 +13,14 @@
  * granted for all use - public, private or commercial. 
  */
 
-
 /** 
  *   \file seq.h
  *   \author Adapted by Lukas Habegger (lukas.habegger@yale.edu)
  */
 
 
-#ifndef DEF_SEQ_H
-#define DEF_SEQ_H
+#ifndef BIOINFO_SEQ_H__
+#define BIOINFO_SEQ_H__
 
 #include "common.h"
 #include "bits.h"
@@ -90,7 +89,6 @@ extern DNA ntCompTable[256];
 extern int ntValMasked[256];
 extern DNA valToNtMasked[256];
  
-
 void seq_init (); 
 void seq_complement (DNA *dna, long length);
 void seq_reverseComplement (DNA *dna, long length);
@@ -111,5 +109,5 @@ void seq_dnaBaseHistogram (DNA *dna, int dnaSize, int histogram[4]);
 int seq_intronOrientation (DNA *iStart, DNA *iEnd);
 int seq_dnaOrAaScoreMatch (char *a, char *b, int size, int matchScore, int mismatchScore, char ignore);
 
-
-#endif
+/* vim: set ai ts=2 sts=2 sw=2 et: */
+#endif /* BIOINFO_SEQ_H__ */

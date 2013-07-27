@@ -8,12 +8,12 @@ libbioinfo_la_SOURCES = \
 		     bioinfo/blatparser.cc \
 		     bioinfo/bowtieparser.cc \
 		     bioinfo/common.c \
-		     bioinfo/dlist.c \
-		     bioinfo/elandMultiParser.c \
-		     bioinfo/elandParser.c \
-		     bioinfo/exportPEParser.c \
-		     bioinfo/fasta.c \
-		     bioinfo/fastq.c \
+		     bioinfo/elandmultiparser.cc \
+		     bioinfo/elandparser.cc \
+		     bioinfo/exportpeparser.cc \
+		     bioinfo/seq.cc \
+		     bioinfo/fasta.cc \
+		     bioinfo/fastq.cc \
 		     bioinfo/format.c \
 		     bioinfo/geneOntology.c \
 		     bioinfo/hlrmisc.c \
@@ -24,7 +24,6 @@ libbioinfo_la_SOURCES = \
 		     bioinfo/log.c \
 		     bioinfo/numUtil.c \
 		     bioinfo/plabla.c \
-		     bioinfo/seq.c \
 		     bioinfo/stringUtil.c
 
 libbioinfo_la_LIBADD = -lm -lgsl
@@ -39,10 +38,10 @@ nobase_dist_include_HEADERS = \
 		  bioinfo/blatparser.h \
 		  bioinfo/bowtieparser.h \
 		  bioinfo/common.h \
-		  bioinfo/dlist.h \
-		  bioinfo/elandMultiParser.h \
-		  bioinfo/elandParser.h \
-		  bioinfo/exportPEParser.h \
+		  bioinfo/elandmultiparser.h \
+		  bioinfo/elandparser.h \
+		  bioinfo/exportpeparser.h \
+		  bioinfo/seq.h \
 		  bioinfo/fasta.h \
 		  bioinfo/fastq.h \
 		  bioinfo/format.h \
@@ -57,5 +56,4 @@ nobase_dist_include_HEADERS = \
 		  bioinfo/numUtil.h \
 		  bioinfo/plabla_conf.h \
 		  bioinfo/plabla.h \
-		  bioinfo/seq.h \
 		  bioinfo/stringUtil.h
