@@ -3,8 +3,8 @@
  *   \author Andrea Sboner (andrea.sboner@yale.edu)
  */
 
-#ifndef BIOINFO_EXPORTPEPARSER_H__
-#define BIOINFO_EXPORTPEPARSER_H__
+#ifndef BIOINFO_EXPORTPE_H__
+#define BIOINFO_EXPORTPE_H__
 
 #include <string>
 #include <sstream>
@@ -68,4 +68,4 @@ class ExportPEParser {
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif /* BIOINFO_EXPORTPEPARSER_H__ */
+#endif /* BIOINFO_EXPORTPE_H__ */

@@ -1,16 +1,16 @@
 lib_LTLIBRARIES = libbioinfo.la
 libbioinfo_la_SOURCES = \
 			 bioinfo/array.c \
-		     bioinfo/bedparser.cc \
-		     bioinfo/bgrparser.cc \
+		     bioinfo/bed.cc \
+		     bioinfo/bedgraph.cc \
 		     bioinfo/bits.c \
-		     bioinfo/blastparser.cc \
-		     bioinfo/blatparser.cc \
-		     bioinfo/bowtieparser.cc \
+		     bioinfo/blast.cc \
+		     bioinfo/blat.cc \
+		     bioinfo/bowtie.cc \
 		     bioinfo/common.c \
-		     bioinfo/elandmultiparser.cc \
-		     bioinfo/elandparser.cc \
-		     bioinfo/exportpeparser.cc \
+		     bioinfo/elandmulti.cc \
+		     bioinfo/eland.cc \
+		     bioinfo/exportpe.cc \
 		     bioinfo/seq.cc \
 		     bioinfo/fasta.cc \
 		     bioinfo/fastq.cc \
@@ -31,16 +31,16 @@ libbioinfo_la_LIBADD = -lm -lgsl
 
 nobase_dist_include_HEADERS = \
 		  bioinfo/array.h \
-		  bioinfo/bedparser.h \
-		  bioinfo/bgrparser.h \
+		  bioinfo/bed.h \
+		  bioinfo/bedgraph.h \
 		  bioinfo/bits.h \
-		  bioinfo/blastparser.h \
-		  bioinfo/blatparser.h \
-		  bioinfo/bowtieparser.h \
+		  bioinfo/blast.h \
+		  bioinfo/blat.h \
+		  bioinfo/bowtie.h \
 		  bioinfo/common.h \
-		  bioinfo/elandmultiparser.h \
-		  bioinfo/elandparser.h \
-		  bioinfo/exportpeparser.h \
+		  bioinfo/elandmulti.h \
+		  bioinfo/eland.h \
+		  bioinfo/exportpe.h \
 		  bioinfo/seq.h \
 		  bioinfo/fasta.h \
 		  bioinfo/fastq.h \

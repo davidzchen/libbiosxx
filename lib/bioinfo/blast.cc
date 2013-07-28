@@ -7,7 +7,7 @@
 #include "log.h"
 #include "linestream.h"
 #include "common.h"
-#include "blastparser.h"
+#include "blast.h"
 
 BlastQuery::BlastQuery() {
 }

@@ -7,7 +7,7 @@
 #include "log.h"
 #include "linestream.h"
 #include "common.h"
-#include "elandmultiparser.h"
+#include "elandmulti.h"
 
 ElandMultiQuery::ElandMultiQuery() {
 }

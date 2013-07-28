@@ -10,7 +10,7 @@
 #include "log.h"
 #include "linestream.h"
 #include "common.h"
-#include "exportpeparser.h"
+#include "exportpe.h"
 
 /** 
  * Write an export entry;

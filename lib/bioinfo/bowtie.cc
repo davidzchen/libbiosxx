@@ -7,7 +7,7 @@
 #include "log.h"
 #include "linestream.h"
 #include "common.h"
-#include "bowtieparser.h"
+#include "bowtie.h"
 
 BowtieEntry::BowtieEntry() {
   mismatches_ = std::vector<BowtieMismatch>();

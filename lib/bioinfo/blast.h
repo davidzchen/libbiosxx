@@ -3,8 +3,8 @@
  *   \author Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-#ifndef BIOINFO_BLASTPARSER_H__
-#define BIOINFO_BLASTPARSER_H__
+#ifndef BIOINFO_BLAST_H__
+#define BIOINFO_BLAST_H__
 
 #include <vector>
 #include <string>
@@ -52,4 +52,4 @@ class BlastParser {
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif /* BIOINFO_BLASTPARSER_H__ */
+#endif /* BIOINFO_BLAST_H__ */

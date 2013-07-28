@@ -3,8 +3,8 @@
  *   \author Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-#ifndef BIOINFO_BLATPARSER_H__
-#define BIOINFO_BLATPARSER_H__
+#ifndef BIOINFO_BLAT_H__
+#define BIOINFO_BLAT_H__
 
 #include <vector>
 #include <string>
@@ -57,4 +57,4 @@ class BlatParser {
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif
+#endif /* BIOINFO_BLAT_H__ */

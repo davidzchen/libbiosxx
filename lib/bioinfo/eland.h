@@ -3,8 +3,8 @@
  *   \author Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-#ifndef BIOINFO_ELAND_PARSER_H__
-#define BIOINFO_ELAND_PARSER_H__
+#ifndef BIOINFO_ELAND_H__
+#define BIOINFO_ELAND_H__
 
 #include <vector>
 #include <string>
@@ -33,4 +33,4 @@ class ElandParser {
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif /* BIOINFO_ELANDPARSER_H__ */
+#endif /* BIOINFO_ELAND_H__ */

@@ -7,7 +7,7 @@
 #include "log.h"
 #include "linestream.h"
 #include "common.h"
-#include "bedparser.h"
+#include "bed.h"
 
 Bed::Bed() {
   sub_blocks_ = std::vector<SubBlock>();

@@ -7,7 +7,7 @@
 #include "log.h"
 #include "linestream.h"
 #include "common.h"
-#include "blatparser.h"
+#include "blat.h"
 
 const int kPslHeaderLinesCount = 5;
 

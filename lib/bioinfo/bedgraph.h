@@ -2,8 +2,8 @@
  *    \file bgrParser.h
  *    \author Andrea Sboner (andrea.sboner@yale.edu)
  */
-#ifndef BIOINFO_BGRPARSER_H__
-#define BIOINFO_BGRPARSER_H__
+#ifndef BIOINFO_BEDGRAPH_H__
+#define BIOINFO_BEDGRAPH_H__
 
 #include <vector>
 #include <string>
@@ -71,4 +71,4 @@ class BedGraphParser {
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif // BIOINFO_BGRPARSER_H__
+#endif // BIOINFO_BEDGRAPH_H__

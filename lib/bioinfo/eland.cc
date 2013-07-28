@@ -7,12 +7,11 @@
 #include "log.h"
 #include "linestream.h"
 #include "common.h"
-#include "elandparser.h"
+#include "eland.h"
 
 ElandParser::ElandParser(std::string filename) {
   stream_ = ls_createFromFile(filename.c_str());
 }
-
 
 ElandParser::~ElandParser() {
   ls_destroy(stream_);

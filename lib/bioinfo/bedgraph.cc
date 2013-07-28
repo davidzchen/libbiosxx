@@ -7,7 +7,7 @@
 #include "log.h"
 #include "linestream.h"
 #include "common.h"
-#include "bgrparser.h"
+#include "bedgraph.h"
 
 BedGraphParser::BedGraphParser() {
   stream_ = NULL;
