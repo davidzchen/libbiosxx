@@ -3,21 +3,33 @@
  *   \author Lukas Habegger (lukas.habegger@yale.edu)
  */
 
+#ifndef BIOINFO_FASTA_H__
+#define BIOINFO_FASTA_H__
 
-#ifndef DEF_FASTA_H
-#define DEF_FASTA_H
-
+#include <string>
+#include <vector>
 
 #include "seq.h"
 
+class FastaParser {
+ public:
+  FastaParser();
+  ~FastaParser();
 
-extern void fasta_initFromFile (char *fileName);
-extern void fasta_initFromPipe (char *command);
-extern void fasta_deInit (void);
-extern Seq* fasta_nextSequence (int truncateName);
-extern Array fasta_readAllSequences (int truncateName);
-extern void fasta_printOneSequence (Seq *currSeq);
-extern void fasta_printSequences (Array seqs);
+  void InitFromFile(std::string filename);
+  void InitFromPipe(std::string command);
 
+  Seq* NextSequence(bool truncate_name);
+  std::vector<Seq> ReadAllSequences(bool truncate_name);
+  void PrintSequence(Seq& seq);
+  void PrintAllSequences(std::vector<Seq>& seqs);
 
-#endif
+ private:
+  Seq* ProcessNextSequence(bool truncate_name);
+
+ private:
+  LineStream stream_;
+};
+
+/* vim: set ai ts=2 sts=2 sw=2 et: */
+#endif /* BIOINFO_FASTA_H__ */

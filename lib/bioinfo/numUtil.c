@@ -2,13 +2,10 @@
 #include "format.h"
 #include "numUtil.h"
 
-
 /** 
  *   \file numUtil.c Numeric utilities
  *   \author Lukas Habegger (lukas.habegger@yale.edu)
  */
-
-
 
 typedef struct {
   double value1;
@@ -16,9 +13,6 @@ typedef struct {
   double rank1;
   double rank2;
 } ValuePair;
-
-
-
 
 /** 
  * Returns rounded a*p/q 
@@ -36,8 +30,6 @@ int roundingScale(int a, int p, int q)
     return (a*p + q/2)/q;
 }
 
-
-
 /** 
  * Return amount of bases two ranges intersect over, 0 or negative if no intersection. 
  */
@@ -47,8 +39,6 @@ int  rangeIntersection(int start1, int end1, int start2, int end2)
   int e = MIN(end1,end2);
   return e-s;
 }
-
-
 
 /** 
  * Return number of bases in intersection of two ranges, or zero if they don't intersect. 
@@ -61,8 +51,6 @@ int positiveRangeIntersection(int start1, int end1, int start2, int end2)
     ret = 0;
   return ret;
 }
-
-
 
 /** 
  * Return byte-swapped version of a. 
@@ -78,8 +66,6 @@ unsigned byteSwap32(unsigned a)
   return v.whole;
 }
 
-
-
 /**
  * Return base two number of digits. 
  */
@@ -93,8 +79,6 @@ int digitsBaseTwo(unsigned long x)
     }
   return digits;
 }
-
-
 
 /**
  * Return number of digits base 10. 
@@ -115,8 +99,6 @@ int digitsBaseTen(int x)
   return digCount;
 }
 
-
-
 static int sortValuePairsByValue1 (ValuePair *a, ValuePair *b) 
 {
   if (a->value1 < b->value1) {
@@ -127,8 +109,6 @@ static int sortValuePairsByValue1 (ValuePair *a, ValuePair *b)
   }
   return 0;
 }
-
-
 
 static int sortValuePairsByValue2 (ValuePair *a, ValuePair *b) 
 {
@@ -141,8 +121,6 @@ static int sortValuePairsByValue2 (ValuePair *a, ValuePair *b)
   return 0;
 }
 
-
-
 static double calculateSumTerm (Array ties) 
 {
   int i;
@@ -153,8 +131,6 @@ static double calculateSumTerm (Array ties)
   }
   return sumTerm;
 }
-
-
 
 static double calculateC1 (Array ties1, Array ties2, int N)
 {
@@ -167,8 +143,6 @@ static double calculateC1 (Array ties1, Array ties2, int N)
   sumTerm2 = calculateSumTerm (ties2);
   return (sumTerm1 + sumTerm2) / (2 * N * ((N * N) - 1));
 }
-
-
 
 static double calculateC2 (Array ties1, Array ties2, int N)
 {
@@ -184,8 +158,6 @@ static double calculateC2 (Array ties1, Array ties2, int N)
   term2 = 1.0 - (sumTerm2 / (N * ((N * N) - 1)));
   return sqrt (term1 * term2);
 }
-
-
 
 double spearmanCorrelation (Array a, Array b)
 {
@@ -280,9 +252,6 @@ double spearmanCorrelation (Array a, Array b)
   return ((1.0 - ((6.0 * sumSquaredRankDifferentials) / (N * ((N * N) - 1)))) - C1) / C2;
 }
 
-
-
-
 GraphCoordTrans gr_ct_create (double minU, double maxU, int minP, int maxP)
 { /* creates a coordinate transformer
      input: minU,maxU : user coordinates
@@ -299,16 +268,12 @@ GraphCoordTrans gr_ct_create (double minU, double maxU, int minP, int maxP)
   return this1;
 }
 
-
-
 void gr_ct_destroy_func (GraphCoordTrans this1)
 {
   if (!this1)
     die ("gr_ct_destroy_func: no GraphCoordTrans");
   hlr_free (this1);
 }
-
-
 
 int gr_ct_toPix (GraphCoordTrans ct,double x)
 { /* returns pixel coordinate for the user coordinate x
@@ -317,8 +282,6 @@ int gr_ct_toPix (GraphCoordTrans ct,double x)
     die ("gr_ct_toPix: no GraphCoordTrans");
   return ct->minP + (x - ct->minU) * (ct->maxP - ct->minP) / (ct->maxU - ct->minU);
 }
-
-
 
 double gr_ct_toUser (GraphCoordTrans ct,int x)
 { /* returns user coordinate for the pixel coordinate

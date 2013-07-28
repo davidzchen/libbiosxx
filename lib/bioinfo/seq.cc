@@ -13,12 +13,10 @@
  * granted for all use - public, private or commercial. 
  */
 
-
 /** 
  *   \file seq.c Module to handle DNA and protein sequences
  *   \author Adapted by Lukas Habegger (lukas.habegger@yale.edu)
  */
-
 
 #include "log.h"
 #include "format.h"
@@ -26,15 +24,39 @@
 #include "seq.h"
 #include "numUtil.h"
 
-#define MASKED_BASE_BIT 8
+Seq::Seq() {
+  name = NULL;
+  sequence = NULL;
+  mask = NULL;
+}
 
-struct codonTable {
-  DNA *codon;        /* Lower case. */
-  AA protCode;        /* Upper case. The "Standard" code */
-  AA mitoCode;        /* Upper case. Vertebrate mitochondrial translations */
-};
+Seq::~Seq() {
+  if (name != NULL) {
+    free(name);
+  }
+  if (sequence != NULL) {
+    free(sequence);
+  }
+  if (mask != NULL) {
+    free(mask);
+  }
+}
 
-struct codonTable codonTable[] = {
+/** 
+ * Allocate a mask for sequence and fill it in based on sequence case. 
+ */
+Bits* Seq::MaskFromUpperCase() {
+  int size = size;
+  char *poly = sequence;
+  Bits *b = bitAlloc(size);
+  for (int i = 0; i < size; ++i) {
+    if (isupper(poly[i]))
+      bitSetOne(b, i);
+  }
+  return b;
+}
+
+Sequencer::CodonRow Sequencer::codon_table_[] = {
   {"ttt", 'F', 'F',},
   {"ttc", 'F', 'F',},
   {"tta", 'L', 'L',},
@@ -116,103 +138,78 @@ struct codonTable codonTable[] = {
   {"ggg", 'G', 'G',},
 };
 
-/* A table that gives values 0 for t
-                             1 for c
-                             2 for a
-                             3 for g
- * (which is order aa's are in biochemistry codon tables)
- * and gives -1 for all others. */
-int ntVal[256];
-int ntValLower[256];        /* NT values only for lower case. */
-int ntValUpper[256];        /* NT values only for upper case. */
-int ntVal5[256];
-int ntValNoN[256]; /* Like ntVal, but with T_BASE_VAL in place of -1 for nonexistent ones. */
-DNA valToNt[(N_BASE_VAL|MASKED_BASE_BIT)+1];
-
-/* convert tables for bit-4 indicating masked */
-int ntValMasked[256];
-DNA valToNtMasked[256];
-
-static int inittedNtVal = 0;
-
-static void initNtVal() {
-  if (!inittedNtVal) {
-    int i;
-    for (i=0; i<NUMELE(ntVal); i++) {
-      ntValUpper[i] = ntValLower[i] = ntVal[i] = -1;
-      ntValNoN[i] = T_BASE_VAL;
-      if (isspace(i) || isdigit(i)) {
-        ntVal5[i] = ntValMasked[i] = -1;
-      } else {
-        ntVal5[i] = N_BASE_VAL;
-        ntValMasked[i] = (islower(i) ? (N_BASE_VAL|MASKED_BASE_BIT) : N_BASE_VAL);
-      }
+void Sequencer::InitNucleotideValues() {
+  for (int i = 0; i < NUMELE(nt_val_); ++i) {
+    nt_val_upper_[i] = nt_val_lower_[i] = nt_val_[i] = -1;
+    nt_val_no_n_[i] = T_BASE_VAL;
+    if (isspace(i) || isdigit(i)) {
+      nt_val_5_[i] = nt_val_masked_[i] = -1;
+    } else {
+      nt_val_5_[i] = N_BASE_VAL;
+      nt_val_masked_[i] = (islower(i) ? (N_BASE_VAL|MASKED_BASE_BIT) : N_BASE_VAL);
     }
-    ntVal5['t'] = ntVal5['T'] = ntValNoN['t'] = ntValNoN['T'] = ntVal['t'] = 
-        ntVal['T'] = ntValLower['t'] = ntValUpper['T'] = T_BASE_VAL;
-    ntVal5['u'] = ntVal5['U'] = ntValNoN['u'] = ntValNoN['U'] = ntVal['u'] =
-        ntVal['U'] = ntValLower['u'] = ntValUpper['U'] = U_BASE_VAL;
-    ntVal5['c'] = ntVal5['C'] = ntValNoN['c'] = ntValNoN['C'] = ntVal['c'] = 
-        ntVal['C'] = ntValLower['c'] = ntValUpper['C'] = C_BASE_VAL;
-    ntVal5['a'] = ntVal5['A'] = ntValNoN['a'] = ntValNoN['A'] = ntVal['a'] = 
-        ntVal['A'] = ntValLower['a'] = ntValUpper['A'] = A_BASE_VAL;
-    ntVal5['g'] = ntVal5['G'] = ntValNoN['g'] = ntValNoN['G'] = ntVal['g'] = 
-        ntVal['G'] = ntValLower['g'] = ntValUpper['G'] = G_BASE_VAL;
-    
-    valToNt[T_BASE_VAL] = valToNt[T_BASE_VAL|MASKED_BASE_BIT] = 't';
-    valToNt[C_BASE_VAL] = valToNt[C_BASE_VAL|MASKED_BASE_BIT] = 'c';
-    valToNt[A_BASE_VAL] = valToNt[A_BASE_VAL|MASKED_BASE_BIT] = 'a';
-    valToNt[G_BASE_VAL] = valToNt[G_BASE_VAL|MASKED_BASE_BIT] = 'g';
-    valToNt[N_BASE_VAL] = valToNt[N_BASE_VAL|MASKED_BASE_BIT] = 'n';
-    
-    /* masked values */
-    ntValMasked['T'] = T_BASE_VAL;
-    ntValMasked['U'] = U_BASE_VAL;
-    ntValMasked['C'] = C_BASE_VAL;
-    ntValMasked['A'] = A_BASE_VAL;
-    ntValMasked['G'] = G_BASE_VAL;
-    
-    ntValMasked['t'] = T_BASE_VAL|MASKED_BASE_BIT;
-    ntValMasked['u'] = U_BASE_VAL|MASKED_BASE_BIT;
-    ntValMasked['c'] = C_BASE_VAL|MASKED_BASE_BIT;
-    ntValMasked['a'] = A_BASE_VAL|MASKED_BASE_BIT;
-    ntValMasked['g'] = G_BASE_VAL|MASKED_BASE_BIT;
-    
-    valToNtMasked[T_BASE_VAL] = 'T';
-    valToNtMasked[C_BASE_VAL] = 'C';
-    valToNtMasked[A_BASE_VAL] = 'A';
-    valToNtMasked[G_BASE_VAL] = 'G';
-    valToNtMasked[N_BASE_VAL] = 'N';
-    
-    valToNtMasked[T_BASE_VAL|MASKED_BASE_BIT] = 't';
-    valToNtMasked[C_BASE_VAL|MASKED_BASE_BIT] = 'c';
-    valToNtMasked[A_BASE_VAL|MASKED_BASE_BIT] = 'a';
-    valToNtMasked[G_BASE_VAL|MASKED_BASE_BIT] = 'g';
-    valToNtMasked[N_BASE_VAL|MASKED_BASE_BIT] = 'n';
-    
-    inittedNtVal = 1;
   }
+  nt_val_5_['t'] = nt_val_5_['T'] = nt_val_no_n_['t'] = nt_val_no_n_['T'] = 
+      nt_val_['t'] = nt_val_['T'] = nt_val_lower_['t'] = nt_val_upper_['T'] = 
+      T_BASE_VAL;
+  nt_val_5_['u'] = nt_val_5_['U'] = nt_val_no_n_['u'] = nt_val_no_n_['U'] = 
+      nt_val_['u'] = nt_val_['U'] = nt_val_lower_['u'] = nt_val_upper_['U'] = 
+      U_BASE_VAL;
+  nt_val_5_['c'] = nt_val_5_['C'] = nt_val_no_n_['c'] = nt_val_no_n_['C'] = 
+      nt_val_['c'] = nt_val_['C'] = nt_val_lower_['c'] = nt_val_upper_['C'] = 
+      C_BASE_VAL;
+  nt_val_5_['a'] = nt_val_5_['A'] = nt_val_no_n_['a'] = nt_val_no_n_['A'] = 
+      nt_val_['a'] = nt_val_['A'] = nt_val_lower_['a'] = nt_val_upper_['A'] = 
+      A_BASE_VAL;
+  nt_val_5_['g'] = nt_val_5_['G'] = nt_val_no_n_['g'] = nt_val_no_n_['G'] = 
+      nt_val_['g'] = nt_val_['G'] = nt_val_lower_['g'] = nt_val_upper_['G'] = 
+      G_BASE_VAL;
+  
+  val_to_nt_[T_BASE_VAL] = val_to_nt_[T_BASE_VAL|MASKED_BASE_BIT] = 't';
+  val_to_nt_[C_BASE_VAL] = val_to_nt_[C_BASE_VAL|MASKED_BASE_BIT] = 'c';
+  val_to_nt_[A_BASE_VAL] = val_to_nt_[A_BASE_VAL|MASKED_BASE_BIT] = 'a';
+  val_to_nt_[G_BASE_VAL] = val_to_nt_[G_BASE_VAL|MASKED_BASE_BIT] = 'g';
+  val_to_nt_[N_BASE_VAL] = val_to_nt_[N_BASE_VAL|MASKED_BASE_BIT] = 'n';
+  
+  // Masked values.
+  nt_val_masked_['T'] = T_BASE_VAL;
+  nt_val_masked_['U'] = U_BASE_VAL;
+  nt_val_masked_['C'] = C_BASE_VAL;
+  nt_val_masked_['A'] = A_BASE_VAL;
+  nt_val_masked_['G'] = G_BASE_VAL;
+  
+  nt_val_masked_['t'] = T_BASE_VAL|MASKED_BASE_BIT;
+  nt_val_masked_['u'] = U_BASE_VAL|MASKED_BASE_BIT;
+  nt_val_masked_['c'] = C_BASE_VAL|MASKED_BASE_BIT;
+  nt_val_masked_['a'] = A_BASE_VAL|MASKED_BASE_BIT;
+  nt_val_masked_['g'] = G_BASE_VAL|MASKED_BASE_BIT;
+  
+  val_to_nt_masked_[T_BASE_VAL] = 'T';
+  val_to_nt_masked_[C_BASE_VAL] = 'C';
+  val_to_nt_masked_[A_BASE_VAL] = 'A';
+  val_to_nt_masked_[G_BASE_VAL] = 'G';
+  val_to_nt_masked_[N_BASE_VAL] = 'N';
+  
+  val_to_nt_masked_[T_BASE_VAL|MASKED_BASE_BIT] = 't';
+  val_to_nt_masked_[C_BASE_VAL|MASKED_BASE_BIT] = 'c';
+  val_to_nt_masked_[A_BASE_VAL|MASKED_BASE_BIT] = 'a';
+  val_to_nt_masked_[G_BASE_VAL|MASKED_BASE_BIT] = 'g';
+  val_to_nt_masked_[N_BASE_VAL|MASKED_BASE_BIT] = 'n';
 }
 
 /**
  * Returns one letter code for protein, 0 for stop codon, or X for bad input.
  */
-AA seq_lookupCodon(DNA *dna) {
-  int ix;
-  int i;
-  char c;
-  if (!inittedNtVal) {
-    initNtVal();
-  }
-  ix = 0;
-  for (i=0; i<3; ++i) {
-    int bv = ntVal[(int)dna[i]];
-    if (bv<0) {
+AA Sequencer::LookupCodon(DNA* dna) {
+  int ix = 0;
+  for (int i = 0; i < 3; ++i) {
+    int bv = nt_val_[(int) dna[i]];
+    if (bv < 0) {
       return 'X';
     }
-    ix = (ix<<2) + bv;
+    ix = (ix << 2) + bv;
   }
-  c = codonTable[ix].protCode;
+  char c = codon_table_[ix].protein_code;
   c = toupper(c);
   return c;
 }
@@ -220,23 +217,16 @@ AA seq_lookupCodon(DNA *dna) {
 /**
  * Returns one letter code for protein, 0 for stop codon, or X for bad input.
  */
-AA seq_lookupMitochondrialCodon(DNA *dna) {
-  int ix;
-  int i;
-  char c;
-
-  if (!inittedNtVal) {
-    initNtVal();
-  }
-  ix = 0;
-  for (i=0; i<3; ++i) {
-    int bv = ntVal[(int)dna[i]];
-    if (bv<0) {
+AA Sequencer::LookupMitochondrialCodon(DNA* dna) {
+  int ix = 0;
+  for (int i = 0; i < 3; ++i) {
+    int bv = nt_val_[(int) dna[i]];
+    if (bv < 0) {
       return 'X';
     }
-    ix = (ix<<2) + bv;
+    ix = (ix << 2) + bv;
   }
-  c = codonTable[ix].mitoCode;
+  char c = codon_table_[ix].mito_code;
   c = toupper(c);
   return c;
 }
@@ -244,154 +234,123 @@ AA seq_lookupMitochondrialCodon(DNA *dna) {
 /** 
  * Return value from 0-63 of codon starting at start. Returns -1 if not a codon. 
  */
-Codon seq_codonVal(DNA *start) {
-  int v1,v2,v3;
-  
-  if ((v1 = ntVal[(int)start[0]]) < 0) {
+Codon Sequencer::CodonVal(DNA* start) {
+  int v1, v2, v3;
+  if ((v1 = nt_val_[(int) start[0]]) < 0) {
     return -1;
   }
-  if ((v2 = ntVal[(int)start[1]]) < 0) {
+  if ((v2 = nt_val_[(int) start[1]]) < 0) {
     return -1;
   }
-  if ((v3 = ntVal[(int)start[2]]) < 0) {
+  if ((v3 = nt_val_[(int) start[2]]) < 0) {
     return -1;
   }
-  return ((v1<<4) + (v2<<2) + v3);
+  return ((v1 << 4) + (v2 << 2) + v3);
 }
 
 /** 
  * Return codon corresponding to val (0-63) 
  */
-DNA* seq_valToCodon(int val) {
+const DNA* Sequencer::ValToCodon(int val) {
   assert(val >= 0 && val < 64);
-  return codonTable[val].codon;
+  return codon_table_[val].codon;
 }
 
-char* seq_dnaTranslate (DNA *dna, int terminateAtStopCodon) {
-  static Stringa buffer = NULL;
-  int i;
-  int dnaSize;
-  char aa;
-
-  stringCreateClear (buffer,500);
-  dnaSize = strlen(dna);
-  for (i=0; i<dnaSize-2; i+=3) {
-    aa = seq_lookupCodon(dna+i);
+char* Sequencer::DnaTranslate(DNA* dna, bool terminate_at_stop_codon) {
+  std::stringstream translation;
+  int dna_size = strlen(dna);
+  for (int i = 0; i < dna_size - 2; i += 3) {
+    char aa = LookupCodon(dna + i);
     if (aa == 0) {
-      if (terminateAtStopCodon) {
+      if (terminate_at_stop_codon) {
         break;
       }
       aa = '*';
     }
-    stringCatChar (buffer,aa);
+    translation << aa;
   }
-  return string (buffer);
+  return hlr_strdup((char*) translation.str().c_str());
 }
 
-
-/* A little array to help us decide if a character is a 
- * nucleotide, and if so convert it to lower case. */
-char ntChars[256];
-
-static void initNtChars() {
-  static int initted = 0;
-  if (!initted) {
-    zeroBytes(ntChars, sizeof(ntChars));
-    ntChars['a'] = ntChars['A'] = 'a';
-    ntChars['c'] = ntChars['C'] = 'c';
-    ntChars['g'] = ntChars['G'] = 'g';
-    ntChars['t'] = ntChars['T'] = 't';
-    ntChars['n'] = ntChars['N'] = 'n';
-    ntChars['u'] = ntChars['U'] = 'u';
-    ntChars['-'] = 'n';
-    initted = 1;
-  }
+void Sequencer::InitNucleotideChars() {
+  zeroBytes(nt_chars_, sizeof(nt_chars_));
+  nt_chars_['a'] = nt_chars_['A'] = 'a';
+  nt_chars_['c'] = nt_chars_['C'] = 'c';
+  nt_chars_['g'] = nt_chars_['G'] = 'g';
+  nt_chars_['t'] = nt_chars_['T'] = 't';
+  nt_chars_['n'] = nt_chars_['N'] = 'n';
+  nt_chars_['u'] = nt_chars_['U'] = 'u';
+  nt_chars_['-'] = 'n';
 }
 
-char ntMixedCaseChars[256];
-
-static void initNtMixedCaseChars() {
-  static int initted = 0;
-  
-  if (!initted) {
-    zeroBytes(ntMixedCaseChars, sizeof(ntMixedCaseChars));
-    ntMixedCaseChars['a'] = 'a';
-    ntMixedCaseChars['A'] = 'A';
-    ntMixedCaseChars['c'] = 'c';
-    ntMixedCaseChars['C'] = 'C';
-    ntMixedCaseChars['g'] = 'g';
-    ntMixedCaseChars['G'] = 'G';
-    ntMixedCaseChars['t'] = 't';
-    ntMixedCaseChars['T'] = 'T';
-    ntMixedCaseChars['n'] = 'n';
-    ntMixedCaseChars['N'] = 'N';
-    ntMixedCaseChars['u'] = 'u';
-    ntMixedCaseChars['U'] = 'U';
-    ntMixedCaseChars['-'] = 'n';
-    initted = 1;
-  }
+void Sequencer::InitNucleotideMixedCaseChars() {
+  zeroBytes(nt_mixed_case_chars_, sizeof(nt_mixed_case_chars_));
+  nt_mixed_case_chars_['a'] = 'a';
+  nt_mixed_case_chars_['A'] = 'A';
+  nt_mixed_case_chars_['c'] = 'c';
+  nt_mixed_case_chars_['C'] = 'C';
+  nt_mixed_case_chars_['g'] = 'g';
+  nt_mixed_case_chars_['G'] = 'G';
+  nt_mixed_case_chars_['t'] = 't';
+  nt_mixed_case_chars_['T'] = 'T';
+  nt_mixed_case_chars_['n'] = 'n';
+  nt_mixed_case_chars_['N'] = 'N';
+  nt_mixed_case_chars_['u'] = 'u';
+  nt_mixed_case_chars_['U'] = 'U';
+  nt_mixed_case_chars_['-'] = 'n';
 }
 
-DNA ntCompTable[256];
-static int inittedCompTable = 0;
-
-static void initNtCompTable() {
-  zeroBytes(ntCompTable, sizeof(ntCompTable));
-  ntCompTable[' '] = ' ';
-  ntCompTable['-'] = '-';
-  ntCompTable['='] = '=';
-  ntCompTable['a'] = 't';
-  ntCompTable['c'] = 'g';
-  ntCompTable['g'] = 'c';
-  ntCompTable['t'] = 'a';
-  ntCompTable['u'] = 'a';
-  ntCompTable['n'] = 'n';
-  ntCompTable['-'] = '-';
-  ntCompTable['.'] = '.';
-  ntCompTable['A'] = 'T';
-  ntCompTable['C'] = 'G';
-  ntCompTable['G'] = 'C';
-  ntCompTable['T'] = 'A';
-  ntCompTable['U'] = 'A';
-  ntCompTable['N'] = 'N';
-  ntCompTable['R'] = 'Y';
-  ntCompTable['Y'] = 'R';
-  ntCompTable['M'] = 'K';
-  ntCompTable['K'] = 'M';
-  ntCompTable['S'] = 'S';
-  ntCompTable['W'] = 'W';
-  ntCompTable['V'] = 'B';
-  ntCompTable['H'] = 'D';
-  ntCompTable['D'] = 'H';
-  ntCompTable['B'] = 'V';
-  ntCompTable['X'] = 'N';
-  ntCompTable['r'] = 'y';
-  ntCompTable['y'] = 'r';
-  ntCompTable['s'] = 's';
-  ntCompTable['w'] = 'w';
-  ntCompTable['m'] = 'k';
-  ntCompTable['k'] = 'm';
-  ntCompTable['v'] = 'b';
-  ntCompTable['h'] = 'd';
-  ntCompTable['d'] = 'h';
-  ntCompTable['b'] = 'v';
-  ntCompTable['x'] = 'n';
-  ntCompTable['('] = ')';
-  ntCompTable[')'] = '(';
-  inittedCompTable = 1;
+void Sequencer::InitNucleotideCompareTable() {
+  zeroBytes(nt_comp_table_, sizeof(nt_comp_table_));
+  nt_comp_table_[' '] = ' ';
+  nt_comp_table_['-'] = '-';
+  nt_comp_table_['='] = '=';
+  nt_comp_table_['a'] = 't';
+  nt_comp_table_['c'] = 'g';
+  nt_comp_table_['g'] = 'c';
+  nt_comp_table_['t'] = 'a';
+  nt_comp_table_['u'] = 'a';
+  nt_comp_table_['n'] = 'n';
+  nt_comp_table_['-'] = '-';
+  nt_comp_table_['.'] = '.';
+  nt_comp_table_['A'] = 'T';
+  nt_comp_table_['C'] = 'G';
+  nt_comp_table_['G'] = 'C';
+  nt_comp_table_['T'] = 'A';
+  nt_comp_table_['U'] = 'A';
+  nt_comp_table_['N'] = 'N';
+  nt_comp_table_['R'] = 'Y';
+  nt_comp_table_['Y'] = 'R';
+  nt_comp_table_['M'] = 'K';
+  nt_comp_table_['K'] = 'M';
+  nt_comp_table_['S'] = 'S';
+  nt_comp_table_['W'] = 'W';
+  nt_comp_table_['V'] = 'B';
+  nt_comp_table_['H'] = 'D';
+  nt_comp_table_['D'] = 'H';
+  nt_comp_table_['B'] = 'V';
+  nt_comp_table_['X'] = 'N';
+  nt_comp_table_['r'] = 'y';
+  nt_comp_table_['y'] = 'r';
+  nt_comp_table_['s'] = 's';
+  nt_comp_table_['w'] = 'w';
+  nt_comp_table_['m'] = 'k';
+  nt_comp_table_['k'] = 'm';
+  nt_comp_table_['v'] = 'b';
+  nt_comp_table_['h'] = 'd';
+  nt_comp_table_['d'] = 'h';
+  nt_comp_table_['b'] = 'v';
+  nt_comp_table_['x'] = 'n';
+  nt_comp_table_['('] = ')';
+  nt_comp_table_[')'] = '(';
 }
 
 /** 
  * Complement DNA (not reverse). 
  */
-void seq_complement(DNA *dna, long length) {
-  int i;
-  
-  if (!inittedCompTable) {
-    initNtCompTable();
-  }
-  for (i=0; i<length; ++i) {
-    *dna = ntCompTable[(int)*dna];
+void Sequencer::Complement(DNA* dna, long length) {
+  for (int i = 0; i < length; ++i) {
+    *dna = nt_comp_table_[(int) *dna];
     ++dna;
   }
 }
@@ -399,46 +358,44 @@ void seq_complement(DNA *dna, long length) {
 /**
  * Reverse complement DNA. 
  */
-void seq_reverseComplement(DNA *dna, long length) {
+void Sequencer::ReverseComplement(DNA* dna, long length) {
   reverseBytes(dna, length);
-  seq_complement(dna, length);
+  Complement(dna, length);
 }
 
 /** 
  * Return 1 if sequence is all lower case, 0 otherwise. 
  */
-int seq_seqIsLower(Seq *seq) {
-  int size = seq->size, i;
+bool Sequencer::SeqIsLower(Seq* seq) {
+  int size = seq->size;
   char *poly = seq->sequence;
-  for (i=0; i<size; ++i) {
+  for (int i = 0; i < size; ++i) {
     if (!islower(poly[i])) {
-      return 0;
+      return false;
     }
   }
-  return 1;
+  return true;
 }
 
 /** 
  * Return a translated sequence.  Offset is position of first base to translate. 
- * If size is 0 then use length of inSeq. 
+ * If size is 0 then use length of in_seq. 
  */
-aaSeq* seq_translateSeqN(dnaSeq *inSeq, unsigned offset, unsigned inSize, int stop)
-{
-  aaSeq *seq;
-  DNA *dna = inSeq->sequence;
-  AA *pep, aa;
-  int i, lastCodon;
-  int actualSize = 0;
+aaSeq* Sequencer::TranslateSeqN(dnaSeq* in_seq, unsigned offset, 
+                                unsigned in_size, int stop) {
+  assert(offset <= in_seq->size);
+  if ((in_size == 0) || (in_size > (in_seq->size - offset))) {
+    in_size = in_seq->size - offset;
+  }
+  int last_codon = offset + in_size - 3;
   
-  assert(offset <= inSeq->size);
-  if ((inSize == 0) || (inSize > (inSeq->size - offset)))
-    inSize = inSeq->size - offset;
-  lastCodon = offset + inSize - 3;
-  
-  AllocVar(seq);
-  seq->sequence = pep = needLargeMem(inSize/3+1);
-  for (i=offset; i <= lastCodon; i += 3) {
-    aa = seq_lookupCodon(dna+i);
+  aaSeq* seq = new aaSeq;
+  DNA* dna = in_seq->sequence;
+  int actual_size = 0;
+  seq->sequence = (char*) needLargeMem(in_size / 3 + 1);
+  AA* pep = seq->sequence;
+  for (int i = offset; i <= last_codon; i += 3) {
+    AA aa = LookupCodon(dna + i);
     if (aa == 0) {
       if (stop) {
         break;
@@ -447,12 +404,12 @@ aaSeq* seq_translateSeqN(dnaSeq *inSeq, unsigned offset, unsigned inSize, int st
       }
     }
     *pep++ = aa;
-    ++actualSize;
+    ++actual_size;
   }
   *pep = 0;
-  assert(actualSize <= inSize/3+1);
-  seq->size = actualSize;
-  seq->name = hlr_strdup(inSeq->name);
+  assert(actual_size <= in_size / 3 + 1);
+  seq->size = actual_size;
+  seq->name = hlr_strdup(in_seq->name);
   return seq;
 }
 
@@ -461,31 +418,16 @@ aaSeq* seq_translateSeqN(dnaSeq *inSeq, unsigned offset, unsigned inSize, int st
  * translate. If stop is 1 then stop at first stop codon.  
  * (Otherwise represent stop codons as 'Z').
  */
-aaSeq* seq_translateSeq(dnaSeq *inSeq, unsigned offset, int stop) {
-  return seq_translateSeqN(inSeq, offset, 0, stop);
-}
-
-/** 
- * Allocate a mask for sequence and fill it in based on sequence case. 
- */
-Bits* seq_maskFromUpperCaseSeq(Seq *seq) {
-  int size = seq->size, i;
-  char *poly = seq->sequence;
-  Bits *b = bitAlloc(size);
-  for (i=0; i<size; ++i) {
-    if (isupper(poly[i]))
-      bitSetOne(b, i);
-  }
-  return b;
+aaSeq* Sequencer::TranslateSeq(dnaSeq* in_seq, unsigned offset, int stop) {
+  return TranslateSeqN(in_seq, offset, 0, stop);
 }
 
 /** 
  * Convert T's to U's.
  */
-void seq_toRna(DNA *dna) {
-  DNA c;
+void Sequencer::ToRna(DNA* dna) {
   for (;;) {
-    c = *dna;
+    DNA c = *dna;
     if (c == 't') {
       *dna = 'u';
     } else if (c == 'T') {
@@ -498,11 +440,12 @@ void seq_toRna(DNA *dna) {
 }
 
 /* Run chars through filter. */
-static void dnaOrAaFilter(char *in, char *out, char filter[256]) {
+void Sequencer::DnaOrAaFilter(char* in, char* out, char filter[256]) {
   char c;
-  seq_init();
   while ((c = *in++) != 0) {
-    if ((c = filter[(int)c]) != 0) *out++ = c;
+    if ((c = filter[(int)c]) != 0) {
+      *out++ = c;
+    }
   }
   *out++ = 0;
 }
@@ -510,50 +453,50 @@ static void dnaOrAaFilter(char *in, char *out, char filter[256]) {
 /** 
  * Filter out non-DNA characters and change to lower case. 
  */
-void seq_dnaFilter(char *in, DNA *out) {
-  dnaOrAaFilter(in, out, ntChars);
+void Sequencer::DnaFilter(char* in, DNA* out) {
+  DnaOrAaFilter(in, out, nt_chars_);
 }
 
 /** 
  * Filter out non-DNA characters but leave case intact. 
  */
-void seq_dnaMixedCaseFilter(char *in, DNA *out) {
-  dnaOrAaFilter(in, out, ntMixedCaseChars);
+void Sequencer::DnaMixedCaseFilter(char* in, DNA* out) {
+  DnaOrAaFilter(in, out, nt_mixed_case_chars_);
 }
 
 /** 
  * Filter out non-aa characters and change to upper case. 
  */
-void seq_aaFilter(char *in, DNA *out) {
-  dnaOrAaFilter(in, out, aaChars);
+void Sequencer::AaFilter(char* in, DNA* out) {
+  DnaOrAaFilter(in, out, aa_chars_);
 }
 
 /** 
  * Count up frequency of occurance of each base and store results in histogram. 
  */
-void seq_dnaBaseHistogram(DNA *dna, int dnaSize, int histogram[4]) {
+void Sequencer::DnaBaseHistogram(DNA* dna, int dna_size, int histogram[4]) {
   int val;
-  zeroBytes(histogram, 4*sizeof(int));
-  while (--dnaSize >= 0) {
-    if ((val = ntVal[(int)*dna++]) >= 0) {
+  zeroBytes(histogram, 4 * sizeof(int));
+  while (--dna_size >= 0) {
+    if ((val = nt_val_[(int) *dna++]) >= 0) {
       ++histogram[val];
     }
   }
 }
 
 /**
- * Given a gap in genome from iStart to iEnd, return 1 for GT/AG intron between left and right, 
+ * Given a gap in genome from intron_start to intron_end, return 1 for GT/AG intron between left and right, 
  * -1 for CT/AC, 0 for no intron. Assumes DNA is lower cased. 
  */
-int seq_intronOrientation(DNA *iStart, DNA *iEnd) {
-  if (iEnd - iStart < 32) {
+int Sequencer::IntronOrientation(DNA* intron_start, DNA* intron_end) {
+  if (intron_end - intron_start < 32) {
     return 0;
   }
-  if (iStart[0] == 'g' && iStart[1] == 't' && iEnd[-2] == 'a' && 
-      iEnd[-1] == 'g') {
+  if (intron_start[0] == 'g' && intron_start[1] == 't' && 
+      intron_end[-2] == 'a' && intron_end[-1] == 'g') {
     return 1;
-  } else if (iStart[0] == 'c' && iStart[1] == 't' && iEnd[-2] == 'a' && 
-      iEnd[-1] == 'c') {
+  } else if (intron_start[0] == 'c' && intron_start[1] == 't' && 
+      intron_end[-2] == 'a' && intron_end[-1] == 'c') {
     return -1;
   } else {
     return 0;
@@ -563,38 +506,25 @@ int seq_intronOrientation(DNA *iStart, DNA *iEnd) {
 /**
  * Compare two sequences (without inserts or deletions) and score. 
  */
-int seq_dnaOrAaScoreMatch(char *a, char *b, int size, int matchScore, 
-                          int mismatchScore, char ignore) {
-  int i;
+int Sequencer::DnaOrAaScoreMatch(char* a, char* b, int size, int match_score, 
+                                 int mismatch_score, char ignore) {
   int score = 0;
-  for (i=0; i<size; ++i) {
+  for (int i = 0; i < size; ++i) {
     char aa = a[i];
     char bb = b[i];
     if (aa == ignore || bb == ignore) {
       continue;
     }
     if (aa == bb) {
-      score += matchScore;
+      score += match_score;
     } else {
-      score += mismatchScore;
+      score += mismatch_score;
     }
   }
   return score;
 }
 
-/* Tables to convert from 0-20 to ASCII single letter representation of proteins. */
-int aaVal[256];
-AA valToAa[20];
-AA aaChars[256]; /* 0 except for value aa characters. Converts to upper case rest. */
-
-struct aminoAcidTable {
-  int ix;
-  char letter;
-  char abbreviation[3];
-  char *name;
-};
-
-struct aminoAcidTable aminoAcidTable[] = {
+Sequencer::AminoAcidRow Sequencer::amino_acid_table_[] = {
   {0, 'A', "ala", "alanine"},
   {1, 'C', "cys", "cysteine"},
   {2, 'D', "asp",  "aspartic acid"},
@@ -617,38 +547,27 @@ struct aminoAcidTable aminoAcidTable[] = {
   {19, 'Y', "tyr", "tyrosine"},
 };
 
-
 /* Initialize aaVal and valToAa tables. */
-static void initAaVal() {
-  int i;
-  char c, lowc;
-  
-  for (i=0; i<NUMELE(aaVal); ++i) {
-    aaVal[i] = -1;
+void Sequencer::InitAminoAcidValues() {
+  for (int i = 0; i < NUMELE(aa_val_); ++i) {
+    aa_val_[i] = -1;
   }
-  for (i=0; i<NUMELE(aminoAcidTable); ++i) {
-    c = aminoAcidTable[i].letter;
-    lowc = tolower(c);
-    aaVal[(int)c] = aaVal[(int)lowc] = i;
-    aaChars[(int)c] = aaChars[(int)lowc] = c;
-    valToAa[i] = c;
+  for (int i = 0; i < NUMELE(amino_acid_table_); ++i) {
+    char c = amino_acid_table_[i].letter;
+    char lowc = tolower(c);
+    aa_val_[(int) c] = aa_val_[(int) lowc] = i;
+    aa_chars_[(int) c] = aa_chars_[(int) lowc] = c;
+    val_to_aa_[i] = c;
   }
-  aaChars['x'] = aaChars['X'] = 'X';
+  aa_chars_['x'] = aa_chars_['X'] = 'X';
 }
 
-/**
- * Initialize the seq module. 
- */
-void seq_init() {
-  static int opened = 0;
-  if (!opened) {
-    initNtVal();
-    initAaVal();
-    initNtChars();
-    initNtMixedCaseChars();
-    initNtCompTable();
-    opened = 1;
-  }
+Sequencer::Sequencer() {
+  InitNucleotideValues();
+  InitAminoAcidValues();
+  InitNucleotideChars();
+  InitNucleotideMixedCaseChars();
+  InitNucleotideCompareTable();
 }
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

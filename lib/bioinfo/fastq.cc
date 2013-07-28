@@ -11,168 +11,114 @@
 #include "common.h"
 #include "fastq.h"
 
+Fastq::Fastq() {
+  seq = new Seq;
+}
 
+Fastq::~Fastq() {
+  delete seq;
+}
 
-#define NUM_CHARACTRS_PER_LINE 60
+FastqParser::FastqParser() {
+  stream_ = NULL;
+}
 
-
-static LineStream lsFastq = NULL;
-
-
+FastqParser::~FastqParser() {
+  ls_destroy(stream_);
+}
 
 /**
  * Initialize the FASTQ module using a file name.
  * @note Use "-" to denote stdin.
- * @post fastq_nextSequence(), fastq_readAllSequences() can be called.
+ * @post FastqParser::nextSequence(), FastqParser::readAllSequences() can be called.
  */
-void fastq_initFromFile (char* fileName) 
-{
-  lsFastq = ls_createFromFile (fileName);
-  ls_bufferSet (lsFastq,1);
+void FastqParser::InitFromFile(const char* filename) {
+  stream_ = ls_createFromFile(filename);
+  ls_bufferSet(stream_, 1);
 }
-
-
-
-/**
- * Deinitialize the FASTQ module. Frees module internal memory.
- */
-void fastq_deInit (void) 
-{
-  ls_destroy (lsFastq);
-}
-
-
 
 /**
  * Initialize the FASTQ module using a pipe.
- * @post fastq_nextSequence(), fastq_readAllSequences() can be called.
+ * @post FastqParser::nextSequence(), FastqParser::readAllSequences() can be called.
  */
-void fastq_initFromPipe (char* command)
-{
-  lsFastq = ls_createFromPipe (command);
-  ls_bufferSet (lsFastq,1);
+void FastqParser::InitFromPipe(const char* command) {
+  stream_ = ls_createFromPipe((char*) command);
+  ls_bufferSet(stream_, 1);
 }
 
-
-
-static void fastq_freeFastq (Fastq* currFQ)
-{
-  if (currFQ == NULL) {
-    return;
-  }
-  Seq* currSeq = currFQ->seq;
-  hlr_free (currSeq->name);
-  hlr_free (currSeq->sequence);
-  freeMem (currSeq);
-  currSeq = NULL;
-  hlr_free (currFQ->quality);
-  freeMem ( currFQ );
-}
-
-
-
-static Fastq* fastq_processNextSequence (int freeMemory, int truncateName)
-{
-  char *line;
-  static Fastq* currFQ = NULL;
-  int count;
-  Seq* currSeq = NULL;
-
-  if (ls_isEof (lsFastq)) {
-    if (freeMemory) {
-      fastq_freeFastq (currFQ);
-    }
+Fastq* FastqParser::ProcessNextSequence (bool truncate_name) {
+  if (ls_isEof (stream_)) {
     return NULL;
   }
-  count = 0;
-  while ( (line=ls_nextLine (lsFastq)) && (count<4) ) {
+
+  Fastq* fq = NULL;
+  char* line = NULL;
+  while ((line = ls_nextLine(stream_))) {
     if (line[0] == '\0') {
       continue;
     }
     if (line[0] == '@') {      
-      if (freeMemory) {
-	fastq_freeFastq (currFQ);
+      fq = new Fastq;
+      Seq* seq = fq->seq;
+      seq->name = hlr_strdup(line + 1);
+      if (truncate_name) {
+        seq->name = firstWordInLine(skipLeadingSpaces(seq->name));
       }
-      count++;
-      AllocVar (currFQ);
-      AllocVar (currFQ->seq);
-      currSeq = currFQ->seq;
-      currSeq->name = hlr_strdup (line + 1);
-      if (truncateName) {
-	currSeq->name = firstWordInLine (skipLeadingSpaces (currSeq->name));
+      line = ls_nextLine(stream_); // reading sequence
+      seq->sequence = hlr_strdup(line);
+      seq->size = strlen(seq->sequence);
+      line = ls_nextLine(stream_); // reading quality ID
+      if (line[0] != '+') {
+        die((char*) "Expected quality ID: '+' or '+%s'", seq->name);
       }
-      line = ls_nextLine (lsFastq); // reading sequence
-      currSeq->sequence = hlr_strdup ( line );
-      currSeq->size = strlen (currSeq->sequence);
-      count++;
-      line = ls_nextLine (lsFastq); // reading quality ID
-      if( line[0] != '+' )
-	die("Expected quality ID: '+' or '+%s'", currSeq->name );
-      count++;
-      line = ls_nextLine (lsFastq); // reading quality
-      currFQ->quality = hlr_strdup( line );
-      count++;
-    } 
+      line = ls_nextLine(stream_); // reading quality
+      fq->quality = hlr_strdup(line);
+      break;
+    }
   }   
-  ls_back (lsFastq,1);
-  return currFQ;
+  return fq;
 }
-
-
 
 /**
  * Returns a pointer to the next FASTQ sequence.
- * @param[in] truncateName If truncateName > 0, leading spaces of the name are skipped. Furthermore, the name is truncated after the first white space. If truncateName == 0, the name is stored as is.
+ * @param[in] truncate_name If truncate_name > 0, leading spaces of the name are skipped. Furthermore, the name is truncated after the first white space. If truncate_name == 0, the name is stored as is.
  * @note The memory belongs to this routine.
  */
-Fastq* fastq_nextSequence (int truncateName) 
-{
-  return fastq_processNextSequence (1,truncateName);
+Fastq* FastqParser::NextSequence(bool truncate_name) {
+  return ProcessNextSequence(truncate_name);
 }
-
-
 
 /**
  * Returns an Array of FASTQ sequences.
- * @param[in] truncateName If truncateName > 0, leading spaces of the name are skipped. Furthermore, the name is truncated after the first white space. If truncateName == 0, the name is stored as is.
+ * @param[in] truncate_name If truncate_name > 0, leading spaces of the name are skipped. Furthermore, the name is truncated after the first white space. If truncate_name == 0, the name is stored as is.
  * @note The memory belongs to this routine.
  */
-Array fastq_readAllSequences (int truncateName)
-{
-  Array seqs;
-  Fastq *currFQ;
-  seqs = arrayCreate (100000,Fastq);
-  while (currFQ = fastq_processNextSequence (0,truncateName)) {
-    array (seqs,arrayMax (seqs),Fastq) = *currFQ;
+std::vector<Fastq> FastqParser::ReadAllSequences(bool truncate_name) {
+  std::vector<Fastq> seqs;
+  Fastq* fq = NULL;
+  while (fq = ProcessNextSequence(truncate_name)) {
+    seqs.push_back(*fq);
   }
   return seqs;
 }
 
-
-
 /**
  * Prints currSeq to char*.
  */
-char* fastq_printOneSequence (Fastq* currFQ) 
-{
-  static Stringa buffer=NULL;
-  stringCreateClear( buffer, 100 );
-  stringPrintf( buffer, "@%s\n%s\n+\n%s", currFQ->seq->name, currFQ->seq->sequence, currFQ->quality );
-  return string( buffer );
+char* FastqParser::PrintSequence(Fastq& fq) {
+  std::stringstream string_buffer;
+  string_buffer << "@" << fq.seq->name << "\n" << fq.seq->sequence << "\n+\n"
+                << fq.quality;
+  return strdup(string_buffer.str().c_str());
 }
-
-
 
 /**
  * Prints seqs to stdout.
  */
-void fastq_printSequences (Array seqs)
-{
-  int i;
-  Fastq *currFQ;
-  
-  for (i = 0; i < arrayMax (seqs); i++) {
-    currFQ = arrp (seqs,i,Fastq);
-    fastq_printOneSequence (currFQ); 
+void FastqParser::PrintAllSequences(std::vector<Fastq>& fqs) {
+  for (std::vector<Fastq>::iterator it = fqs.begin(); it != fqs.end(); ++it) {
+    FastqParser::PrintSequence(*it); 
   }
 }
+
+/* vim: set ai ts=2 sts=2 sw=2 et: */

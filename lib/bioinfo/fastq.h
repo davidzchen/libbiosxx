@@ -3,29 +3,45 @@
  *   \author Andrea Sboner (andrea.sboner@yale.edu)
  */
 
+#ifndef BIOINFO_FASTQ_H__
+#define BIOINFO_FASTQ_H__
 
-#ifndef DEF_FASTQ_H
-#define DEF_FASTQ_H
-
+#include <vector>
+#include <string>
 
 #include "seq.h"
 
-/**
- * FASTQ structure.
- */
-typedef struct {
+struct Fastq {
+  Fastq();
+  ~Fastq();
+
   Seq* seq;
   char* quality;
-} Fastq;
+};
 
+class FastqParser {
+ public:
+  FastqParser();
+  ~FastqParser();
 
-extern void fastq_initFromFile (char *fileName);
-extern void fastq_initFromPipe (char *command);
-extern void fastq_deInit (void);
-extern Fastq* fastq_nextSequence (int truncateName);
-extern Array fastq_readAllSequences (int truncateName);
-extern char* fastq_printOneSequence (Fastq *currFQ);
-extern void fastq_printSequences (Array seqs);
+  void InitFromFile(const char* filename);
+  void InitFromPipe(const char* command);
 
+  Fastq* NextSequence(bool truncate_name);
+  std::vector<Fastq> ReadAllSequences(bool truncate_name);
+  char* PrintSequence(Fastq& fq);
+  void PrintAllSequences(std::vector<Fastq>& fqs);
 
-#endif
+ private:
+  Fastq* ProcessNextSequence(bool truncate_name);
+
+ private:
+  enum {
+    kCharactersPerLine = 60,
+  };
+
+  LineStream stream_;
+};
+
+/* vim: set ai ts=2 sts=2 sw=2 et: */
+#endif /* BIOINFO_FASTQ_H__ */
