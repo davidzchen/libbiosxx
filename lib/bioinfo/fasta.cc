@@ -7,7 +7,7 @@
 #include "log.h"
 #include "format.h"
 #include "linestream.h"
-#include "stringUtil.h"
+#include "string.h"
 #include "common.h"
 #include "fasta.h"
 
@@ -58,7 +58,7 @@ Seq* FastaParser::ProcessNextSequence(bool truncate_name) {
       if (count == 1) {
         seq->name = hlr_strdup(line + 1);
         if (truncate_name) {
-          seq->name = firstWordInLine(skipLeadingSpaces(seq->name));
+          seq->name = str::firstWordInLine(str::skipLeadingSpaces(seq->name));
         }
         continue;
       } else if (count == 2) {
@@ -106,8 +106,8 @@ std::vector<Seq> FastaParser::ReadAllSequences(bool truncate_name) {
  * Prints currSeq to stdout.
  */
 void FastaParser::PrintSequence(Seq& seq) {
-  char* str = insertWordEveryNthPosition(seq.sequence, (char*) "\n",
-                                         kCharactersPerLine);
+  char* str = str::insertWordEveryNthPosition(seq.sequence, (char*) "\n",
+                                              kCharactersPerLine);
   printf(">%s\n%s\n", seq.name, str);
 }
 

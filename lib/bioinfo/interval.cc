@@ -13,7 +13,7 @@
 #include "log.h"
 #include "format.h"
 #include "linestream.h"
-#include "numUtil.h"
+#include "number.h"
 #include "interval.h"
 
 Interval::Interval() {
@@ -264,7 +264,9 @@ void IntervalFind::AddIntervals(std::vector<Interval*> matching_intervals,
   for (std::vector<Interval*>::iterator it = sublist.begin(); 
       it != sublist.end(); ++it) {
     Interval* interval = *it;
-    if (rangeIntersection(interval->start, interval->end, start, end) >= 0) {
+    int intersection = num::range_intersection(interval->start, interval->end, 
+                                               start, end);
+    if (intersection >= 0) {
       matching_intervals.push_back(interval);
     }
   }

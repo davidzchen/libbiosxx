@@ -22,9 +22,9 @@ libbioinfo_la_SOURCES = \
 		     bioinfo/htmlLinker.c \
 		     bioinfo/linestream.c \
 		     bioinfo/log.c \
-		     bioinfo/numUtil.c \
+		     bioinfo/number.cc \
 		     bioinfo/plabla.c \
-		     bioinfo/stringUtil.c
+		     bioinfo/string.cc
 
 libbioinfo_la_LIBADD = -lm -lgsl
 
@@ -52,7 +52,7 @@ nobase_dist_include_HEADERS = \
 		  bioinfo/linestream.h \
 		  bioinfo/log.h \
 		  bioinfo/mainpage.h \
-		  bioinfo/numUtil.h \
+		  bioinfo/number.h \
 		  bioinfo/plabla_conf.h \
 		  bioinfo/plabla.h \
-		  bioinfo/stringUtil.h
+		  bioinfo/string.h

@@ -7,7 +7,7 @@
 #include "log.h"
 #include "format.h"
 #include "linestream.h"
-#include "stringUtil.h"
+#include "string.h"
 #include "common.h"
 #include "fastq.h"
 
@@ -62,7 +62,7 @@ Fastq* FastqParser::ProcessNextSequence (bool truncate_name) {
       Seq* seq = fq->seq;
       seq->name = hlr_strdup(line + 1);
       if (truncate_name) {
-        seq->name = firstWordInLine(skipLeadingSpaces(seq->name));
+        seq->name = str::firstWordInLine(str::skipLeadingSpaces(seq->name));
       }
       line = ls_nextLine(stream_); // reading sequence
       seq->sequence = hlr_strdup(line);

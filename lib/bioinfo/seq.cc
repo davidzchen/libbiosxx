@@ -22,7 +22,7 @@
 #include "format.h"
 #include "common.h"
 #include "seq.h"
-#include "numUtil.h"
+#include "number.h"
 
 Seq::Seq() {
   name = NULL;
@@ -178,11 +178,11 @@ void Sequencer::InitNucleotideValues() {
   nt_val_masked_['A'] = A_BASE_VAL;
   nt_val_masked_['G'] = G_BASE_VAL;
   
-  nt_val_masked_['t'] = T_BASE_VAL|MASKED_BASE_BIT;
-  nt_val_masked_['u'] = U_BASE_VAL|MASKED_BASE_BIT;
-  nt_val_masked_['c'] = C_BASE_VAL|MASKED_BASE_BIT;
-  nt_val_masked_['a'] = A_BASE_VAL|MASKED_BASE_BIT;
-  nt_val_masked_['g'] = G_BASE_VAL|MASKED_BASE_BIT;
+  nt_val_masked_['t'] = T_BASE_VAL | MASKED_BASE_BIT;
+  nt_val_masked_['u'] = U_BASE_VAL | MASKED_BASE_BIT;
+  nt_val_masked_['c'] = C_BASE_VAL | MASKED_BASE_BIT;
+  nt_val_masked_['a'] = A_BASE_VAL | MASKED_BASE_BIT;
+  nt_val_masked_['g'] = G_BASE_VAL | MASKED_BASE_BIT;
   
   val_to_nt_masked_[T_BASE_VAL] = 'T';
   val_to_nt_masked_[C_BASE_VAL] = 'C';
@@ -190,11 +190,11 @@ void Sequencer::InitNucleotideValues() {
   val_to_nt_masked_[G_BASE_VAL] = 'G';
   val_to_nt_masked_[N_BASE_VAL] = 'N';
   
-  val_to_nt_masked_[T_BASE_VAL|MASKED_BASE_BIT] = 't';
-  val_to_nt_masked_[C_BASE_VAL|MASKED_BASE_BIT] = 'c';
-  val_to_nt_masked_[A_BASE_VAL|MASKED_BASE_BIT] = 'a';
-  val_to_nt_masked_[G_BASE_VAL|MASKED_BASE_BIT] = 'g';
-  val_to_nt_masked_[N_BASE_VAL|MASKED_BASE_BIT] = 'n';
+  val_to_nt_masked_[T_BASE_VAL | MASKED_BASE_BIT] = 't';
+  val_to_nt_masked_[C_BASE_VAL | MASKED_BASE_BIT] = 'c';
+  val_to_nt_masked_[A_BASE_VAL | MASKED_BASE_BIT] = 'a';
+  val_to_nt_masked_[G_BASE_VAL | MASKED_BASE_BIT] = 'g';
+  val_to_nt_masked_[N_BASE_VAL | MASKED_BASE_BIT] = 'n';
 }
 
 /**
