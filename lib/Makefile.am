@@ -15,11 +15,11 @@ libbioinfo_la_SOURCES = \
 		     bioinfo/fasta.cc \
 		     bioinfo/fastq.cc \
 		     bioinfo/format.c \
-		     bioinfo/geneOntology.c \
+		     bioinfo/interval.cc \
+		     bioinfo/geneontology.cc \
 		     bioinfo/hlrmisc.c \
 		     bioinfo/html.c \
 		     bioinfo/htmlLinker.c \
-		     bioinfo/intervalFind.c \
 		     bioinfo/linestream.c \
 		     bioinfo/log.c \
 		     bioinfo/numUtil.c \
@@ -27,7 +27,6 @@ libbioinfo_la_SOURCES = \
 		     bioinfo/stringUtil.c
 
 libbioinfo_la_LIBADD = -lm -lgsl
-
 
 nobase_dist_include_HEADERS = \
 		  bioinfo/array.h \
@@ -45,11 +44,11 @@ nobase_dist_include_HEADERS = \
 		  bioinfo/fasta.h \
 		  bioinfo/fastq.h \
 		  bioinfo/format.h \
-		  bioinfo/geneOntology.h \
+		  bioinfo/interval.h \
+		  bioinfo/geneontology.h \
 		  bioinfo/hlrmisc.h \
 		  bioinfo/html.h \
 		  bioinfo/htmlLinker.h \
-		  bioinfo/intervalFind.h \
 		  bioinfo/linestream.h \
 		  bioinfo/log.h \
 		  bioinfo/mainpage.h \

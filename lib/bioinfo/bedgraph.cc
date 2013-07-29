@@ -84,8 +84,9 @@ std::vector<double> BedGraphParser::GetValuesForRegion(
   test_bed_graph.set_chromosome(chromosome);
   test_bed_graph.set_start(start);
   test_bed_graph.set_end(end);
-  std::vector<BedGraph>::iterator it =
-    std::find(bed_graphs.begin(), bed_graphs.end(), test_bed_graph);
+  std::vector<BedGraph>::iterator it = std::find(bed_graphs.begin(), 
+                                                 bed_graphs.end(), 
+                                                 test_bed_graph);
   int index = std::distance(bed_graphs.begin(), it);
   int i = index;
   while (i >= 0) {
