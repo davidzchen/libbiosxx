@@ -50,7 +50,7 @@ char* stringBetween(char* start, char* end, char* haystack) {
     pos = p + strlen(start);
     if ((p = stringIn(end, pos)) != NULL) {
       len = p - pos;
-      pos = (char*) cloneMem(pos, len + 1);
+      pos = (char*) clone_mem(pos, len + 1);
       pos[len] = 0;
       return pos;
     }

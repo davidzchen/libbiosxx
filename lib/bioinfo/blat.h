@@ -10,9 +10,7 @@
 #include <string>
 
 #include "format.h"
-#include "log.h"
 #include "linestream.h"
-#include "common.h"
 
 struct PslEntry {
   int matches;       // Number of bases that match that aren't repeats

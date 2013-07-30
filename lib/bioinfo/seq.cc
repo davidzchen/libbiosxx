@@ -265,11 +265,11 @@ char* Sequencer::DnaTranslate(DNA* dna, bool terminate_at_stop_codon) {
     }
     translation << aa;
   }
-  return hlr_strdup((char*) translation.str().c_str());
+  return strdup((char*) translation.str().c_str());
 }
 
 void Sequencer::InitNucleotideChars() {
-  zeroBytes(nt_chars_, sizeof(nt_chars_));
+  memset(nt_chars_, 0, sizeof(nt_chars_));
   nt_chars_['a'] = nt_chars_['A'] = 'a';
   nt_chars_['c'] = nt_chars_['C'] = 'c';
   nt_chars_['g'] = nt_chars_['G'] = 'g';
@@ -280,7 +280,7 @@ void Sequencer::InitNucleotideChars() {
 }
 
 void Sequencer::InitNucleotideMixedCaseChars() {
-  zeroBytes(nt_mixed_case_chars_, sizeof(nt_mixed_case_chars_));
+  memset(nt_mixed_case_chars_, 0, sizeof(nt_mixed_case_chars_));
   nt_mixed_case_chars_['a'] = 'a';
   nt_mixed_case_chars_['A'] = 'A';
   nt_mixed_case_chars_['c'] = 'c';
@@ -297,7 +297,7 @@ void Sequencer::InitNucleotideMixedCaseChars() {
 }
 
 void Sequencer::InitNucleotideCompareTable() {
-  zeroBytes(nt_comp_table_, sizeof(nt_comp_table_));
+  memset(nt_comp_table_, 0, sizeof(nt_comp_table_));
   nt_comp_table_[' '] = ' ';
   nt_comp_table_['-'] = '-';
   nt_comp_table_['='] = '=';
@@ -355,7 +355,7 @@ void Sequencer::Complement(DNA* dna, long length) {
  * Reverse complement DNA. 
  */
 void Sequencer::ReverseComplement(DNA* dna, long length) {
-  reverseBytes(dna, length);
+  reverse_bytes(dna, length);
   Complement(dna, length);
 }
 
@@ -407,7 +407,7 @@ aaSeq* Sequencer::TranslateSeqN(dnaSeq* in_seq, unsigned offset,
   *pep = 0;
   assert(actual_size <= in_size / 3 + 1);
   seq->size = actual_size;
-  seq->name = hlr_strdup(in_seq->name);
+  seq->name = strdup(in_seq->name);
   return seq;
 }
 
@@ -474,7 +474,7 @@ void Sequencer::AaFilter(char* in, DNA* out) {
  */
 void Sequencer::DnaBaseHistogram(DNA* dna, int dna_size, int histogram[4]) {
   int val;
-  zeroBytes(histogram, 4 * sizeof(int));
+  memset(histogram, 0, 4 * sizeof(int));
   while (--dna_size >= 0) {
     if ((val = nt_val_[(int) *dna++]) >= 0) {
       ++histogram[val];

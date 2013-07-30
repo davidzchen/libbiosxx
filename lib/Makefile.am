@@ -19,6 +19,7 @@ libbioinfo_la_SOURCES = \
 		     bioinfo/hlrmisc.c \
 		     bioinfo/linestream.c \
 		     bioinfo/log.c \
+			 bioinfo/misc.cc \
 		     bioinfo/number.cc \
 		     bioinfo/plabla.c \
 		     bioinfo/seq.cc \
@@ -47,6 +48,7 @@ nobase_dist_include_HEADERS = \
 		  bioinfo/linestream.h \
 		  bioinfo/log.h \
 		  bioinfo/mainpage.h \
+		  bioinfo/misc.h \
 		  bioinfo/number.h \
 		  bioinfo/plabla_conf.h \
 		  bioinfo/plabla.h \

@@ -25,8 +25,8 @@ int rounding_scale(int a, int p, int q) {
  * Return amount of bases two ranges intersect over, 0 or negative if no intersection. 
  */
 int range_intersection(int start1, int end1, int start2, int end2) {
-  int s = MAX(start1,start2);
-  int e = MIN(end1,end2);
+  int s = std::max(start1, start2);
+  int e = std::min(end1, end2);
   return e - s;
 }
 

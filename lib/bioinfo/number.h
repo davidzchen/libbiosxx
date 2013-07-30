@@ -11,7 +11,6 @@
 #include <cmath>
 
 #include "log.h"
-#include "format.h"
 
 namespace num {
 

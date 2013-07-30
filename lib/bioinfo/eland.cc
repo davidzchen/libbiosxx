@@ -51,7 +51,7 @@ ElandQuery* ElandParser::NextQuery() {
     }
     char* pos;
     if (!(pos = strchr(token, '.'))) {
-      die ((char*) "Expected '.' in chromosome name: %s", token);
+      die((char*) "Expected '.' in chromosome name: %s", token);
     }
     *pos = '\0';
     query->chromosome = pos + 1;
@@ -59,8 +59,7 @@ ElandQuery* ElandParser::NextQuery() {
     token = wordNext(w);
     if (token[0] == 'F') {
       query->strand = '+'; 
-    }
-    else if (token[0] == 'R') {
+    } else if (token[0] == 'R') {
       query->strand = '-'; 
     } 
     wordIterDestroy(w);

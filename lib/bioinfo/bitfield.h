@@ -13,7 +13,8 @@
 #ifndef BIOINFO_BITS_H__
 #define BIOINFO_BITS_H__
 
-#include "common.h"
+#include <cstring>
+#include <cstdio>
 
 class BitField {
  public:

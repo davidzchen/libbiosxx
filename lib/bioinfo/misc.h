@@ -1,0 +1,14 @@
+#ifndef BIOINFO_MISC_H__
+#define BIOINFO_MISC_H__
+
+#include <cstdlib>
+#include <cstring>
+
+#define NUMELE(a) ((int)sizeof(a)/sizeof(a[0]))
+
+void reverse_bytes(char* bytes, long length);
+
+void* clone_mem(void *pt, size_t size);
+
+/* vim: set ai ts=2 sts=2 sw=2 et: */
+#endif /* BIOINFO_MISC_H__ */

@@ -14,7 +14,6 @@
 #include "format.h"
 #include "linestream.h"
 #include "string.h"
-#include "common.h"
 
 struct Fastq {
   Fastq();

@@ -11,7 +11,7 @@
 #include <string>
 #include <sstream>
 
-#include "common.h"
+#include "misc.h"
 
 namespace str {
 

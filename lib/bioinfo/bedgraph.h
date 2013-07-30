@@ -13,7 +13,6 @@
 #include "format.h"
 #include "log.h"
 #include "linestream.h"
-#include "common.h"
 
 class BedGraph {
  public:

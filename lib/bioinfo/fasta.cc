@@ -3,7 +3,6 @@
  *   \author Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-
 #include "fasta.h"
 
 const int kCharactersPerLine = 60;

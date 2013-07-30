@@ -23,11 +23,11 @@
 
 #include <string>
 #include <sstream>
+#include <cassert>
+#include <cstring>
 
-#include "common.h"
-#include "format.h"
+#include "misc.h"
 #include "number.h"
-#include "log.h"
 #include "bitfield.h"
 
 /**
