@@ -13,6 +13,11 @@
 #include <algorithm>
 #include <iterator>
 
+#include "log.h"
+#include "format.h"
+#include "linestream.h"
+#include "number.h"
+
 struct SubInterval {
   int start;
   int end;

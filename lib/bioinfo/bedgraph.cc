@@ -3,10 +3,6 @@
  *   \author Andrea Sboner (andrea.sboner@yale.edu)
  */
 
-#include "format.h"
-#include "log.h"
-#include "linestream.h"
-#include "common.h"
 #include "bedgraph.h"
 
 BedGraphParser::BedGraphParser() {

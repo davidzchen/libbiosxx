@@ -10,10 +10,6 @@
  *   Note: The Interval format is zero-based and half-open.
  */
 
-#include "log.h"
-#include "format.h"
-#include "linestream.h"
-#include "number.h"
 #include "interval.h"
 
 Interval::Interval() {

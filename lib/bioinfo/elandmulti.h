@@ -9,6 +9,11 @@
 #include <vector>
 #include <string>
 
+#include "format.h"
+#include "log.h"
+#include "linestream.h"
+#include "common.h"
+
 struct ElandMultiEntry {
   std::string chromosome;
   int position;

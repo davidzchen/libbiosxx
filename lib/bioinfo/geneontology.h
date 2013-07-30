@@ -10,6 +10,12 @@
 #include <string>
 #include <algorithm>
 
+#include <gsl/gsl_randist.h>
+
+#include "log.h"
+#include "format.h"
+#include "linestream.h"
+
 struct GoTagValue {
   char* tag;
   char* value;

@@ -3,12 +3,6 @@
  *   \author Andrea Sboner (andrea.sboner@yale.edu)
  */
 
-
-#include "log.h"
-#include "format.h"
-#include "linestream.h"
-#include "string.h"
-#include "common.h"
 #include "fastq.h"
 
 Fastq::Fastq() {

@@ -10,6 +10,11 @@
 #include <vector>
 
 #include "seq.h"
+#include "log.h"
+#include "format.h"
+#include "linestream.h"
+#include "string.h"
+#include "common.h"
 
 class FastaParser {
  public:

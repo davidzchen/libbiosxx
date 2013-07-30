@@ -4,11 +4,6 @@
  */
 
 
-#include "log.h"
-#include "format.h"
-#include "linestream.h"
-#include "string.h"
-#include "common.h"
 #include "fasta.h"
 
 const int kCharactersPerLine = 60;

@@ -3,8 +3,6 @@
  *   \author Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-#include "log.h"
-#include "format.h"
 #include "number.h"
 
 namespace num {

@@ -3,10 +3,6 @@
  *   \author Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-#include "format.h"
-#include "log.h"
-#include "linestream.h"
-#include "common.h"
 #include "bowtie.h"
 
 BowtieEntry::BowtieEntry() {

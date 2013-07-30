@@ -4,11 +4,6 @@
  *   \author Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-#include <gsl/gsl_randist.h>
-
-#include "log.h"
-#include "format.h"
-#include "linestream.h"
 #include "geneontology.h"
 
 GoNode::GoNode() {

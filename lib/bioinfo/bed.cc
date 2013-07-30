@@ -3,10 +3,6 @@
  *   \author Andrea Sboner (ans2077@med.cornell.edu)
  */
 
-#include "format.h"
-#include "log.h"
-#include "linestream.h"
-#include "common.h"
 #include "bed.h"
 
 Bed::Bed() {
