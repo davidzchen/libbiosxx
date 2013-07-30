@@ -25,7 +25,10 @@
 #include <sstream>
 
 #include "common.h"
-#include "bits.h"
+#include "format.h"
+#include "number.h"
+#include "log.h"
+#include "bitfield.h"
 
 /**
  * Seq.
@@ -33,12 +36,12 @@
 struct Seq {
   Seq();
   ~Seq();
-  Bits* MaskFromUpperCase();
+  BitField* MaskFromUpperCase();
 
   char *name;           /* Name of sequence. */
   char *sequence;       /* Sequence base by base. */
   int size;             /* Size of sequence. */
-  Bits* mask;           /* Repeat mask (optional) */
+  BitField* mask;           /* Repeat mask (optional) */
 }; 
 
 typedef Seq dnaSeq;	/* Preferred use if DNA */

@@ -18,11 +18,7 @@
  *   \author Adapted by Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-#include "log.h"
-#include "format.h"
-#include "common.h"
 #include "seq.h"
-#include "number.h"
 
 Seq::Seq() {
   name = NULL;
@@ -45,13 +41,13 @@ Seq::~Seq() {
 /** 
  * Allocate a mask for sequence and fill it in based on sequence case. 
  */
-Bits* Seq::MaskFromUpperCase() {
+BitField* Seq::MaskFromUpperCase() {
   int size = size;
   char *poly = sequence;
-  Bits *b = bitAlloc(size);
+  BitField *b = new BitField(size);
   for (int i = 0; i < size; ++i) {
     if (isupper(poly[i]))
-      bitSetOne(b, i);
+      b->SetBit(i);
   }
   return b;
 }
@@ -392,7 +388,9 @@ aaSeq* Sequencer::TranslateSeqN(dnaSeq* in_seq, unsigned offset,
   aaSeq* seq = new aaSeq;
   DNA* dna = in_seq->sequence;
   int actual_size = 0;
-  seq->sequence = (char*) needLargeMem(in_size / 3 + 1);
+  size_t size = in_size / 3 + 1;
+  seq->sequence = (char*) malloc(size);
+  memset(seq->sequence, 0, size);
   AA* pep = seq->sequence;
   for (int i = offset; i <= last_codon; i += 3) {
     AA aa = LookupCodon(dna + i);
