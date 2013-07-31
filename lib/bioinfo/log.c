@@ -40,12 +40,10 @@ PART III: assertions and messages at debug time
 PART IV:  buffering warnings
 */
 
-#include "plabla.h"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include PLABLA_INCLUDE_IO_UNISTD
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <time.h>
@@ -305,9 +303,9 @@ void LogOpen (char *fname)
 
     if (fflush(stderr)) 
       perror("PROBLEM: log: fflush") ;
-    if (PLABLA_CLOSE(2) == -1) 
+    if (close(2) == -1) 
       perror("PROBLEM: log: close(2)") ;
-    fd = PLABLA_OPEN(fname, O_WRONLY | O_CREAT | O_APPEND, 0664) ; 
+    fd = open(fname, O_WRONLY | O_CREAT | O_APPEND, 0664) ; 
     if (fd == -1) {
       printf("PROBLEM: could not open log file %s\n", fname) ;
       perror("PROBLEM: log: open") ;
