@@ -6,6 +6,7 @@ libbioinfo_la_SOURCES = \
 		     bioinfo/blast.cc \
 		     bioinfo/blat.cc \
 		     bioinfo/bowtie.cc \
+			 bioinfo/conf.cc \
 		     bioinfo/eland.cc \
 		     bioinfo/elandmulti.cc \
 		     bioinfo/exportpe.cc \
@@ -30,6 +31,7 @@ nobase_dist_include_HEADERS = \
 		  bioinfo/blast.h \
 		  bioinfo/blat.h \
 		  bioinfo/bowtie.h \
+		  bioinfo/conf.h \
 		  bioinfo/eland.h \
 		  bioinfo/elandmulti.h \
 		  bioinfo/exportpe.h \
