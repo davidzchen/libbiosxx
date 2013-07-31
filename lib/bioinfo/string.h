@@ -43,8 +43,6 @@ static inline int strStartsWithC(char* s1, const char* s2) {
   return strncmp(s1, s2, len) == 0;
 }
 
-int strTrim(char *s, char *left, char *right) ;
-
 char* rStringIn(char* needle, char *haystack);
 char* stringBetween(char* start, char *end, char *haystack);
 void toggleCase(char* s, int size);
@@ -69,6 +67,17 @@ const char *trueFalseString(int b);
 char* skipNumeric(char* s);
 char* skipToNumeric(char* s);
 char* insertWordEveryNthPosition (char *string, char *word, int n);
+
+void strReplace(char **s1, char *s2) ;
+void toupperStr(char *s) ; /* converts string to uppercase */
+void tolowerStr(char *s) ; /* converts string to lowercase */
+char *strCaseStr (char *s, char *t) ;  /* case-insensitive strstr() */
+char *strCopySubstr(char *string, char begin, char end, std::string substr);
+int strTranslate(char *s, char *fromChars, char *toChars) ;
+int strTrim(char *s, char *left, char *right) ;
+void strScramble(char *s) ;
+void strUnscramble(char *s) ;
+int isBlankStr(char *s) ;
 
 }; // namespace str
 

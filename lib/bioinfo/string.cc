@@ -387,6 +387,137 @@ char* insertWordEveryNthPosition(char* string, char* word, int n) {
   return strdup(string_buffer.str().c_str());
 }
 
+/** 
+ * Replace previous contents of s1 with copy of s2. s2 can be NULL. 
+   This function is the same as strdup() from the C library, 
+   except that it free()s the target string before duplicating.
+ * @param[in] s1 Place where a pointer to a string is stored
+ * @param[in] s2 Contents of s2 will replace contents of s1
+ * @param[out] s2 Pervious contents free()d, new memory allocated
+ */
+void strReplace(char **s1, char *s2) { 
+  if (!s1) {
+    return;
+  }
+  free(*s1) ;
+  if (s2) {
+    *s1 = strdup(s2) ;
+  }
+}
+
+/** 
+ * Converts string to uppercase. 
+ */
+void toupperStr(char *s) { 
+  char *cp = s - 1 ;
+  while (*++cp) {
+    *cp = toupper(*cp) ;
+  }
+}
+
+/** 
+ * Converts string to lowercase. 
+ */
+void tolowerStr(char *s) {
+  char *cp = s - 1 ;
+  while (*++cp) {
+    *cp = tolower(*cp) ;
+  }
+}
+
+/**
+ * Case-insensitive version of strstr(3C) from the C-libarary.
+ * @param[in] s String to be searched in (subject)
+ * @param[in] t String to look for in s (query)
+ * @return If t is the empty string return s, else if t does not occur in s 
+ *         return NULL, 
+   else pointer to first position of t in s
+ */
+char *strCaseStr (char *s, char *t) { 
+  char *p , *r ;
+  if (*t == '\0') {
+    return s ;
+  }
+  for ( ; *s != '\0'; s++) {
+    for (p = s, r = t; *r != '\0' && tolower(*p) == tolower(*r); p++, r++) 
+      ;
+    if (r > t && *r == '\0') {
+      return s ;
+    }
+  }
+  return NULL ;
+}
+
+/**
+ * From a supplied string copy a substring delimited by two supplied 
+ * characters, excluding these characters.
+ * @param[in] string String to copy from
+ * @param[in] begin Start copying after the leftmost occurrence of this 
+ *            character in string
+ * @param[in] end Stop copying before the leftmost occurrence of this 
+ *            character from occurrence of begin on; 
+   may be null-terminated to copy to the end of string
+ * @param[in] substr Stringa, must exist
+ * @param[out] substr Filled with string extracted; empty string if nothing 
+ *             extracted;
+ * @return Position after location of end, NULL if no substring extracted
+ */
+char *strCopySubstr(char *string, char begin, char end, std::string& substr) { 
+  char *pbegin = NULL;
+  char *pend = NULL;
+  char *nextPos = NULL;
+  substr.clear();
+  if (pbegin = strchr(string, begin)) {
+    ++pbegin;
+    if (pend = strchr(pbegin, end)) {
+      nextPos = pend + 1;
+      --pend;
+      substr.copy(pbegin, pend - pbegin + 1);
+    }
+  }
+  return nextPos;
+}
+
+/** 
+ * Translates each character from 's' which matches one of the characters in 
+ * 'fromChars' with the corresponding character from 'toChars' or, if this 
+ * position in 'toChars' is not filled, deletes this character from s, thus 
+ * shortening 's'.
+ * This function resembles the Unix command and the Perl function 'tr'.
+  \verbatim
+   example: strTranslate("abc", "ac", "b") modifies
+            "abc" into "bb" and returns 2
+            strTranslate("a|b|c", "|", "|")
+            just counts the number of '|' chars
+  \endverbatim   
+ * @param[in] s
+ * @param[in] fromChars
+ * @param[in] toChars
+ * @param[out] s
+ * @return Number of chars translated or modified
+*/
+int strTranslate(char *s, char *fromChars, char *toChars) { 
+  char *from = s - 1 ;
+  char *to = s ;
+  char c ;
+  int toLen = strlen(toChars) ;
+  char *hit ;
+  int cnt = 0 ;
+
+  while (c = *++from) {
+    if (hit = strchr(fromChars, c)) {
+      ++cnt ;
+      if (hit - fromChars < toLen) {
+        *to++ = toChars[hit - fromChars];
+      }
+    } else {
+      *to++ = c ;
+    }
+  }
+  *to = '\0' ;
+  return cnt ;
+}
+
 /**
  * Remove leading and trailing characters from s. 
   \verbatim
@@ -394,8 +525,10 @@ char* insertWordEveryNthPosition(char* string, char* word, int n) {
            returns 7 and leaves output "text=>>" 
  \endverbatim  	   
  * @param[in] s Zero-terminated string of char or NULL (nothing will happen)
- * @param[in] left Set of chars to be removed from left end of s, NULL or empty string to leave beginning of s as is
- * @param[in] right Set of chars to be removed from right end of s, NULL or empty string to leave tail of s as is
+ * @param[in] left Set of chars to be removed from left end of s, NULL or empty 
+ *            string to leave beginning of s as is
+ * @param[in] right Set of chars to be removed from right end of s, NULL or 
+ *            empty string to leave tail of s as is
  * @param[out] s Changed
  * @return Length of s after trim
  */
@@ -437,6 +570,41 @@ int strTrim(char *s, char *left, char *right) {
     *s = '\0' ;
   }
   return len ;
+}
+
+/**
+ * Encrypt the input string such that it is unreadable to humans and can 
+ * easily be strUnscrambled() again.
+ * @param[in] s Must not contain 0xFF
+ * @param[out] s Scrambled
+ */
+void strScramble(char *s) { 
+  char *cp = s - 1 ;
+  while (*++cp) {
+    if ((unsigned char)*cp == 255) {
+      die((char*) "clsv_scramble: cannot scramble 0xFF") ;
+    }
+    *cp = *cp ^ 255 ;
+  }
+}
+
+/**
+ * Antidot for strScramble().
+ */
+void strUnscramble(char *s) { 
+  strScramble(s) ;  /* scramble + scramble = unscramble */
+}
+
+/**
+ * Check if s is blank.
+ * @return True, if string consists of whitespace only or is of length 0, else 
+ *         returns false 
+ */
+int isBlankStr(char *s) {
+  char *cp = s-1 ;
+  while (*++cp && isspace(*cp))
+    ;
+  return *cp == '\0' ;
 }
 
 }; // namespace str

@@ -88,6 +88,35 @@ int getLine(FILE *stream, char **buffer, int *buflen) {
 }
 
 /**
+ * Strip the trailing \n character off line, if present and return the length 
+ * of the resulting line.
+ * This function is typically used in conjunction with getLine().
+ * @param[in] line
+ * @param[out] line
+ * @return Length of output line
+ */
+int stripNlGetLength(char *line) { 
+  /*
+  implementation note: since strlen() is a slow function if
+    lines are long, I try to use it only when unavoidable.
+    Since stripNlGetLength() has to find the end of the string
+    I pass its finding back, so programs using this function
+    would not need to call strlen() again.
+  */
+  int len = strlen(line) ;
+  if (!len) {
+    return 0 ;
+  }
+  --len ;
+  if (line[len] == '\n') {
+    line[len] = '\0' ;
+  } else {
+    ++len ;
+  }
+  return len ;
+}
+
+/**
  * Read a list from a file. 
  * @note Empty lines are skipped.
  */

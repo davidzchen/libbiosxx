@@ -29,23 +29,23 @@
 #ifndef DEF_FORMAT_H
 #define DEF_FORMAT_H
 
-
 /** 
  *   \file format.h  
  *   \author Adapted by Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "plabla.h"
+#include <ctype.h>
 
+#include "log.h"
+#include "plabla.h"
 #include "array.h"
 #include "hlrmisc.h"
 
 /* -----------------------------------------------------------
    do not refer to anything inside this struct from your programs */
-
 
 /**
  * Worditer.

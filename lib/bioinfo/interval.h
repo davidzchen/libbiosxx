@@ -14,7 +14,6 @@
 #include <iterator>
 
 #include "log.h"
-#include "format.h"
 #include "linestream.h"
 #include "number.h"
 

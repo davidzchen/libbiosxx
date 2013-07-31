@@ -31,7 +31,6 @@
  *   \author Adapted by Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-
 /* technical comments:
 
 the functions collected here belong into x groups:
@@ -50,18 +49,10 @@ a note on terminolgy:
 see #include "array.h"
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-
-#include "hlrmisc.h"
-#include "log.h"
 #include "format.h"
 
 /* ---------- part 1: String = Array of char with 
                       arru(string,arrayMax(string)-1,char) == '\0' ----- */ 
-
 
 /**
  * Create an array of char and make it null-terminated.
@@ -85,8 +76,6 @@ Array stringCreate(int initialSize)
   return a ;
 }
 
-
-
 /**
  * Terminate string.
  * @param[in] s Array of char, not yet null-terminated
@@ -102,8 +91,6 @@ void stringTerminate(Array s /* of char */)
   array(s, arrayMax(s), char) = '\0' ;
 }
 
-
-
 /**
  * Terminate string at position 'cp'.
  * @param[in] cp A pointer to a position within the string
@@ -115,8 +102,6 @@ void stringTerminateP(Array s /* of char */, char *cp)
 { 
   stringTerminateI(s, cp-string(s)) ;
 }
-
-
 
 /**
  * Terminate string at the i+1 char.
@@ -132,8 +117,6 @@ void stringTerminateI(Array s /* of char */, int i)
   arru(s, i, char) = '\0' ;
   arraySetMax(s, i+1) ;
 }
-
-
 
 void stringAdjust(Array s1) { 
   /*  
@@ -156,8 +139,6 @@ void stringAdjust(Array s1) {
   arraySetMax(s1, l+1) ;
 }
 
-
-
 /**
  * Remove the trailing n chars from s.
  * If n is equal or larger than the length of s, the result is the empty string.
@@ -176,8 +157,6 @@ void stringChop(Stringa s, int n)
   arraySetMax(s, l-n) ;
   return ;
 }
-
-
 
 /**
  * Removes a string segment.
@@ -225,8 +204,6 @@ char *stringCut(Array s, int pos, int len)
   return string(r) ;
 }
 
-
-
 /**
  * Insert string 'i' at position p into array string 's'.
  * @param[in] s Destination
@@ -256,8 +233,6 @@ void stringInsert(Stringa s, int p, char *i)
   /* if (strlen(string(s)) != arrayMax(s)-1) die("oops") ; */
 }
 
-
-
 /**
  * Appends null-terminated string s2 to s1. 
  * @param[in] s1 Valid Stringa
@@ -274,8 +249,6 @@ void stringCat(Array s1, char *s2)
   memcpy(arrp(s1, i, char), s2, l) ;
 }  
 
-
-
 /**
  * Convert i into a string and append it to string Array s.
  */
@@ -284,8 +257,6 @@ void stringCatInt(Array s, int i) {
   hlr_itoa(c, i) ;
   stringCat(s, c) ;
 }
-
-
 
 /**
  * Append single character 'c' to a Stringa 's'. 
