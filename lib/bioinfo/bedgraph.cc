@@ -5,47 +5,47 @@
 
 #include "bedgraph.h"
 
-BedGraphParser::BedGraphParser() {
-  stream_ = NULL;
+BedGraphParser::BedGraphParser() 
+    : stream_(NULL) {
 }
 
 BedGraphParser::~BedGraphParser() {
-  ls_destroy(stream_);
+  delete stream_;
 }
 
 /**
  * Initialize the bgrParser module from file.
  * @param[in] fileName File name, use "-" to denote stdin
  */
-void BedGraphParser::InitFromFile(std::string filename) {  
-  stream_ = ls_createFromFile(filename.c_str());
-  ls_bufferSet(stream_, 1);
+void BedGraphParser::InitFromFile(const char* filename) {  
+  stream_ = LineStream::FromFile(filename);
+  stream_->SetBuffer(1);
 }
 
 /**
  * Initialize the bgrParser module from pipe.
  * @param[in] command Command to be executed
  */
-void BedGraphParser::InitFromPipe(std::string command) {
-  stream_ = ls_createFromPipe((char*) command.c_str());
-  ls_bufferSet(stream_, 1);
+void BedGraphParser::InitFromPipe(const char* command) {
+  stream_ = LineStream::FromPipe(command);
+  stream_->SetBuffer(1);
 }
 
 /**
  * Retrieve the next entry in the bedGraph file.
  */
 BedGraph* BedGraphParser::NextEntry() {
-  while (!ls_isEof(stream_)) {
-    char* line = ls_nextLine(stream_);
-    if (!strStartsWithC(line, "track")) {
+  while (!stream_->IsEof()) {
+    char* line = stream_->GetLine();
+    if (!str::strStartsWithC(line, "track")) {
       BedGraph* bed_graph = new BedGraph();
-      WordIter w = wordIterCreate(line, (char*) "\t", 1);
-      std::string chromosome(wordNext(w));
+      WordIter* w = new WordIter(line, "\t", true);
+      std::string chromosome(w->Next());
       bed_graph->set_chromosome(chromosome);
-      bed_graph->set_start(atoi(wordNext(w)));
-      bed_graph->set_end(atoi(wordNext(w)));
-      bed_graph->set_value(atof(wordNext(w)));
-      wordIterDestroy(w);
+      bed_graph->set_start(atoi(w->Next()));
+      bed_graph->set_end(atoi(w->Next()));
+      bed_graph->set_value(atof(w->Next()));
+      delete w;
       return bed_graph;
     }
   }

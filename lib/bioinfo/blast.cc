@@ -13,20 +13,20 @@ BlastQuery::~BlastQuery() {
 
 void BlastQuery::ProcessLine(char* line) {
   BlastEntry entry;
-  WordIter w = wordIterCreate(line, (char*) "\t", 0);
-  std::string t_name(wordNext(w));
+  WordIter* w = new WordIter(line, "\t", false);
+  std::string t_name(w->Next());
   entry.t_name = t_name;
-  entry.percent_identity = atof(wordNext(w));
-  entry.alignment_length = atoi(wordNext(w));
-  entry.mis_matches = atoi(wordNext(w));
-  entry.gap_openings = atoi(wordNext(w));
-  entry.q_start = atoi(wordNext(w));
-  entry.q_end = atoi(wordNext(w));
-  entry.t_start = atoi(wordNext(w));
-  entry.t_end = atoi(wordNext(w));
-  entry.evalue = atof(wordNext(w));
-  entry.bit_score = atof(wordNext(w));
-  wordIterDestroy (w);
+  entry.percent_identity = atof(w->Next());
+  entry.alignment_length = atoi(w->Next());
+  entry.mis_matches = atoi(w->Next());
+  entry.gap_openings = atoi(w->Next());
+  entry.q_start = atoi(w->Next());
+  entry.q_end = atoi(w->Next());
+  entry.t_start = atoi(w->Next());
+  entry.t_end = atoi(w->Next());
+  entry.evalue = atof(w->Next());
+  entry.bit_score = atof(w->Next());
+  delete w;
   entries.push_back(entry);
 }
 
@@ -36,30 +36,30 @@ BlastEntry::BlastEntry() {
 BlastEntry::~BlastEntry() {
 }
 
-BlastParser::BlastParser() {
-  stream_ = NULL;
+BlastParser::BlastParser()
+    : stream_(NULL) {
 }
 
 BlastParser::~BlastParser() {
-  ls_destroy(stream_);
+  delete stream_;
 }
 
 /**
  * Initialize the blastParser module from file.
  * @param[in] fileName File name, use "-" to denote stdin
  */
-void BlastParser::InitFromFile(std::string filename) {
-  stream_ = ls_createFromFile(filename.c_str());
-  ls_bufferSet(stream_, 1);
+void BlastParser::InitFromFile(const char* filename) {
+  stream_ = LineStream::FromFile(filename);
+  stream_->SetBuffer(1);
 }
 
 /**
  * Initialize the blastParser module from pipe.
  * @param[in] command Command to be executed
  */
-void BlastParser::InitFromPipe(std::string command) {
-  stream_ = ls_createFromPipe((char*) command.c_str());
-  ls_bufferSet(stream_, 1);
+void BlastParser::InitFromPipe(const char* command) {
+  stream_ = LineStream::FromPipe(command);
+  stream_->SetBuffer(1);
 }
 
 /**
@@ -72,14 +72,14 @@ BlastQuery* BlastParser::NextQuery() {
     blast_query_ = NULL;
   }
 
-  if (!ls_isEof(stream_)) {
+  if (stream_->IsEof()) {
     return NULL;
   }
 
   blast_query_ = new BlastQuery;
   int first = 1;
   char* line;
-  while (line = ls_nextLine(stream_)) {
+  while (line = stream_->GetLine()) {
     if (line[0] == '\0') {
       continue;
     }
@@ -89,7 +89,7 @@ BlastQuery* BlastParser::NextQuery() {
     if (first == 1 || prev_query_name_ == query_name_) {
       blast_query_->ProcessLine(pos + 1);
     } else {
-      ls_back(stream_, 1);
+      stream_->Back(1);
       return blast_query_;
     }
     if (first == 1) {

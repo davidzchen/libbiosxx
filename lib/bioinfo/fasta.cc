@@ -7,12 +7,12 @@
 
 const int kCharactersPerLine = 60;
 
-FastaParser::FastaParser() {
-  stream_ = NULL;
+FastaParser::FastaParser()
+    : stream_(NULL) {
 }
 
 FastaParser::~FastaParser() {
-  ls_destroy(stream_);
+  delete stream_;
 }
 
 /**
@@ -20,22 +20,22 @@ FastaParser::~FastaParser() {
  * @note Use "-" to denote stdin.
  * @post FastaParser::nextSequence(), FastaParser::readAllSequences() can be called.
  */
-void FastaParser::InitFromFile(std::string filename) {
-  stream_ = ls_createFromFile(filename.c_str());
-  ls_bufferSet(stream_, 1);
+void FastaParser::InitFromFile(const char* filename) {
+  stream_ = LineStream::FromFile(filename);
+  stream_->SetBuffer(1);
 }
 
 /**
  * Initialize the FASTA module using a pipe.
  * @post FastaParser::nextSequence(), FastaParser::readAllSequences() can be called.
  */
-void FastaParser::InitFromPipe(std::string command) {
-  stream_ = ls_createFromPipe((char*) command.c_str());
-  ls_bufferSet(stream_, 1);
+void FastaParser::InitFromPipe(const char* command) {
+  stream_ = LineStream::FromPipe(command);
+  stream_->SetBuffer(1);
 }
 
 Seq* FastaParser::ProcessNextSequence(bool truncate_name) {
-  if (ls_isEof(stream_)) {
+  if (stream_->IsEof()) {
     return NULL;
   }
 
@@ -43,28 +43,28 @@ Seq* FastaParser::ProcessNextSequence(bool truncate_name) {
   int count = 0;
   char* line;
   std::stringstream string_buffer;
-  while (line = ls_nextLine(stream_)) {
+  while (line = stream_->GetLine()) {
     if (line[0] == '\0') {
       continue;
     }
     if (line[0] == '>') {
       ++count;
       if (count == 1) {
-        seq->name = hlr_strdup(line + 1);
+        seq->name = strdup(line + 1);
         if (truncate_name) {
           seq->name = str::firstWordInLine(str::skipLeadingSpaces(seq->name));
         }
         continue;
       } else if (count == 2) {
-        seq->sequence = hlr_strdup((char*) string_buffer.str().c_str());
+        seq->sequence = strdup((char*) string_buffer.str().c_str());
         seq->size = string_buffer.str().size();
-        ls_back(stream_, 1);
+        stream_->Back(1);
         return seq;
       }
     }
     string_buffer << line;
   }
-  seq->sequence = hlr_strdup((char*) string_buffer.str().c_str());
+  seq->sequence = strdup((char*) string_buffer.str().c_str());
   seq->size = string_buffer.str().size();
   return seq;
 } 

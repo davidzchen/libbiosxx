@@ -387,6 +387,58 @@ char* insertWordEveryNthPosition(char* string, char* word, int n) {
   return strdup(string_buffer.str().c_str());
 }
 
+/**
+ * Remove leading and trailing characters from s. 
+  \verbatim
+  example: strTrim("<<=text=>>", "=<", "=")
+           returns 7 and leaves output "text=>>" 
+ \endverbatim  	   
+ * @param[in] s Zero-terminated string of char or NULL (nothing will happen)
+ * @param[in] left Set of chars to be removed from left end of s, NULL or empty string to leave beginning of s as is
+ * @param[in] right Set of chars to be removed from right end of s, NULL or empty string to leave tail of s as is
+ * @param[out] s Changed
+ * @return Length of s after trim
+ */
+/* tried to keep this efficent:
+   - don't use strlen() unless unavoidable
+   - first remove right side, because then there is less
+   to be shifted left
+*/ 
+int strTrim(char *s, char *left, char *right) { 
+  int len ;
+  char *cp ;
+  if (!s) {
+    return 0;
+  }
+  len = strlen(s);
+  if (len && right) {
+    /* move to last char of sequence, then run as long as
+       there are only chars from 'right' or we bump into the
+       beginning of the string */
+    cp = s + len - 1;  
+    while( cp >= s && strchr(right, *cp)) {
+      *cp-- = '\0';
+    }
+    len = cp - s + 1;
+  }
+
+  if (len && left) {
+    /* move cp to the first char not in 'left'; then start
+       shuffling chars from this position onward down to the beginning
+       of the string */
+    cp = s ;
+    while (*cp && strchr(left, *cp)) {
+      ++cp;
+    }
+    len = len - (cp - s) ;
+    while (*cp) {
+      *s++ = *cp++ ;
+    }
+    *s = '\0' ;
+  }
+  return len ;
+}
+
 }; // namespace str
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

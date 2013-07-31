@@ -7,7 +7,7 @@ libbioinfo_la_SOURCES = \
 		     bioinfo/blast.cc \
 		     bioinfo/blat.cc \
 		     bioinfo/bowtie.cc \
-		     bioinfo/common.c \
+		     bioinfo/common.cc \
 		     bioinfo/eland.cc \
 		     bioinfo/elandmulti.cc \
 		     bioinfo/exportpe.cc \
@@ -17,13 +17,14 @@ libbioinfo_la_SOURCES = \
 		     bioinfo/geneontology.cc \
 		     bioinfo/interval.cc \
 		     bioinfo/hlrmisc.c \
-		     bioinfo/linestream.c \
+		     bioinfo/linestream.cc \
 		     bioinfo/log.c \
 			 bioinfo/misc.cc \
 		     bioinfo/number.cc \
 		     bioinfo/plabla.c \
 		     bioinfo/seq.cc \
-		     bioinfo/string.cc
+		     bioinfo/string.cc \
+			 bioinfo/worditer.cc
 
 libbioinfo_la_LIBADD = -lm -lgsl
 
@@ -53,4 +54,5 @@ nobase_dist_include_HEADERS = \
 		  bioinfo/plabla_conf.h \
 		  bioinfo/plabla.h \
 		  bioinfo/seq.h \
-		  bioinfo/string.h
+		  bioinfo/string.h \
+		  bioinfo/worditer.h

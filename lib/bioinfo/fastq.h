@@ -11,7 +11,6 @@
 
 #include "seq.h"
 #include "log.h"
-#include "format.h"
 #include "linestream.h"
 #include "string.h"
 
@@ -44,7 +43,7 @@ class FastqParser {
     kCharactersPerLine = 60,
   };
 
-  LineStream stream_;
+  LineStream* stream_;
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

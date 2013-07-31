@@ -43,30 +43,30 @@ std::string Bed::ToString() {
   return string_buffer.str();
 }
 
-BedParser::BedParser() {
-  stream_ = NULL;
+BedParser::BedParser()
+    : stream_(NULL) {
 }
 
 BedParser::~BedParser() {
-  ls_destroy(stream_);
+  delete stream_;
 }
 
 /**
  * Initialize the bedParser module from file.
  * @param[in] fileName File name, use "-" to denote stdin
  */
-void BedParser::InitFromFile(std::string filename) {
-  stream_ = ls_createFromFile((char*) filename.c_str());
-  ls_bufferSet(stream_, 1);
+void BedParser::InitFromFile(const char* filename) {
+  stream_ = LineStream::FromFile(filename);
+  stream_->SetBuffer(1);
 }
 
 /**
  * Initialize the bedParser module from pipe.
  * @param[in] command Command to be executed
  */
-void BedParser::InitFromCommand(std::string command) {
-  stream_ = ls_createFromPipe((char*) command.c_str());
-  ls_bufferSet(stream_, 1);
+void BedParser::InitFromCommand(const char* command) {
+  stream_ = LineStream::FromPipe(command);
+  stream_->SetBuffer(1);
 }
 
 /**
@@ -74,43 +74,44 @@ void BedParser::InitFromCommand(std::string command) {
  */
 Bed* BedParser::NextEntry(void) {
   char* line = NULL;
-  while (ls_isEof(stream_)) {
-    char *line = ls_nextLine(stream_);
-    if (strStartsWithC(line, "track") || strStartsWithC(line, "browser")) {
+  while (!stream_->IsEof()) {
+    char* line = stream_->GetLine();
+    if (str::strStartsWithC(line, "track") || 
+        str::strStartsWithC(line, "browser")) {
       continue;
     }
     Bed* bed = new Bed();
-    WordIter w = wordIterCreate(line, (char*) "\t", 1);
-    std::string chromosome(wordNext(w));
+    WordIter* w = new WordIter(line, "\t", true);
+    std::string chromosome(w->Next());
     bed->set_chromosome(chromosome);
-    bed->set_start(atoi(wordNext(w)));
-    bed->set_end(atoi(wordNext(w)));
-    char *next = wordNext(w);
+    bed->set_start(atoi(w->Next()));
+    bed->set_end(atoi(w->Next()));
+    char *next = w->Next();
     if (next != NULL) {
       std::string name(next);
       bed->set_name(name);
       bed->set_extended(true);
-      bed->set_score(atoi(wordNext(w)));
-      bed->set_strand(wordNext(w)[0]);
-      bed->set_thick_start(atoi(wordNext(w)));
-      bed->set_thick_end(atoi(wordNext(w)));
-      std::string item_rgb(wordNext(w));
+      bed->set_score(atoi(w->Next()));
+      bed->set_strand(w->Next()[0]);
+      bed->set_thick_start(atoi(w->Next()));
+      bed->set_thick_end(atoi(w->Next()));
+      std::string item_rgb(w->Next());
       bed->set_item_rgb(item_rgb);
-      bed->set_block_count(atoi(wordNext(w)));
-      WordIter wsizes = wordIterCreate(wordNext(w), (char*) ",", 1);
-      WordIter wstarts = wordIterCreate(wordNext(w), (char*) ",", 1); 
+      bed->set_block_count(atoi(w->Next()));
+      WordIter* wsizes = new WordIter(w->Next(), ",", true);
+      WordIter* wstarts = new WordIter(w->Next(), ",", true); 
       for (int i = 0; i < bed->block_count(); ++i) {
         SubBlock sub_block;
-        sub_block.size = atoi(wordNext(wsizes));
-        sub_block.start = atoi(wordNext(wstarts));
+        sub_block.size = atoi(wsizes->Next());
+        sub_block.start = atoi(wstarts->Next());
         bed->AddSubBlock(sub_block);
       }
-      wordIterDestroy(wsizes);
-      wordIterDestroy(wstarts);
+      delete wsizes;
+      delete wstarts;
     } else {
       bed->set_extended(false);
     }
-    wordIterDestroy(w);
+    delete w;
     return bed;
   }
   return NULL;

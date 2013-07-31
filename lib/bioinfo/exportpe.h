@@ -10,8 +10,8 @@
 #include <sstream>
 #include <cstdlib>
 
-#include "format.h"
 #include "log.h"
+#include "worditer.h"
 #include "linestream.h"
 
 /**
@@ -58,8 +58,8 @@ class ExportPEParser {
   ExportPEParser();
   ~ExportPEParser();
 
-  void InitFromFile(std::string filename1, std::string filename2);
-  void InitFromPipe(std::string cmd1, std::string cmd2);
+  void InitFromFile(const char* filename1, const char* filename2);
+  void InitFromPipe(const char* cmd1, const char* cmd2);
 
   ExportPE* NextEntry();
 
@@ -68,8 +68,8 @@ class ExportPEParser {
   ExportPE* ProcessNextEntry();
 
  private:
-  LineStream stream1_;
-  LineStream stream2_;
+  LineStream* stream1_;
+  LineStream* stream2_;
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

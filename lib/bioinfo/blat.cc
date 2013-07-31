@@ -7,12 +7,12 @@
 
 const int kPslHeaderLinesCount = 5;
 
-BlatParser::BlatParser() {
-
+BlatParser::BlatParser() 
+    : stream_(NULL) {
 }
 
 BlatParser::~BlatParser() {
-  ls_destroy(stream_);
+  delete stream_;
   if (blat_query_ != NULL) {
     delete blat_query_;
   }
@@ -22,11 +22,11 @@ BlatParser::~BlatParser() {
  * Initialize the blatParser module from file.
  * @param[in] fileName File name, use "-" to denote stdin
  */
-void BlatParser::InitFromFile(std::string filename) {
-  stream_ = ls_createFromFile(filename.c_str());
-  ls_bufferSet(stream_, 1);
+void BlatParser::InitFromFile(const char* filename) {
+  stream_ = LineStream::FromFile(filename);
+  stream_->SetBuffer(1);
   for (int i = 0; i < kPslHeaderLinesCount; ++i) {
-    ls_nextLine(stream_);
+    stream_->GetLine();
   }
 }
 
@@ -34,25 +34,25 @@ void BlatParser::InitFromFile(std::string filename) {
  * Initialize the blatParser module from pipe.
  * @param[in] command Command to be executed
  */
-void BlatParser::InitFromPipe(std::string command) {
-  stream_ = ls_createFromPipe((char*) command.c_str());
-  ls_bufferSet(stream_, 1);
+void BlatParser::InitFromPipe(const char* command) {
+  stream_ = LineStream::FromPipe(command);
+  stream_->SetBuffer(1);
   for (int i = 0; i < kPslHeaderLinesCount; ++i) {
-    ls_nextLine(stream_);
+    stream_->GetLine();
   }
 }
 
 void BlatParser::ProcessCommaSeparatedList(std::vector<int> results, 
                                            char* str) {
-  WordIter w = wordIterCreate(str, (char*) ",", 0);
+  WordIter* w = new WordIter(str, ",", false);
   char *tok;
-  while (tok = wordNext(w)) {
+  while (tok = w->Next()) {
     if (tok[0] == '\0') {
       continue;
     }
     results.push_back(atoi(tok));
   }
-  wordIterDestroy(w);
+  delete w;
 }
 
 /**
@@ -64,29 +64,29 @@ BlatQuery* BlatParser::NextQuery() {
     delete blat_query_;
     blat_query_ = NULL;
   }
-  
-  if (ls_isEof(stream_)) {
+ 
+  if (stream_->IsEof()) {
     return NULL;
   }
 
   blat_query_ = new BlatQuery;
   int first = 1;
   char* line = NULL;
-  while (line = ls_nextLine(stream_)) {
+  while (line = stream_->GetLine()) {
     if (line[0] == '\0') {
       continue;
     }
-    WordIter w = wordIterCreate(line, (char*) "\t", 0);
-    int matches = atoi(wordNext(w));
-    int mismatches = atoi(wordNext(w));
-    int repmatches = atoi(wordNext(w));
-    int n_count = atoi(wordNext(w));
-    int q_num_insert = atoi(wordNext(w));
-    int q_base_insert = atoi(wordNext(w));
-    int t_num_insert = atoi(wordNext(w));
-    int t_base_insert = atoi(wordNext(w));
-    char strand = (wordNext(w))[0];
-    std::string query_name(wordNext(w));
+    WordIter* w = new WordIter(line, "\t", false);
+    int matches = atoi(w->Next());
+    int mismatches = atoi(w->Next());
+    int repmatches = atoi(w->Next());
+    int n_count = atoi(w->Next());
+    int q_num_insert = atoi(w->Next());
+    int q_base_insert = atoi(w->Next());
+    int t_num_insert = atoi(w->Next());
+    int t_base_insert = atoi(w->Next());
+    char strand = (w->Next())[0];
+    std::string query_name(w->Next());
     query_name_ = query_name;
     if (first == 1 || prev_query_name_ == query_name_) {
       PslEntry psl_entry;
@@ -99,20 +99,20 @@ BlatQuery* BlatParser::NextQuery() {
       psl_entry.t_num_insert = t_num_insert;
       psl_entry.t_base_insert = t_base_insert;
       psl_entry.strand = strand;
-      psl_entry.q_size = atoi(wordNext(w));
-      psl_entry.q_start = atoi(wordNext(w));
-      psl_entry.q_end = atoi(wordNext(w));
-      std::string name(wordNext(w));
+      psl_entry.q_size = atoi(w->Next());
+      psl_entry.q_start = atoi(w->Next());
+      psl_entry.q_end = atoi(w->Next());
+      std::string name(w->Next());
       psl_entry.t_name = name;
-      psl_entry.t_size = atoi(wordNext(w));
-      psl_entry.t_start = atoi(wordNext(w));
-      psl_entry.t_end = atoi(wordNext(w));
-      psl_entry.block_count = atoi(wordNext(w));
-      ProcessCommaSeparatedList(psl_entry.block_sizes, wordNext(w));
-      ProcessCommaSeparatedList(psl_entry.q_starts, wordNext(w));
-      ProcessCommaSeparatedList(psl_entry.t_starts, wordNext(w));
+      psl_entry.t_size = atoi(w->Next());
+      psl_entry.t_start = atoi(w->Next());
+      psl_entry.t_end = atoi(w->Next());
+      psl_entry.block_count = atoi(w->Next());
+      ProcessCommaSeparatedList(psl_entry.block_sizes, w->Next());
+      ProcessCommaSeparatedList(psl_entry.q_starts, w->Next());
+      ProcessCommaSeparatedList(psl_entry.t_starts, w->Next());
     } else {
-      ls_back(stream_, 1);
+      stream_->Back(1);
       return blat_query_;
     }
     if (first == 1) {
@@ -120,7 +120,7 @@ BlatQuery* BlatParser::NextQuery() {
       first = 0;
     }
     prev_query_name_ = query_name;
-    wordIterDestroy(w);
+    delete w;
   }
   if (first == 1) {
     return NULL;

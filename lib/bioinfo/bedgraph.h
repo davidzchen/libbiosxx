@@ -10,8 +10,9 @@
 #include <algorithm>
 #include <iterator>
 
-#include "format.h"
 #include "log.h"
+#include "worditer.h"
+#include "string.h"
 #include "linestream.h"
 
 class BedGraph {
@@ -60,8 +61,8 @@ class BedGraphParser {
   BedGraphParser();
   ~BedGraphParser();
 
-  void InitFromFile(std::string filename);
-  void InitFromPipe(std::string command);
+  void InitFromFile(const char* filename);
+  void InitFromPipe(const char* command);
 
   BedGraph* NextEntry();
   std::vector<BedGraph> GetAllEntries();
@@ -71,7 +72,7 @@ class BedGraphParser {
       int end);
 
  private:
-  LineStream stream_;
+  LineStream* stream_;
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

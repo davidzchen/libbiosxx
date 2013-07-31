@@ -77,14 +77,14 @@ ExportPE::~ExportPE() {
   }
 }
 
-ExportPEParser::ExportPEParser() {
-  stream1_ = NULL;
-  stream2_ = NULL;
+ExportPEParser::ExportPEParser() 
+    : stream1_(NULL),
+      stream2_(NULL) {
 }
 
 ExportPEParser::~ExportPEParser() {
-  ls_destroy(stream1_);
-  ls_destroy(stream2_);
+  delete stream1_;
+  delete stream2_;
 }
 
 /**
@@ -92,10 +92,10 @@ ExportPEParser::~ExportPEParser() {
  * @param[in] fileName1 First-end file name
  * @param[in] fileName1 Second-end file name
  */
-void ExportPEParser::InitFromFile(std::string filename1, 
-                                  std::string filename2) {
-  stream1_ = ls_createFromFile(filename1.c_str());
-  stream2_ = ls_createFromFile(filename2.c_str());
+void ExportPEParser::InitFromFile(const char* filename1, 
+                                  const char* filename2) {
+  stream1_ = LineStream::FromFile(filename1);
+  stream2_ = LineStream::FromFile(filename2);
 }
 
 /**
@@ -103,51 +103,51 @@ void ExportPEParser::InitFromFile(std::string filename1,
  * @param[in] cmd1 command to be executed for the first end
  * @param[in] cmd2 command to be executed for the second end
  */
-void ExportPEParser::InitFromPipe(std::string cmd1, std::string cmd2) {
-  stream1_ = ls_createFromPipe((char*) cmd1.c_str());
-  stream2_ = ls_createFromPipe((char*) cmd2.c_str());
+void ExportPEParser::InitFromPipe(const char* cmd1, const char* cmd2) {
+  stream1_ = LineStream::FromPipe(cmd1);
+  stream2_ = LineStream::FromPipe(cmd2);
 }
 
 int ExportPEParser::ProcessSingleEndEntry(ExportPE* entry, int read_number) {
   char* line;
   if (read_number == 1) {
-    line = ls_nextLine(stream1_);
+    line = stream1_->GetLine();
   } else {
-    line = ls_nextLine(stream2_);
+    line = stream2_->GetLine();
   }
-  if (ls_isEof(stream1_) || ls_isEof(stream2_)) {
+  if (stream1_->IsEof() || stream2_->IsEof()) {
     return 0;  // no more entries
   }
-  WordIter w = wordIterCreate(line, (char*) "\t", 0);
+  WordIter* w = new WordIter(line, "\t", false);
   singleEnd* end = new singleEnd;
-  end->machine = wordNext(w);
-  end->run_number = atoi(wordNext(w));
-  end->lane = atoi(wordNext(w));
-  end->tile = atoi(wordNext(w));
-  end->x_coord = atoi(wordNext(w));
-  end->y_coord = atoi(wordNext(w));
-  end->index = wordNext(w);
-  end->read_number =  atoi(wordNext(w));
-  end->sequence = wordNext(w);
-  end->quality = wordNext(w);
-  end->chromosome =  wordNext(w);
-  end->contig = wordNext(w);
-  end->position = atoi(wordNext(w));
-  end->strand =  wordNext(w)[0] ;
-  end->match_descriptor = wordNext(w);
-  end->single_score = atoi(wordNext(w));
-  end->paired_score = atoi(wordNext(w));
-  end->partner_chromosome = wordNext(w);
-  end->partner_contig = wordNext(w);
-  end->partner_offset = atoi(wordNext(w));
-  end->partner_strand = wordNext(w)[0];
-  end->filter = wordNext(w)[0];
+  end->machine = w->Next();
+  end->run_number = atoi(w->Next());
+  end->lane = atoi(w->Next());
+  end->tile = atoi(w->Next());
+  end->x_coord = atoi(w->Next());
+  end->y_coord = atoi(w->Next());
+  end->index = w->Next();
+  end->read_number =  atoi(w->Next());
+  end->sequence = w->Next();
+  end->quality = w->Next();
+  end->chromosome =  w->Next();
+  end->contig = w->Next();
+  end->position = atoi(w->Next());
+  end->strand =  w->Next()[0] ;
+  end->match_descriptor = w->Next();
+  end->single_score = atoi(w->Next());
+  end->paired_score = atoi(w->Next());
+  end->partner_chromosome = w->Next();
+  end->partner_contig = w->Next();
+  end->partner_offset = atoi(w->Next());
+  end->partner_strand = w->Next()[0];
+  end->filter = w->Next()[0];
   if (read_number == 1) {
     entry->end1 = end;
   } else {
     entry->end2 = end;
   }
-  wordIterDestroy(w);
+  delete w;
   return 1; // still more entries
 }
 

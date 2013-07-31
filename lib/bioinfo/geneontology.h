@@ -13,7 +13,8 @@
 #include <gsl/gsl_randist.h>
 
 #include "log.h"
-#include "format.h"
+#include "worditer.h"
+#include "string.h"
 #include "linestream.h"
 
 struct GoTagValue {

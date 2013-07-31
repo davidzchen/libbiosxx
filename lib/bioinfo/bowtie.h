@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 
-#include "format.h"
+#include "worditer.h"
 #include "linestream.h"
 
 struct BowtieMismatch {
@@ -71,8 +71,8 @@ class BowtieParser {
   BowtieParser();
   ~BowtieParser();
 
-  void InitFromFile(std::string filename);
-  void InitFromPipe(std::string command);
+  void InitFromFile(const char* filename);
+  void InitFromPipe(const char* command);
 
   BowtieQuery* NextQuery();
   std::vector<BowtieQuery> GetAllQueries();
@@ -81,7 +81,7 @@ class BowtieParser {
   BowtieQuery* ProcessNextQuery();
 
  private:
-  LineStream stream_;
+  LineStream* stream_;
   BowtieQuery* bowtie_query_;
   std::string query_name_;
   std::string prev_query_name_;

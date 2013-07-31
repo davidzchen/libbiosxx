@@ -32,46 +32,95 @@
  */
 
 
-#ifndef _nextline_h_
-#define _nextline_h_
+#ifndef BIOINFO_LINESTREAM_H__
+#define BIOINFO_LINESTREAM_H__
 
-#include "format.h"
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <string>
+#include <unistd.h>
 
-/**
- * LineStream.
- */
-typedef struct _lineStreamStruct_ {
-  /* the members of this struct are PRIVATE for the
-     LineStream module -- DO NOT access from outside
-     the LineStream module */
-  FILE *fp;
-  char *line;
-  int lineLen;
-  WordIter wi;
-  int count;
-  int status ;  /* exit status of popen() */
-  char *(*nextLine_hook)(struct _lineStreamStruct_ *);
-  Stringa buffer ;    /* NULL if not in buffered mode, else used
-                         used for remembering last line seen */
-  char *bufferLine ;  /* pointer to 'buffer' or NULL if EOF */
-  int bufferBack ;    /* 0=normal, 1=take next line from buffer */
-} *LineStream;
+#include "log.h"
+#include "worditer.h"
+#include "misc.h"
 
-extern LineStream ls_createFromFile (const char *fn);
-extern LineStream ls_createFromPipe (char *command);
-extern LineStream ls_createFromBuffer (char *buffer);
-extern char *ls_nextLine (LineStream this1);
-extern void ls_destroy_func (LineStream this1); /* do not use this function */
+class LineStream {
+ public:
+  LineStream();
+  ~LineStream();
 
-/**
- * Destroy a line stream.
- * @see ls_destroy_func()
- */
-#define ls_destroy(this1) (ls_destroy_func(this1),this1=NULL) /* use this one */
-extern int ls_lineCountGet (LineStream this1);
-extern void ls_cat(LineStream this1, char *filename) ;
-extern int ls_skipStatusGet(LineStream this1) ;
-extern int ls_isEof(LineStream this1) ;
-extern void ls_bufferSet(LineStream this1, int lineCnt) ;
-extern void ls_back(LineStream this1, int lineCnt) ;
-#endif
+  static LineStream* FromFile(const char* filename);
+  static LineStream* FromPipe(const char* command);
+  static LineStream* FromBuffer(char* buffer);
+
+  char* GetLine();
+  int GetLineCount();
+  void Cat(const char* filename);
+  void SetBuffer(int line_count);
+  void Back(int line_count);
+
+  virtual bool IsEof();
+  virtual int SkipGetStatus();
+
+ protected:
+  virtual char* GetNextLine();
+
+ protected:
+  int count_;
+  int status_;
+  std::string* buffer_;
+  int buffer_back_;
+};
+
+class FileLineStream : public LineStream {
+ public:
+  FileLineStream(const char* filename);
+  ~FileLineStream();
+
+  bool IsEof();
+  int SkipGetStatus();
+
+ protected:
+  char* GetNextLine();
+
+ private:
+  FILE* fp_;
+  char* line_;
+  int line_len_;
+};
+
+class PipeLineStream : public LineStream {
+ public:
+  PipeLineStream(const char* pipe);
+  ~PipeLineStream();
+
+  bool IsEof();
+  int SkipGetStatus();
+
+ protected: 
+  char* GetNextLine();
+
+ private:
+  FILE* fp_;
+  char* line_;
+  int line_len_;
+};
+
+class BufferLineStream : public LineStream {
+ public:
+  BufferLineStream(char* buffer);
+  ~BufferLineStream();
+
+  bool IsEof();
+  int SkipGetStatus();
+  
+ protected:
+  char* GetNextLine();
+
+ private:
+  WordIter* word_iter_;
+};
+
+/* vim: set ai ts=2 sts=2 sw=2 et: */
+#endif /* BIOINFO_LINESTREAM_H__ */

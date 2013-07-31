@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "seq.h"
-#include "format.h"
 #include "linestream.h"
 #include "string.h"
 
@@ -19,8 +18,8 @@ class FastaParser {
   FastaParser();
   ~FastaParser();
 
-  void InitFromFile(std::string filename);
-  void InitFromPipe(std::string command);
+  void InitFromFile(const char* filename);
+  void InitFromPipe(const char* command);
 
   Seq* NextSequence(bool truncate_name);
   std::vector<Seq> ReadAllSequences(bool truncate_name);
@@ -31,7 +30,7 @@ class FastaParser {
   Seq* ProcessNextSequence(bool truncate_name);
 
  private:
-  LineStream stream_;
+  LineStream* stream_;
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

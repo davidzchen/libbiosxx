@@ -11,7 +11,8 @@
 #include <vector>
 #include <stdint.h>
 
-#include "format.h"
+#include "string.h"
+#include "worditer.h"
 #include "linestream.h"
 
 struct SubBlock {
@@ -87,14 +88,14 @@ class BedParser {
  public:
   BedParser();
   ~BedParser();
-  void InitFromFile(std::string filename);
-  void InitFromCommand(std::string command);
+  void InitFromFile(const char* filename);
+  void InitFromCommand(const char* command);
 
   Bed* NextEntry();
   std::vector<Bed> GetAllEntries();
 
  private:
-  LineStream stream_;
+  LineStream* stream_;
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

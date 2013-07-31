@@ -9,8 +9,8 @@
 #include <vector>
 #include <string>
 
-#include "format.h"
 #include "log.h"
+#include "worditer.h"
 #include "linestream.h"
 
 struct ElandQuery {
@@ -27,13 +27,13 @@ struct ElandQuery {
 
 class ElandParser {
  public:
-  ElandParser(std::string filename);
+  ElandParser(const char* filename);
   ~ElandParser();
 
   ElandQuery* NextQuery();
 
  private:
-  LineStream stream_;
+  LineStream* stream_;
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

@@ -54,39 +54,39 @@ BowtieQuery::~BowtieQuery() {
 
 // BowtieParser
 
-BowtieParser::BowtieParser() {
-  stream_ = NULL;
+BowtieParser::BowtieParser()
+    : stream_(NULL) {
 }
 
 BowtieParser::~BowtieParser() {
-  ls_destroy(stream_);
+  delete stream_;
 }
 
 /**
  * Initialize the bowtieParser module from file.
  * @param[in] fileName File name, use "-" to denote stdin
  */
-void BowtieParser::InitFromFile(std::string filename) {
-  stream_ = ls_createFromFile(filename.c_str());
-  ls_bufferSet(stream_, 1);
+void BowtieParser::InitFromFile(const char* filename) {
+  stream_ = LineStream::FromFile(filename);
+  stream_->SetBuffer(1);
 }
 
 /**
  * Initialize the bowtieParser module from pipe.
  * @param[in] command Command to be executed
  */
-void BowtieParser::InitFromPipe(std::string command) {
-  stream_ = ls_createFromPipe((char*) command.c_str());
-  ls_bufferSet(stream_, 1);
+void BowtieParser::InitFromPipe(const char* command) {
+  stream_ = LineStream::FromPipe(command);
+  stream_->SetBuffer(1);
 }
 
 void BowtieEntry::ProcessMismatches(char* token) {
   if (token[0] == '\0') {
     return;
   }
-  WordIter w = wordIterCreate (token, (char*)",", 0);
+  WordIter* w = new WordIter(token, ",", false);
   char* item;
-  while (item = wordNext(w)) {
+  while (item = w->Next()) {
     BowtieMismatch mismatch;
     char* pos = strchr(item, ':');
     *pos = '\0';
@@ -95,23 +95,23 @@ void BowtieEntry::ProcessMismatches(char* token) {
     mismatch.read_base = *(pos + 3);
     mismatches_.push_back(mismatch);
   }
-  wordIterDestroy(w);
+  delete w;
 }
 
 void BowtieQuery::ProcessLine(char* line) {
   BowtieEntry entry;
-  WordIter w = wordIterCreate(line, (char*) "\t", 0);
-  entry.set_strand((wordNext(w))[0]);
-  std::string chromosome(wordNext(w));
+  WordIter* w = new WordIter(line, "\t", false);
+  entry.set_strand((w->Next())[0]);
+  std::string chromosome(w->Next());
   entry.set_chromosome(chromosome);
-  entry.set_position(atoi(wordNext(w)));
-  std::string sequence(wordNext(w));
+  entry.set_position(atoi(w->Next()));
+  std::string sequence(w->Next());
   entry.set_sequence(sequence);
-  std::string quality(wordNext(w));
+  std::string quality(w->Next());
   entry.set_quality(quality);
-  wordNext(w);
-  entry.ProcessMismatches(wordNext(w));
-  wordIterDestroy(w);
+  w->Next();
+  entry.ProcessMismatches(w->Next());
+  delete w;
   entries_.push_back(entry);
 }
 
@@ -121,14 +121,14 @@ BowtieQuery* BowtieParser::ProcessNextQuery() {
     bowtie_query_ = NULL;
   }
 
-  if (!ls_isEof(stream_)) {
+  if (stream_->IsEof()) {
     return NULL;
   }
 
   bowtie_query_ = new BowtieQuery;
   int first = 1;
   char* line = NULL;
-  while (line = ls_nextLine(stream_)) {
+  while (line = stream_->GetLine()) {
     if (line[0] == '\0') {
       continue;
     }
@@ -139,7 +139,7 @@ BowtieQuery* BowtieParser::ProcessNextQuery() {
     if (first == 1 || prev_query_name_ == query_name_) {
       bowtie_query_->ProcessLine(pos + 1);
     } else {
-      ls_back(stream_, 1);
+      stream_->Back(1);
       return bowtie_query_;
     }
     if (first == 1) {

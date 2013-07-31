@@ -16,15 +16,15 @@ ElandMultiQuery::~ElandMultiQuery() {
  * Initialize the elandMultiParser module.
  * @param[in] fileName File name, use "-" to denote stdin
  */
-ElandMultiParser::ElandMultiParser(std::string filename) {
-  stream_ = ls_createFromFile(filename.c_str());
+ElandMultiParser::ElandMultiParser(const char* filename) {
+  stream_ = LineStream::FromFile(filename);
 }
 
 /**
  * Deinitialize the elandMultiParser module.
  */
 ElandMultiParser::~ElandMultiParser() {
-  ls_destroy(stream_);
+  delete stream_;
 }
 
 /**
@@ -39,21 +39,21 @@ ElandMultiParser::~ElandMultiParser() {
  */
 ElandMultiQuery* ElandMultiParser::NextQuery() {
   char* line;
-  while (line = ls_nextLine(stream_)) {
+  while (line = stream_->GetLine()) {
     if (line[0] == '\0') {
       continue;
     }
-    WordIter w1 = wordIterCreate(line, (char*) "\t", 0);
+    WordIter* w1 = new WordIter(line, "\t", false);
     ElandMultiQuery* query = new ElandMultiQuery;
     // remove the '>' character at beginning of the line
-    std::string sequence_name(wordNext(w1) + 1);
-    std::string sequence(wordNext(w1));
+    std::string sequence_name(w1->Next() + 1);
+    std::string sequence(w1->Next());
     query->sequence_name = sequence_name; 
     query->sequence = sequence;
-    char* token = wordNext(w1);
-    if (strEqual(token, "NM") || strEqual(token, "QC") || 
-        strEqual(token, "RM")) {
-      wordIterDestroy(w1);
+    char* token = w1->Next();
+    if (strcmp(token, "NM") == 0 || strcmp(token, "QC") == 0 || 
+        strcmp(token, "RM") == 0) {
+      delete w1;
       return query;
     }
     char* first_colon = strchr(token, ':');
@@ -66,13 +66,13 @@ ElandMultiQuery* ElandMultiParser::NextQuery() {
     query->exact_matches = atoi(token);
     query->one_error_matches = atoi(first_colon + 1);
     query->two_error_matches = atoi(last_colon + 1);
-    token = wordNext(w1);
+    token = w1->Next();
     if (token == NULL) {
-      wordIterDestroy(w1);
+      delete w1;
       return query;
     }
-    WordIter w2 = wordIterCreate(token, (char*) ",", 0);
-    while (token = wordNext(w2)) {
+    WordIter* w2 = new WordIter(token, ",", false);
+    while (token = w2->Next()) {
       ElandMultiEntry entry;
       int token_length = strlen(token);
       if (token[token_length - 2] == 'F') {
@@ -96,8 +96,8 @@ ElandMultiQuery* ElandMultiParser::NextQuery() {
       entry.chromosome = chromosome;
       query->entries.push_back(entry);
     }
-    wordIterDestroy(w2);
-    wordIterDestroy(w1);
+    delete w1;
+    delete w2;
     return query;
   }
   return NULL;

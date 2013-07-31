@@ -13,12 +13,12 @@ Fastq::~Fastq() {
   delete seq;
 }
 
-FastqParser::FastqParser() {
-  stream_ = NULL;
+FastqParser::FastqParser()
+    : stream_(NULL) {
 }
 
 FastqParser::~FastqParser() {
-  ls_destroy(stream_);
+  delete stream_;
 }
 
 /**
@@ -27,8 +27,8 @@ FastqParser::~FastqParser() {
  * @post FastqParser::nextSequence(), FastqParser::readAllSequences() can be called.
  */
 void FastqParser::InitFromFile(const char* filename) {
-  stream_ = ls_createFromFile(filename);
-  ls_bufferSet(stream_, 1);
+  stream_ = LineStream::FromFile(filename);
+  stream_->SetBuffer(1);
 }
 
 /**
@@ -36,37 +36,37 @@ void FastqParser::InitFromFile(const char* filename) {
  * @post FastqParser::nextSequence(), FastqParser::readAllSequences() can be called.
  */
 void FastqParser::InitFromPipe(const char* command) {
-  stream_ = ls_createFromPipe((char*) command);
-  ls_bufferSet(stream_, 1);
+  stream_ = LineStream::FromPipe(command);
+  stream_->SetBuffer(1);
 }
 
 Fastq* FastqParser::ProcessNextSequence (bool truncate_name) {
-  if (ls_isEof (stream_)) {
+  if (stream_->IsEof()) {
     return NULL;
   }
 
   Fastq* fq = NULL;
   char* line = NULL;
-  while ((line = ls_nextLine(stream_))) {
+  while (line = stream_->GetLine()) {
     if (line[0] == '\0') {
       continue;
     }
     if (line[0] == '@') {      
       fq = new Fastq;
       Seq* seq = fq->seq;
-      seq->name = hlr_strdup(line + 1);
+      seq->name = strdup(line + 1);
       if (truncate_name) {
         seq->name = str::firstWordInLine(str::skipLeadingSpaces(seq->name));
       }
-      line = ls_nextLine(stream_); // reading sequence
-      seq->sequence = hlr_strdup(line);
+      line = stream_->GetLine(); // reading sequence
+      seq->sequence = strdup(line);
       seq->size = strlen(seq->sequence);
-      line = ls_nextLine(stream_); // reading quality ID
+      line = stream_->GetLine(); // reading quality ID
       if (line[0] != '+') {
         die((char*) "Expected quality ID: '+' or '+%s'", seq->name);
       }
-      line = ls_nextLine(stream_); // reading quality
-      fq->quality = hlr_strdup(line);
+      line = stream_->GetLine(); // reading quality
+      fq->quality = strdup(line);
       break;
     }
   }   

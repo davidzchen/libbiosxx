@@ -162,12 +162,12 @@ void GeneOntology::ResetGenesOfInterest() {
 }
 
 void GeneOntology::ReadGoOntology(const char* obo_filename) {
-  LineStream ls = ls_createFromFile(obo_filename);
+  LineStream* ls = LineStream::FromFile(obo_filename);
   bool go_term_found = false;
-  GoTerm *go_term = NULL;
+  GoTerm* go_term = NULL;
   char* line;
-  while (line = ls_nextLine(ls)) {
-    if (strEqual(line, "[Term]")) {
+  while (line = ls->GetLine()) {
+    if (strcmp(line, "[Term]") == 0) {
       if (go_term_found == true) {
         go_terms_.push_back(*go_term);
         delete go_term;
@@ -189,47 +189,47 @@ void GeneOntology::ReadGoOntology(const char* obo_filename) {
     go_term = new GoTerm;
     char* pos1 = NULL;
     char* pos2 = NULL;
-    if (strStartsWithC(line, "id:")) {
+    if (str::strStartsWithC(line, "id:")) {
       pos1 = strchr(line, ' ');
       go_term->id = pos1 + 1;
-    } else if (strStartsWithC(line, "name:")) {
+    } else if (str::strStartsWithC(line, "name:")) {
       pos1 = strchr(line, ' ');
       go_term->name = pos1 + 1;
-    } else if (strStartsWithC(line, "namespace:")) {
+    } else if (str::strStartsWithC(line, "namespace:")) {
       pos1 = strchr(line, ' ');
       go_term->name_space = pos1 + 1;
-    } else if (strStartsWithC(line, "alt_id:")) {
+    } else if (str::strStartsWithC(line, "alt_id:")) {
       pos1 = strchr(line, ' ');
       go_term->alt_ids.push_back(pos1 + 1);
-    } else if (strStartsWithC(line, "def:")) {
+    } else if (str::strStartsWithC(line, "def:")) {
       pos1 = strstr(line, " [");
       if (pos1 == NULL) {
         die((char*) "Expected ' [' in def line: %s", line);
       }
       *pos1 = '\0';
       pos1 = strchr(line, ' ');
-      strTrim(pos1, (char*) " \"", (char*) " \"");
+      str::strTrim(pos1, (char*) " \"", (char*) " \"");
       go_term->definition = pos1;
-    } else if (strStartsWithC(line, "subset:")) {
+    } else if (str::strStartsWithC(line, "subset:")) {
       pos1 = strchr (line,' ');
       go_term->subsets.push_back(pos1 + 1);
-      if (strEqual(pos1 + 1, "goslim_generic")) {
+      if (strcmp(pos1 + 1, "goslim_generic") == 0) {
         go_term->is_generic_go_slim = true;
       }
-    } else if (strStartsWithC(line, "comment:")) {
+    } else if (str::strStartsWithC(line, "comment:")) {
       pos1 = strchr(line, ' ');
       go_term->comment = pos1 + 1;
-    } else if (strEqual(line, "is_obsolete: true")) {
+    } else if (strcmp(line, "is_obsolete: true") == 0) {
       go_term->is_obsolete = true;
-    } else if (strStartsWithC(line, "synonym:")) {
+    } else if (str::strStartsWithC(line, "synonym:")) {
       pos1 = strrchr(line, '"');
       *pos1 = '\0';
       pos1 = strchr(line, '"');
       go_term->synonyms.push_back(pos1 + 1);
-    } else if (strStartsWithC(line, "consider:")) {
+    } else if (str::strStartsWithC(line, "consider:")) {
       pos1 = strchr(line, ' ');
       go_term->considers.push_back(pos1 + 1);
-    } else if (strStartsWithC(line, "xref:")) {
+    } else if (str::strStartsWithC(line, "xref:")) {
       pos1 = strchr(line, ' ');
       pos2 = strchr(pos1 + 1, ':');
       *pos2 = '\0';
@@ -237,13 +237,13 @@ void GeneOntology::ReadGoOntology(const char* obo_filename) {
       go_tag_value.tag = pos1 + 1;
       go_tag_value.value = pos2 + 1;
       go_term->xrefs.push_back(go_tag_value);
-    } else if (strStartsWithC(line, "is_a:")) {
+    } else if (str::strStartsWithC(line, "is_a:")) {
       if (pos1 = strchr(line, '!')) {
         *(pos1 - 1) = '\0';
       }
       pos1 = strchr(line, ' ');
       go_term->parents.push_back(pos1 + 1);
-    } else if (strStartsWithC(line, "relationship:")) {
+    } else if (str::strStartsWithC(line, "relationship:")) {
       if (pos1 = strchr(line, '!')) {
         *(pos1 - 1) = '\0';
       }
@@ -254,15 +254,15 @@ void GeneOntology::ReadGoOntology(const char* obo_filename) {
       go_tag_value.tag = pos1 + 1;
       go_tag_value.value = pos2 + 1;
       go_term->relationships.push_back(go_tag_value);
-    } else if (strStartsWithC (line,"replaced_by:")) {
+    } else if (str::strStartsWithC (line,"replaced_by:")) {
       // Do nothing.
-    } else if (strStartsWithC (line,"disjoint_from:")) {
+    } else if (str::strStartsWithC (line,"disjoint_from:")) {
       // Do nothing.
     } else {
       warn((char*) "Unexpected line: %s", line);
     }
   }
-  ls_destroy(ls);
+  delete ls;
 }
 
 /**
@@ -334,24 +334,24 @@ void GeneOntology::ConvertGoTermsToGoNodes() {
 
 void GeneOntology::ReadGoAnnotations(const char* annotation_filename) {
   std::vector<GoGeneAssociationEntry> association_entries;
-  LineStream ls = ls_createFromFile((char*) annotation_filename); 
+  LineStream* ls = LineStream::FromFile(annotation_filename);
   char* line = NULL;
-  while (line = ls_nextLine(ls)) {
+  while (line = ls->GetLine()) {
     if (line[0] == '\0' || line[0] == '!') {
       continue;
     }
     GoGeneAssociationEntry association_entry;
-    WordIter w = wordIterCreate(line, (char*) "\t", 0);
-    association_entry.db = wordNext(w);
-    association_entry.db_gene_name = wordNext (w);
-    association_entry.gene_name = wordNext(w);
+    WordIter* w = new WordIter(line, "\t", false);
+    association_entry.db = w->Next();
+    association_entry.db_gene_name = w->Next();
+    association_entry.gene_name = w->Next();
     // optional column [qualifier], not considered
-    wordNext(w); 
-    association_entry.go_id = wordNext(w);
-    wordIterDestroy(w);
+    w->Next(); 
+    association_entry.go_id = w->Next();
+    delete w;
     association_entries.push_back(association_entry);
   }
-  ls_destroy(ls);
+  delete ls;
   std::sort(association_entries.begin(), association_entries.end(),
             GoGeneAssociationEntry::CompareByGeneName);
   int i = 0;

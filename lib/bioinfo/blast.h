@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 
-#include "format.h"
+#include "worditer.h"
 #include "linestream.h"
 
 struct BlastEntry {
@@ -43,12 +43,12 @@ class BlastParser {
   BlastParser();
   ~BlastParser();
 
-  void InitFromFile(std::string filename);
-  void InitFromPipe(std::string command);
+  void InitFromFile(const char* filename);
+  void InitFromPipe(const char* command);
   BlastQuery* NextQuery();
 
  private:
-  LineStream stream_;
+  LineStream* stream_;
   std::string query_name_;
   std::string prev_query_name_;
   BlastQuery* blast_query_;

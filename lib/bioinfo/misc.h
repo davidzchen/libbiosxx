@@ -3,12 +3,15 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <cstdio>
 
 #define NUMELE(a) ((int)sizeof(a)/sizeof(a[0]))
 
 void reverse_bytes(char* bytes, long length);
 
 void* clone_mem(void *pt, size_t size);
+
+int getLine(FILE *stream, char **buffer, int *buflen);
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_MISC_H__ */

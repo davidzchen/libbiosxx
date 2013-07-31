@@ -26,18 +26,18 @@ Interval::Interval() {
  * @pre None.
 */
 Interval::Interval(const char* line, int source) {
-  WordIter w = wordIterCreate((char*) line, (char*) "\t", 0);
+  WordIter* w = new WordIter((char*) line, "\t", 0);
   source = source;
-  name = wordNext(w);
-  chromosome = wordNext(w);
-  strand = wordNext(w)[0];
-  start = atoi(wordNext(w));
-  end = atoi(wordNext(w));
-  sub_interval_count = atoi(wordNext(w));
+  name = w->Next();
+  chromosome = w->Next();
+  strand = w->Next()[0];
+  start = atoi(w->Next());
+  end = atoi(w->Next());
+  sub_interval_count = atoi(w->Next());
   std::vector<int> starts;
   std::vector<int> ends;
-  IntervalFind::ProcessCommaSeparatedList(starts, wordNext(w));
-  IntervalFind::ProcessCommaSeparatedList(ends, wordNext(w));
+  IntervalFind::ProcessCommaSeparatedList(starts, w->Next());
+  IntervalFind::ProcessCommaSeparatedList(ends, w->Next());
   if (starts.size() != ends.size()) {
     die((char*) "Unequal number of subIntervalStarts and subIntervalEnds");
   }
@@ -47,7 +47,7 @@ Interval::Interval(const char* line, int source) {
     sub_interval.end = ends[i];
     sub_intervals.push_back(sub_interval);
   }
-  wordIterDestroy(w);
+  delete w;
 }
 
 Interval::~Interval() {
@@ -143,29 +143,29 @@ std::vector<Interval*> IntervalFind::GetIntervalPointers() {
 
 void IntervalFind::ProcessCommaSeparatedList(std::vector<int>& results, 
                                              const char* str) {
-  WordIter w = wordIterCreate((char*) str, (char*) ",", 0);
+  WordIter* w = new WordIter((char*) str, ",", false);
   char* tok = NULL;
-  while (tok = wordNext(w)) {
+  while (tok = w->Next()) {
     if (tok[0] == '\0') {
       continue;
     }
     results.push_back(atoi(tok));
   }
-  wordIterDestroy(w);
+  delete w;
 }
 
 void IntervalFind::ParseFileContent(std::vector<Interval>& intervals, 
                                     const char* filename, int source) {
-  LineStream ls = ls_createFromFile(filename);
+  LineStream* ls = LineStream::FromFile(filename);
   char* line = NULL;
-  while (line = ls_nextLine(ls)) {
+  while (line = ls->GetLine()) {
     if (line[0] == '\0') {
       continue;
     }
     Interval interval(line, source);
     intervals.push_back(interval);
   }
-  ls_destroy(ls);
+  delete ls;
 }
 
 /**

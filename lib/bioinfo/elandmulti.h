@@ -9,8 +9,8 @@
 #include <vector>
 #include <string>
 
-#include "format.h"
 #include "log.h"
+#include "worditer.h"
 #include "linestream.h"
 
 struct ElandMultiEntry {
@@ -34,13 +34,13 @@ struct ElandMultiQuery {
 
 class ElandMultiParser {
  public:
-  ElandMultiParser(std::string filename);
+  ElandMultiParser(const char* filename);
   ~ElandMultiParser();
 
   ElandMultiQuery* NextQuery();
 
  private:
-  LineStream stream_;
+  LineStream* stream_;
 };
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

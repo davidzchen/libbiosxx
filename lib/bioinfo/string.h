@@ -20,9 +20,30 @@ char* subString(char* str, int start, int end);
 /**
  * Returns position of needle in haystack or NULL if it's not there. 
  */
-static char* stringIn(char* needle, char* haystack) {
+static inline char* stringIn(char* needle, char* haystack) {
   return strstr(haystack, needle);
 }
+
+/**
+ * Check if s1 starts with s2.
+ * strStartsWith() always works, but is slower than strStartsWithC()
+ * @note s2 must not be an expression with side effects since it is evaluated twice
+ */
+static inline int strStartsWith(char* s1, char* s2) {
+  int len = strlen(s2);
+  return strncmp(s1, s2, len) == 0;
+}
+
+/**
+ * Check if s1 starts with s2.
+ * Same as strStartsWith, but can only be used if s2 is a string constant, e.g. if (strStartsWithC(s, "CC   ")) ...strStartsWith() always works, but is slower than strStartsWithC()
+ */
+static inline int strStartsWithC(char* s1, const char* s2) {
+  int len = sizeof(s2) - 1;
+  return strncmp(s1, s2, len) == 0;
+}
+
+int strTrim(char *s, char *left, char *right) ;
 
 char* rStringIn(char* needle, char *haystack);
 char* stringBetween(char* start, char *end, char *haystack);

@@ -967,7 +967,7 @@ Texta textClone(Array a /* of char* */)
  */
 Texta textStrtok(char *s, char *sep)
 { 
-  WordIter wi=wordIterCreate(s,sep,1) ;
+  Worditer wi=wordIterCreate(s,sep,1) ;
   char *pos ;
   Texta a=textCreate(10) ;
   while (pos=wordNext(wi))
@@ -1002,7 +1002,7 @@ Texta textStrtokP(char *s, char *sep)
  */
 Texta textFieldtok(char *s, char *sep)
 { 
-  WordIter wi=wordIterCreate(s,sep,0) ;
+  Worditer wi=wordIterCreate(s,sep,0) ;
   char *pos ;
   Texta a=textCreate(10) ;
   while (pos=wordNext(wi))
@@ -1211,7 +1211,7 @@ but a bit more flexible and allows multiple independent
 interleaved scans in different strings.
 
 usage:
-  WordIter wi = wordTokIterCreate("hallo welt", " \n\t") ;
+  Worditer wi = wordTokIterCreate("hallo welt", " \n\t") ;
   char *w ;
   while (w = wordNext(wi)) 
     printf("w='%s'\n", w) ;
@@ -1229,7 +1229,7 @@ usage:
  * @post 'this1' is no more accessible
  * @note Do not call in your programs, use wordIterDestroy() instead.
  */
-void wordIterDestroy_func(WordIter this1) 
+void wordIterDestroy_func(Worditer this1) 
 { 
   if (!this1) 
     die("wordIterDestroy: null") ;
@@ -1244,17 +1244,17 @@ void wordIterDestroy_func(WordIter this1)
  * @param[in] seps Set of word separator chars
  * @param[in] manySepsAreOne 1 or 0
  * @param[out] s Is destroyed
- * @returns WordIter object for use in wordNext() and wordIterDestroy()
+ * @returns Worditer object for use in wordNext() and wordIterDestroy()
  * @note sep must be kept stable during the whole scan
  * @note if 's' is the empty string, then in mode manySepsAreOne==1, wordNext() will immediately return NULL, 
    in mode manySepsAreOne==0, wordNext() will return one empty string, then NULL
  */
-WordIter wordIterCreate(char *s, char *seps, int manySepsAreOne) 
+Worditer wordIterCreate(char *s, char *seps, int manySepsAreOne) 
 { 
-  WordIter this1 ;
+  Worditer this1 ;
   if (!s || !seps || !*seps)
     die("wordIterCreate: some null/empty input") ;
-  this1 = (WordIter) hlr_malloc(sizeof(struct wordIterStruct)) ;
+  this1 = (Worditer) hlr_malloc(sizeof(struct wordIterStruct)) ;
   this1->seps = seps ;
   this1->cp = s ;
   this1->manySepsAreOne = manySepsAreOne ;
@@ -1277,7 +1277,7 @@ from format.h
  * @param[out] lenP If lenP not NULL: strlen() of result, computed efficiently
  * @return  NULL if no more word, else pointer to beginning of null-terminated word
  */
-char *wordNextG(WordIter this1, int *lenP) 
+char *wordNextG(Worditer this1, int *lenP) 
 { 
   char *cp ;
   char *word ;

@@ -48,18 +48,18 @@
 
 
 /**
- * WordIter.
+ * Worditer.
  */
 typedef struct wordIterStruct {
   char *cp ;   /* current position */
   char *seps ;
   int manySepsAreOne ;
   int atEnd ;
-} *WordIter ;
-extern WordIter wordIterCreate(char *s, char *seps, int manySepsAreOne) ;
+} *Worditer ;
+extern Worditer wordIterCreate(char *s, char *seps, int manySepsAreOne) ;
 
 /* do not call in your programs: */
-/* private */ extern void wordIterDestroy_func(WordIter thisOne) ;
+/* private */ extern void wordIterDestroy_func(Worditer thisOne) ;
 /* private */ extern void textDestroyFunc(Array a) ;
 /* ------------------------------------- end of private section */
 
@@ -263,7 +263,7 @@ extern void textJoin(Stringa s, char *sep, Array a /* of char* */) ;
  * @see wordNextG()
  */
 #define wordNext(this1) (wordNextG((this1),NULL))
-char *wordNextG(WordIter this1, int *lenP) ;
+char *wordNextG(Worditer this1, int *lenP) ;
 
 /**
  * wordDestroy.
@@ -272,7 +272,7 @@ char *wordNextG(WordIter this1, int *lenP) ;
 #define wordIterDestroy(this) (wordIterDestroy_func(this), this=0)
 
 /* usage:
-  WordIter wi = wordTokIterCreate("hello world", " \n\t") ;
+  Worditer wi = wordTokIterCreate("hello world", " \n\t") ;
   char *w ;
   while (w = wordNext(wi)) 
     printf("w='%s'\n", w) ;

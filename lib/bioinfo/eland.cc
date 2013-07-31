@@ -5,12 +5,12 @@
 
 #include "eland.h"
 
-ElandParser::ElandParser(std::string filename) {
-  stream_ = ls_createFromFile(filename.c_str());
+ElandParser::ElandParser(const char* filename) {
+  stream_ = LineStream::FromFile(filename);
 }
 
 ElandParser::~ElandParser() {
-  ls_destroy(stream_);
+  delete stream_;
 }
 
 /**
@@ -27,26 +27,26 @@ ElandParser::~ElandParser() {
  */
 ElandQuery* ElandParser::NextQuery() {
   char *line;
-  while (line = ls_nextLine(stream_)) {
+  while (line = stream_->GetLine()){
     if (line[0] == '\0') {
       continue;
     }
-    WordIter w = wordIterCreate(line, (char*) "\t", 0);
+    WordIter* w = new WordIter(line, "\t", false);
     ElandQuery* query = new ElandQuery;
     // remove the '>' character at beginning of the line
-    query->sequence_name = wordNext(w) + 1;
-    query->sequence = wordNext(w);
-    query->match_code = wordNext(w);
+    query->sequence_name = w->Next() + 1;
+    query->sequence = w->Next();
+    query->match_code = w->Next();
     if (query->match_code == "QC") {
-      wordIterDestroy(w);
+      delete w;
       return query;
     }
-    query->exact_matches = atoi(wordNext(w));
-    query->one_error_matches = atoi(wordNext(w));
-    query->two_error_matches = atoi(wordNext(w));
-    char* token = wordNext(w);
+    query->exact_matches = atoi(w->Next());
+    query->one_error_matches = atoi(w->Next());
+    query->two_error_matches = atoi(w->Next());
+    char* token = w->Next();
     if (token == NULL) {
-      wordIterDestroy(w);
+      delete w;
       return query;
     }
     char* pos;
@@ -55,14 +55,14 @@ ElandQuery* ElandParser::NextQuery() {
     }
     *pos = '\0';
     query->chromosome = pos + 1;
-    query->position = atoi(wordNext(w));
-    token = wordNext(w);
+    query->position = atoi(w->Next());
+    token = w->Next();
     if (token[0] == 'F') {
       query->strand = '+'; 
     } else if (token[0] == 'R') {
       query->strand = '-'; 
     } 
-    wordIterDestroy(w);
+    delete w;
     return query;
   }
   return NULL;
