@@ -87,4 +87,46 @@ int getLine(FILE *stream, char **buffer, int *buflen) {
   return bufp - startp ;
 }
 
+/**
+ * Read a list from a file. 
+ * @note Empty lines are skipped.
+ */
+std::vector<std::string> read_list(const char* filename) {
+  std::vector<std::string> list;
+  LineStream* ls = LineStream::FromFile(filename);
+  char *line;
+  while (line = ls->GetLine()) {
+    if (line[0] == '\0') {
+      continue;
+    }
+    list.push_back(line);
+  }
+  delete ls;
+  return list;
+}
+
+/**
+ * Read a table from a file.
+ */
+std::vector<TableRow> read_table(const char* filename, const char* delimiter) {
+  std::vector<TableRow> table_rows;
+  LineStream* ls = LineStream::FromFile(filename); 
+  char* line = NULL;
+  while (line = ls->GetLine()) {
+    if (line[0] == '\0') {
+      continue;
+    }
+    TableRow row;
+    WordIter* w = new WordIter(line, delimiter, false);
+    char* token = NULL;
+    while (token = w->Next()) {
+      row.columns.push_back(token);
+    }
+    table_rows.push_back(row);
+    delete w;
+  }
+  delete ls;
+  return table_rows;
+}
+
 /* vim: set ai ts=2 sts=2 sw=2 et: */

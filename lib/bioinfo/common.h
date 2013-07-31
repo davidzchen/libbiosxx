@@ -24,13 +24,6 @@
 #include "log.h"
 #include "worditer.h"
 
-/**
- * TableRow.
- */
-typedef struct {
-  Texta tableColumns;
-} TableRow;
-
 /****************************************************************************************
 *  Memory functions
 ****************************************************************************************/
@@ -66,8 +59,5 @@ void freez (void *ppt);
 
 void zeroBytes (void *vpt, int count);     
 void reverseBytes (char *bytes, long length);
-
-Texta readList (char* fileName);
-Array readTable (char* fileName, char* delimiter);
 
 #endif 
