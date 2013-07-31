@@ -1,49 +1,49 @@
-lib_LTLIBRARIES = libbioinfo.la
-libbioinfo_la_SOURCES = \
-		     bioinfo/bed.cc \
-		     bioinfo/bedgraph.cc \
-		     bioinfo/bitfield.cc \
-		     bioinfo/blast.cc \
-		     bioinfo/blat.cc \
-		     bioinfo/bowtie.cc \
-			 bioinfo/conf.cc \
-		     bioinfo/eland.cc \
-		     bioinfo/elandmulti.cc \
-		     bioinfo/exportpe.cc \
-		     bioinfo/fasta.cc \
-		     bioinfo/fastq.cc \
-		     bioinfo/geneontology.cc \
-		     bioinfo/interval.cc \
-		     bioinfo/linestream.cc \
-		     bioinfo/log.c \
-			 bioinfo/misc.cc \
-		     bioinfo/number.cc \
-		     bioinfo/seq.cc \
-		     bioinfo/string.cc \
-			 bioinfo/worditer.cc
+lib_LTLIBRARIES = libbios++.la
+libbios___la_SOURCES = \
+		     bios/bed.cc \
+		     bios/bedgraph.cc \
+		     bios/bitfield.cc \
+		     bios/blast.cc \
+		     bios/blat.cc \
+		     bios/bowtie.cc \
+			 bios/conf.cc \
+		     bios/eland.cc \
+		     bios/elandmulti.cc \
+		     bios/exportpe.cc \
+		     bios/fasta.cc \
+		     bios/fastq.cc \
+		     bios/geneontology.cc \
+		     bios/interval.cc \
+		     bios/linestream.cc \
+		     bios/log.c \
+			 bios/misc.cc \
+		     bios/number.cc \
+		     bios/seq.cc \
+		     bios/string.cc \
+			 bios/worditer.cc
 
-libbioinfo_la_LIBADD = -lm -lgsl
+libbios___la_LIBADD = -lm -lgsl
 
-nobase_dist_include_HEADERS = \
-		  bioinfo/bed.h \
-		  bioinfo/bedgraph.h \
-		  bioinfo/bitfield.h \
-		  bioinfo/blast.h \
-		  bioinfo/blat.h \
-		  bioinfo/bowtie.h \
-		  bioinfo/conf.h \
-		  bioinfo/eland.h \
-		  bioinfo/elandmulti.h \
-		  bioinfo/exportpe.h \
-		  bioinfo/fasta.h \
-		  bioinfo/fastq.h \
-		  bioinfo/geneontology.h \
-		  bioinfo/interval.h \
-		  bioinfo/linestream.h \
-		  bioinfo/log.h \
-		  bioinfo/mainpage.h \
-		  bioinfo/misc.h \
-		  bioinfo/number.h \
-		  bioinfo/seq.h \
-		  bioinfo/string.h \
-		  bioinfo/worditer.h
+nobase_dist_include.hhEADERS = \
+		  bios/bed.hh \
+		  bios/bedgraph.hh \
+		  bios/bitfield.hh \
+		  bios/blast.hh \
+		  bios/blat.hh \
+		  bios/bowtie.hh \
+		  bios/conf.hh \
+		  bios/eland.hh \
+		  bios/elandmulti.hh \
+		  bios/exportpe.hh \
+		  bios/fasta.hh \
+		  bios/fastq.hh \
+		  bios/geneontology.hh \
+		  bios/interval.hh \
+		  bios/linestream.hh \
+		  bios/log.h \
+		  bios/mainpage.hh \
+		  bios/misc.hh \
+		  bios/number.hh \
+		  bios/seq.hh \
+		  bios/string.hh \
+		  bios/worditer.hh

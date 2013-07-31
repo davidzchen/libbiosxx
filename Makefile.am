@@ -6,7 +6,7 @@ debug:
 	$(MAKE) all "CFLAGS=-g -DDEBUG " $(AM_MAKEFLAGS)
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = bioinfo.pc
+pkgconfig_DATA = biosxx.pc
 
 # Doxygen
 if USE_DOXYGEN
@@ -16,8 +16,6 @@ doxygen:
 
 clean-local:
 	rm -rf $(top_srcdir)/doc/html
-
-
 
 .PHONY: doxygen clean-local
 endif
