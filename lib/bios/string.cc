@@ -582,7 +582,8 @@ void strScramble(char *s) {
   char *cp = s - 1 ;
   while (*++cp) {
     if ((unsigned char)*cp == 255) {
-      die((char*) "clsv_scramble: cannot scramble 0xFF") ;
+      std::cerr << "clsv_scramble: cannot scramble 0xFF" << std::endl;
+      return;
     }
     *cp = *cp ^ 255 ;
   }

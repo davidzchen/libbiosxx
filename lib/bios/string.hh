@@ -10,6 +10,7 @@
 #include <cstring>
 #include <string>
 #include <sstream>
+#include <iostream>
 
 #include "misc.hh"
 

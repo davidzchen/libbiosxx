@@ -9,10 +9,10 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <iostream>
 
 #include <gsl/gsl_randist.h>
 
-#include "log.h"
 #include "worditer.hh"
 #include "string.hh"
 #include "linestream.hh"

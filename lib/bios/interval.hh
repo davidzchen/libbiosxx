@@ -12,8 +12,8 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <iostream>
 
-#include "log.h"
 #include "linestream.hh"
 #include "number.hh"
 

@@ -8,8 +8,8 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
-#include "log.h"
 #include "worditer.hh"
 #include "linestream.hh"
 

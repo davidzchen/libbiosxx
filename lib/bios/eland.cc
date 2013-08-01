@@ -51,7 +51,9 @@ ElandQuery* ElandParser::NextQuery() {
     }
     char* pos;
     if (!(pos = strchr(token, '.'))) {
-      die((char*) "Expected '.' in chromosome name: %s", token);
+      std::cerr << "Expected '.' in chromosome name: " << token << std::endl;
+      delete w;
+      return NULL;
     }
     *pos = '\0';
     query->chromosome = pos + 1;

@@ -112,7 +112,9 @@ std::vector<double> BedGraphParser::GetValuesForRegion(
       } 
     }
     if (num_occurances > 1) {
-      die((char*) "Expected only one BedGraph overlap per position");
+      std::cerr << "Expected only one BedGraph overlap per position" 
+                << std::endl;
+      return entries;
     }
   }
   return entries;

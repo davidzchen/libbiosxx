@@ -9,8 +9,8 @@
 #include <string>
 #include <sstream>
 #include <cstdlib>
+#include <iostream>
 
-#include "log.h"
 #include "worditer.hh"
 #include "linestream.hh"
 

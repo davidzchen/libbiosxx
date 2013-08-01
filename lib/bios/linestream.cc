@@ -144,13 +144,16 @@ char* LineStream::GetLine() {
 */
 void LineStream::Back(int line_count) {
   if (buffer_ == NULL) {
-    die((char*) "ls_back() without preceeding ls_bufferSet()") ;
+    std::cerr << "ls_back() without preceeding ls_bufferSet()" << std::endl;
+    return;
   }
   if (buffer_back_ > 0) {
-    die((char*) "ls_back() twice in a row") ;
+    std::cerr << "ls_back() twice in a row" << std::endl;
+    return;
   }
   if (line_count != 1) {
-    die((char*) "ls_back: sorry, not yet implemented") ;
+    std::cerr << "ls_back: sorry, not yet implemented" << std::endl;
+    return;
   }
   buffer_back_ = 1 ;
 }
@@ -165,10 +168,12 @@ void LineStream::Back(int line_count) {
  */
 void LineStream::SetBuffer(int line_count) { 
   if (buffer_ != NULL || count_ != 0) {
-    die((char*) "ls_bufferSet() more than once or too late") ;
+    std::cerr << "ls_bufferSet() more than once or too late" << std::endl;
+    return;
   }
   if (line_count != 1) {
-    die((char*) "ls_bufferSet() sorry, not yet implemented") ;
+    std::cerr << "ls_bufferSet() sorry, not yet implemented" << std::endl;
+    return;
   }
   buffer_ = new std::string;
   buffer_back_ = 0;

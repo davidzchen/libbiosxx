@@ -39,9 +39,9 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <iostream>
 #include <unistd.h>
 
-#include "log.h"
 #include "worditer.hh"
 #include "misc.hh"
 

@@ -59,7 +59,8 @@ ElandMultiQuery* ElandMultiParser::NextQuery() {
     char* first_colon = strchr(token, ':');
     char* last_colon = strrchr(token, ':');
     if (first_colon == NULL || last_colon == NULL) {
-      die((char*) "Expected the following format: x:y:z");
+      std::cerr << "Expected the following format: x:y:z" << std::endl;
+      return NULL;
     }
     *first_colon = '\0';
     *last_colon = '\0';
@@ -80,7 +81,8 @@ ElandMultiQuery* ElandMultiParser::NextQuery() {
       } else if (token[token_length - 2] == 'R') {
         entry.strand = '-';
       } else {
-        die((char*) "Unexpected strand: %s", token);
+        std::cerr << "Unexpected strand: " << token << std::endl;
+        return NULL;
       }
       entry.num_errors = atoi(token + token_length - 1);
       token[token_length - 2] = '\0';

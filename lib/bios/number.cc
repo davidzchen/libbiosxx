@@ -134,7 +134,9 @@ struct ValuePair {
 
 double spearman_correlation(std::vector<double>& a, std::vector<double>& b) {
   if (a.size() != b.size()) {
-    die((char*) "Expected the same number of elements for the two arrays");
+    std::cerr << "Expected the same number of elements for the two arrays"
+              << std::endl;
+    return 0.0;
   }
   int n = a.size();
   std::vector<ValuePair> value_pairs;

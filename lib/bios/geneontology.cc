@@ -204,7 +204,8 @@ void GeneOntology::ReadGoOntology(const char* obo_filename) {
     } else if (str::strStartsWithC(line, "def:")) {
       pos1 = strstr(line, " [");
       if (pos1 == NULL) {
-        die((char*) "Expected ' [' in def line: %s", line);
+        std::cerr << "Expected ' [' in def line: " << line << std::endl;
+        return;
       }
       *pos1 = '\0';
       pos1 = strchr(line, ' ');
@@ -259,7 +260,7 @@ void GeneOntology::ReadGoOntology(const char* obo_filename) {
     } else if (str::strStartsWithC (line,"disjoint_from:")) {
       // Do nothing.
     } else {
-      warn((char*) "Unexpected line: %s", line);
+      std::cerr << "Unexpected line: " << line << std::endl;
     }
   }
   delete ls;
@@ -323,8 +324,9 @@ void GeneOntology::ConvertGoTermsToGoNodes() {
     for (int i = 0; i < go_node.go_term->parents.size(); i++) {
       GoNode* parent_go_node = FindGoNode(go_node.go_term->parents[i].c_str());
       if (parent_go_node == NULL) {
-        die((char*) "Expected to find %s in GO ontology: %s",
-            go_node.go_term->parents[i].c_str());
+        std::cerr << "Expected to find %s in GO ontology: "
+                  << go_node.go_term->parents[i].c_str() << std::endl;
+        return;
       }
       AddGoNode(go_node.parents, parent_go_node);
       AddGoNode(parent_go_node->children, &go_node);
@@ -391,7 +393,9 @@ void GeneOntology::MapAnnotatedGenesToGoOntology() {
       std::string& id = *it;
       GoNode* go_node = FindGoNode(id.c_str());
       if (go_node == NULL) {
-        die((char*) "Expected to find %s in GO ontology: %s", id.c_str());
+        std::cerr << "Expected to find %s in GO ontology: "
+                  << id.c_str() << std::endl;
+        return;
       }
       go_node->associated_genes.push_back(go_gene_association.gene_name);
     }
@@ -446,8 +450,10 @@ std::vector<std::string> GeneOntology::MapGenesOfInterestToGeneOntology(
       for (int j = 0; j < go_gene_association->go_ids.size(); ++j) {
         GoNode* go_node = FindGoNode(go_gene_association->go_ids[j].c_str());
         if (go_node == NULL) {
-          die((char*) "Expected to find %s in GO ontology: %s",
-              go_gene_association->go_ids[j].c_str());
+          std::cerr << "Expected to find "
+                    << go_gene_association->go_ids[j].c_str()
+                    << " in GO ontology: " << "????" << std::endl;
+          return invalid_gene_names;
         }
         go_node->genes_of_interest.push_back(gene_names_of_interest[j]);
       }
@@ -542,7 +548,8 @@ std::vector<std::string> GeneOntology::CalculateGeneEnrichmentOrDepletionForGoTe
         go_gene_associations_.size() - (*number_of_annotated_genes),
         genes_of_interest_.size());
   } else {
-    die((char*) "Unknown analysis mode: %d", analysis_mode);
+    std::cerr << "Unknown analysis mode: " << analysis_mode << std::endl;
+    return go_node_genes_of_interest;
   }
   return go_node_genes_of_interest;
 }
@@ -582,8 +589,9 @@ std::vector<GoStatistic> GeneOntology::CalculateGeneEnrichmentOrDepletion(
       go_statistic.pvalue_corrected =  std::min<double>(
           go_statistic.pvalue * go_statistics.size(), 1.0);
     } else {
-      die((char*) "Unknown multiple testing correction method: %d",
-          multiple_testing_correction_method);
+      std::cerr << "Unknown multiple testing correction method: "
+                << multiple_testing_correction_method << std::endl;
+      return go_statistics;
     }
   }
   return go_statistics;

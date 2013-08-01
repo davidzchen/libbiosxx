@@ -168,16 +168,17 @@ ExportPE* ExportPEParser::ProcessNextEntry() {
         << end2->tile << ":" << end2->x_coord << ":" << end2->y_coord << "#"
         << end2->index.c_str();
     if (id1.str() != id2.str()) {
-      die((char*) "The IDs of the two entries do not match\n%s\n%s", 
-          end1->ToString().c_str(), 
-          end2->ToString().c_str());
+      std::cerr << "The IDs of the two entries do not match" << std::endl
+                << end1->ToString().c_str() << std::endl
+                << end2->ToString().c_str() << std::endl;
+      return NULL;
     }
     return entry;
   } else {
     if (more_entries == 0) {
       return NULL;
     } else {
-      die((char*) "The export files do not have the same length");
+      std::cerr << "The export files do not have the same length" << std::endl;
       return NULL;
     }
   }

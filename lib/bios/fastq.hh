@@ -8,9 +8,9 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include "seq.hh"
-#include "log.h"
 #include "linestream.hh"
 #include "string.hh"
 

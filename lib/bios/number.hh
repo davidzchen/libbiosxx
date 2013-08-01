@@ -9,8 +9,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
-
-#include "log.h"
+#include <iostream>
 
 namespace num {
 

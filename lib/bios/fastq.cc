@@ -63,7 +63,9 @@ Fastq* FastqParser::ProcessNextSequence (bool truncate_name) {
       seq->size = strlen(seq->sequence);
       line = stream_->GetLine(); // reading quality ID
       if (line[0] != '+') {
-        die((char*) "Expected quality ID: '+' or '+%s'", seq->name);
+        std::cerr << "Expected quality ID: '+' or '+" << seq->name << "'"
+                  << std::endl;
+        return NULL;
       }
       line = stream_->GetLine(); // reading quality
       fq->quality = strdup(line);

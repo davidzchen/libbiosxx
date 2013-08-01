@@ -15,7 +15,6 @@ libbios___la_SOURCES = \
 		     bios/geneontology.cc \
 		     bios/interval.cc \
 		     bios/linestream.cc \
-		     bios/log.c \
 			 bios/misc.cc \
 		     bios/number.cc \
 		     bios/seq.cc \
@@ -40,7 +39,6 @@ nobase_dist_include.hhEADERS = \
 		  bios/geneontology.hh \
 		  bios/interval.hh \
 		  bios/linestream.hh \
-		  bios/log.h \
 		  bios/mainpage.hh \
 		  bios/misc.hh \
 		  bios/number.hh \

@@ -39,7 +39,9 @@ Interval::Interval(const char* line, int source) {
   IntervalFind::ProcessCommaSeparatedList(starts, w->Next());
   IntervalFind::ProcessCommaSeparatedList(ends, w->Next());
   if (starts.size() != ends.size()) {
-    die((char*) "Unequal number of subIntervalStarts and subIntervalEnds");
+    std::cerr << "Unequal number of subIntervalStarts and subIntervalEnds"
+              << std::endl;
+    return;
   }
   for (int i = 0; i < sub_interval_count; ++i) {
     SubInterval sub_interval;
