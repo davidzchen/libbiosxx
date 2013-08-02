@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.59])
 AC_INIT([libbios++], [1.0.0], [david.chen@yale.edu])
-AC_CONFIG_SRCDIR([lib/Makefile.am])
+AC_CONFIG_SRCDIR([src/Makefile.am])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -42,6 +42,6 @@ AC_CHECK_FUNCS([memset pow sqrt strchr strdup strerror strrchr strstr strtol mem
 # Output
 AM_COND_IF([USE_DOXYGEN], [AC_CONFIG_FILES([doc/Doxyfile])])
 AC_CONFIG_FILES([Makefile 
-		 lib/Makefile 
+		 src/Makefile 
 		 biosxx.pc:biosxx.pc.in])
 AC_OUTPUT
