@@ -1,9 +1,30 @@
-/** 
- *   \file bedParser.c Module to parse BED files
- *   \author Andrea Sboner (ans2077@med.cornell.edu)
- */
+// This file is free software; you can redistribute it and/or 
+// modify it under the terms of the GNU Lesser General Public 
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This file is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// Lesser General Public License for more details.
+//
+// To obtain a copy of the GNU Lesser General Public License, 
+// please write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
+
+/// @file bed.hh
+/// @author David Z. Chen <d.zhekai.chen@gmail.com>
+/// @version 
+/// @since 07 Aug 2013
+///
+/// @section DESCRIPTION
+///
+/// This is the header for the module for parsing BED files.
 
 #include "bed.hh"
+
+namespace bios {
 
 Bed::Bed() {
   sub_blocks_ = std::vector<SubBlock>();
@@ -51,27 +72,16 @@ BedParser::~BedParser() {
   delete stream_;
 }
 
-/**
- * Initialize the bedParser module from file.
- * @param[in] fileName File name, use "-" to denote stdin
- */
 void BedParser::InitFromFile(const char* filename) {
   stream_ = LineStream::FromFile(filename);
   stream_->SetBuffer(1);
 }
 
-/**
- * Initialize the bedParser module from pipe.
- * @param[in] command Command to be executed
- */
 void BedParser::InitFromCommand(const char* command) {
   stream_ = LineStream::FromPipe(command);
   stream_->SetBuffer(1);
 }
 
-/**
- * Retrieve the next entry in the BED file.
- */
 Bed* BedParser::NextEntry(void) {
   char* line = NULL;
   while (!stream_->IsEof()) {
@@ -117,9 +127,6 @@ Bed* BedParser::NextEntry(void) {
   return NULL;
 }
 
-/**
- * Retrieve all entries from a Bed file.
- */
 std::vector<Bed> BedParser::GetAllEntries() {
   std::vector<Bed> beds = std::vector<Bed>();
   Bed* current_bed;
@@ -131,5 +138,7 @@ std::vector<Bed> BedParser::GetAllEntries() {
   }
   return beds;
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

@@ -6,6 +6,8 @@
 
 #include "exportpe.hh"
 
+namespace bios {
+
 /** 
  * Write an export entry;
  * @param [in] currEntry: a pointer to the single end entry
@@ -190,5 +192,7 @@ ExportPE* ExportPEParser::ProcessNextEntry() {
 ExportPE* ExportPEParser::NextEntry() {
   return ExportPEParser::ProcessNextEntry();
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

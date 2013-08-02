@@ -13,6 +13,8 @@
 #include "linestream.hh"
 #include "string.hh"
 
+namespace bios {
+
 class FastaParser {
  public:
   FastaParser();
@@ -32,6 +34,8 @@ class FastaParser {
  private:
   LineStream* stream_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_FASTA_H__ */

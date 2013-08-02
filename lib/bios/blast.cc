@@ -5,6 +5,8 @@
 
 #include "blast.hh"
 
+namespace bios {
+
 BlastQuery::BlastQuery() {
 }
 
@@ -104,5 +106,7 @@ BlastQuery* BlastParser::NextQuery() {
     return blast_query_;
   }
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

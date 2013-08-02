@@ -5,6 +5,8 @@
 
 #include "blat.hh"
 
+namespace bios {
+
 const int kPslHeaderLinesCount = 5;
 
 BlatParser::BlatParser() 
@@ -127,5 +129,7 @@ BlatQuery* BlatParser::NextQuery() {
   }
   return blat_query_;
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

@@ -5,6 +5,8 @@
 
 #include "eland.hh"
 
+namespace bios {
+
 ElandParser::ElandParser(const char* filename) {
   stream_ = LineStream::FromFile(filename);
 }
@@ -69,5 +71,7 @@ ElandQuery* ElandParser::NextQuery() {
   }
   return NULL;
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

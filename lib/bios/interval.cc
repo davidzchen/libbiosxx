@@ -12,6 +12,8 @@
 
 #include "interval.hh"
 
+namespace bios {
+
 Interval::Interval() {
 }
 
@@ -317,5 +319,7 @@ std::vector<Interval*> IntervalFind::GetOverlappingIntervals(
   }
   return matching_intervals;
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

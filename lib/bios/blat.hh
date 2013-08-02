@@ -12,6 +12,8 @@
 #include "worditer.hh"
 #include "linestream.hh"
 
+namespace bios {
+
 struct PslEntry {
   int matches;       // Number of bases that match that aren't repeats
   int mismatches;    // Number of bases that don't match
@@ -58,6 +60,8 @@ class BlatParser {
   std::string query_name_;
   std::string prev_query_name_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_BLAT_H__ */

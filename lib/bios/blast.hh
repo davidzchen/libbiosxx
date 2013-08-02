@@ -12,6 +12,8 @@
 #include "worditer.hh"
 #include "linestream.hh"
 
+namespace bios {
+
 struct BlastEntry {
   BlastEntry();
   ~BlastEntry();
@@ -53,6 +55,8 @@ class BlastParser {
   std::string prev_query_name_;
   BlastQuery* blast_query_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_BLAST_H__ */

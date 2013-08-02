@@ -5,6 +5,8 @@
 
 #include "number.hh"
 
+namespace bios {
+
 namespace num {
 
 /** 
@@ -216,5 +218,7 @@ double spearman_correlation(std::vector<double>& a, std::vector<double>& b) {
 }
 
 }; // namespace num
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

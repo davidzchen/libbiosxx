@@ -30,9 +30,8 @@
 #include "number.hh"
 #include "bitfield.hh"
 
-/**
- * Seq.
- */
+namespace bios {
+
 struct Seq {
   Seq();
   ~Seq();
@@ -168,6 +167,8 @@ class Sequencer {
   AA val_to_aa_[20];
   AA aa_chars_[256]; // 0 except for value aa characters. Converts to upper first.
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_SEQ_H__ */

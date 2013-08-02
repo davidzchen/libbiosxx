@@ -5,6 +5,8 @@
 
 #include "bowtie.hh"
 
+namespace bios {
+
 BowtieEntry::BowtieEntry() {
   mismatches_ = std::vector<BowtieMismatch>();
 }
@@ -224,5 +226,7 @@ std::vector<BowtieQuery> BowtieParser::GetAllQueries() {
   }
   return queries;
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

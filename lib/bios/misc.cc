@@ -1,5 +1,7 @@
 #include "misc.hh"
 
+namespace bios {
+
 /** 
  * Reverse the order of the bytes. 
  */
@@ -157,5 +159,7 @@ std::vector<TableRow> read_table(const char* filename, const char* delimiter) {
   delete ls;
   return table_rows;
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

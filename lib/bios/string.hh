@@ -14,6 +14,8 @@
 
 #include "misc.hh"
 
+namespace bios {
+
 namespace str {
 
 char* subString(char* str, int start, int end);
@@ -81,6 +83,8 @@ void strUnscramble(char *s) ;
 int isBlankStr(char *s) ;
 
 }; // namespace str
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_STRING_H__ */

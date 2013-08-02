@@ -1,5 +1,7 @@
 #include "worditer.hh"
 
+namespace bios {
+
 WordIter::WordIter(char* str, const char* seps, bool collapse_separators) {
   if (str == NULL || seps == NULL) {
     return;
@@ -64,5 +66,7 @@ char* WordIter::Next(int* index) {
 char* WordIter::Next() {
   return Next(NULL); 
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

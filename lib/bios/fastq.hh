@@ -14,6 +14,8 @@
 #include "linestream.hh"
 #include "string.hh"
 
+namespace bios {
+
 struct Fastq {
   Fastq();
   ~Fastq();
@@ -45,6 +47,8 @@ class FastqParser {
 
   LineStream* stream_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_FASTQ_H__ */

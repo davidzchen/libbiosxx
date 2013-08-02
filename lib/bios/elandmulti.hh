@@ -13,6 +13,8 @@
 #include "worditer.hh"
 #include "linestream.hh"
 
+namespace bios {
+
 struct ElandMultiEntry {
   std::string chromosome;
   int position;
@@ -42,6 +44,8 @@ class ElandMultiParser {
  private:
   LineStream* stream_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_ELANDMULTI_H__ */

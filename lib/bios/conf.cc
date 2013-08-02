@@ -1,5 +1,7 @@
 #include "conf.hh"
 
+namespace bios {
+
 Conf::Conf(const char* filename) {
   if (filename == NULL) {
     return;
@@ -121,5 +123,7 @@ const char* Conf::Get(const char* key) {
     return value.c_str();
   }
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

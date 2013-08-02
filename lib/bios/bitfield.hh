@@ -16,6 +16,8 @@
 #include <cstring>
 #include <cstdio>
 
+namespace bios {
+
 class BitField {
  public:
   BitField(int size);
@@ -49,6 +51,8 @@ class BitField {
   int size_;
   char* bit_field_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_BITS_H__ */

@@ -1,7 +1,26 @@
-/**
- *    \file bedParser.h
- *    \author Andrea Sboner (ans2077@med.cornell.edu)
- */
+// This file is free software; you can redistribute it and/or 
+// modify it under the terms of the GNU Lesser General Public 
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This file is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// Lesser General Public License for more details.
+//
+// To obtain a copy of the GNU Lesser General Public License, 
+// please write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
+
+/// @file bed.hh
+/// @author David Z. Chen <d.zhekai.chen@gmail.com>
+/// @version 
+/// @since 07 Aug 2013
+///
+/// @section DESCRIPTION
+///
+/// This is the header for the module for parsing BED files.
 
 #ifndef BIOINFO_BED_H__
 #define BIOINFO_BED_H__
@@ -15,11 +34,21 @@
 #include "worditer.hh"
 #include "linestream.hh"
 
+namespace bios {
+
+/// @struct SubBlock
+/// @brief  Struct representing a sub-block.
+///
+/// Something something.
 struct SubBlock {
   uint32_t size;
   uint32_t start; // relative to Bed->start
 };
 
+/// @struct Bed
+/// @brief  BED entry.
+///
+/// Something something.
 class Bed {
  public:
   Bed();
@@ -83,20 +112,52 @@ class Bed {
   uint32_t block_count_;
   std::vector<SubBlock> sub_blocks_;
 };
-  
+
+/// @class BedParser
+/// @brief Class for parsing BED files.
 class BedParser {
  public:
   BedParser();
   ~BedParser();
+
+  /// @brief Initialize the BedParser from a file.
+  ///
+  /// This method initializes the BedParser from a file. This method or
+  /// InitFromCommand must be called before calling other parser methods.
+  ///
+  /// @param     filename     The name of the input file or '-' for stdin.
   void InitFromFile(const char* filename);
+
+  /// @brief Initialize the BedParser from a command.
+  ///
+  /// This method initializes the BedParser from a command. This method or
+  /// InitFromFile must be called before calling other parser methods.
+  ///
+  /// @param     filename     The command to be executed.
   void InitFromCommand(const char* command);
 
+  /// @brief Retrieve the next entry in the BED file.
+  ///
+  /// This method retrieves the next entry in the BED file.
+  ///
+  /// @return    A pointer to the a Bed object representing the next entry in
+  ///            the BED file.
   Bed* NextEntry();
+
+  /// @brief Retrieves all entries from the BED file.
+  ///
+  /// This method parses the BED file and returns a vector containing all of
+  /// entries from the BED file.
+  ///
+  /// @return    a vector containing Bed objects representing all entries in
+  ///            the BED file.
   std::vector<Bed> GetAllEntries();
 
  private:
   LineStream* stream_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif // BIOINFO_BED_H__

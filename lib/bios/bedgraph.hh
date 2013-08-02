@@ -2,6 +2,7 @@
  *    \file bgrParser.h
  *    \author Andrea Sboner (andrea.sboner@yale.edu)
  */
+
 #ifndef BIOINFO_BEDGRAPH_H__
 #define BIOINFO_BEDGRAPH_H__
 
@@ -14,6 +15,8 @@
 #include "worditer.hh"
 #include "string.hh"
 #include "linestream.hh"
+
+namespace bios {
 
 class BedGraph {
  public:
@@ -74,6 +77,8 @@ class BedGraphParser {
  private:
   LineStream* stream_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif // BIOINFO_BEDGRAPH_H__

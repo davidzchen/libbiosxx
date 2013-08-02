@@ -20,6 +20,8 @@
 
 #include "seq.hh"
 
+namespace bios {
+
 Seq::Seq() {
   name = NULL;
   sequence = NULL;
@@ -567,5 +569,7 @@ Sequencer::Sequencer() {
   InitNucleotideMixedCaseChars();
   InitNucleotideCompareTable();
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

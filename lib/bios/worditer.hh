@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <cstring>
 
+namespace bios {
+
 class WordIter {
  public:
   WordIter(char* str, const char* seps, bool collapse_separators);
@@ -18,6 +20,8 @@ class WordIter {
   bool collapse_separators_;
   bool at_end_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_WORDITER_H__ */

@@ -17,6 +17,8 @@
 #include "string.hh"
 #include "linestream.hh"
 
+namespace bios {
+
 struct GoTagValue {
   char* tag;
   char* value;
@@ -182,6 +184,8 @@ class GeneOntology {
   GoNode* molecular_function_root_;
   GoNode* cellular_component_root_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_GENEONTOLOGY_H__ */

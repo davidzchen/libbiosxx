@@ -39,6 +39,8 @@
 
 #include "linestream.hh"
 
+namespace bios {
+
 LineStream::LineStream()
     : count_(0),
       status_(0),
@@ -438,5 +440,7 @@ int BufferLineStream::SkipGetStatus() {
   }
   return status_;
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

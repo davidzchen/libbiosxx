@@ -12,6 +12,8 @@
 #include "worditer.hh"
 #include "linestream.hh"
 
+namespace bios {
+
 struct BowtieMismatch {
   int offset;
   char reference_base;
@@ -86,6 +88,8 @@ class BowtieParser {
   std::string query_name_;
   std::string prev_query_name_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_BOWTIE_H__ */

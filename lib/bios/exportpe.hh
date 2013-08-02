@@ -14,9 +14,7 @@
 #include "worditer.hh"
 #include "linestream.hh"
 
-/**
- * ExportPEsingle
- */
+namespace bios {
 
 struct singleEnd {
   std::string ToString();
@@ -71,6 +69,8 @@ class ExportPEParser {
   LineStream* stream1_;
   LineStream* stream2_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_EXPORTPE_H__ */

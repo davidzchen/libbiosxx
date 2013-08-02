@@ -10,6 +10,8 @@
 #include "linestream.hh"
 #include "worditer.hh"
 
+namespace bios {
+
 #define NUMELE(a) ((int)sizeof(a)/sizeof(a[0]))
 
 void reverse_bytes(char* bytes, long length);
@@ -42,6 +44,8 @@ struct TableRow {
 std::vector<std::string> read_list(const char* filename);
 
 std::vector<TableRow> read_table(const char* filename, const char* delimiter);
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_MISC_H__ */

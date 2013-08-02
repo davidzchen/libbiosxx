@@ -17,6 +17,8 @@
 #include "linestream.hh"
 #include "number.hh"
 
+namespace bios {
+
 struct SubInterval {
   int start;
   int end;
@@ -109,6 +111,8 @@ class IntervalFind {
   std::map<int, std::string> source_to_file_;
   std::map<std::string, int> file_to_source_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_INTERVAL_H__ */

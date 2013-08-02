@@ -10,6 +10,8 @@
 
 #include "bitfield.hh"
 
+namespace bios {
+
 class BitsInByte {
  public:
   static BitsInByte& GetInstance() {
@@ -318,5 +320,7 @@ void BitField::Print(int start_index) {
   }
   putchar('\n');
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

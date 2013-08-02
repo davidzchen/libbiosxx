@@ -5,6 +5,8 @@
 
 #include "fasta.hh"
 
+namespace bios {
+
 const int kCharactersPerLine = 60;
 
 FastaParser::FastaParser()
@@ -113,5 +115,7 @@ void FastaParser::PrintAllSequences(std::vector<Seq>& seqs) {
     FastaParser::PrintSequence(*it); 
   }
 }
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */

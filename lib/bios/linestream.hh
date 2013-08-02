@@ -31,7 +31,6 @@
  *   \author Adapted by Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-
 #ifndef BIOINFO_LINESTREAM_H__
 #define BIOINFO_LINESTREAM_H__
 
@@ -45,11 +44,13 @@
 #include "worditer.hh"
 #include "misc.hh"
 
+namespace bios {
+
 class LineStream {
  public:
   LineStream();
   ~LineStream();
-
+  
   static LineStream* FromFile(const char* filename);
   static LineStream* FromPipe(const char* command);
   static LineStream* FromBuffer(char* buffer);
@@ -63,7 +64,7 @@ class LineStream {
   virtual bool IsEof();
   virtual int SkipGetStatus();
 
- protected:
+ protected: 
   virtual char* GetNextLine();
 
  protected:
@@ -121,6 +122,8 @@ class BufferLineStream : public LineStream {
  private:
   WordIter* word_iter_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_LINESTREAM_H__ */

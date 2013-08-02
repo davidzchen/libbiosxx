@@ -14,6 +14,8 @@
 
 #include "linestream.hh"
 
+namespace bios {
+
 class Conf {
  public:
   Conf(const char* filename);
@@ -29,6 +31,8 @@ class Conf {
   std::map<std::string, std::string> map_;
   char* filename_;
 };
+
+}; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
 #endif /* BIOINFO_CONF_H__ */
