@@ -13,7 +13,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
 // or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
 
-/// @file bed.hh
+/// @file bed.cc
 /// @author David Z. Chen <d.zhekai.chen@gmail.com>
 /// @version 
 /// @since 07 Aug 2013

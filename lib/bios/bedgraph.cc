@@ -1,7 +1,26 @@
-/** 
- *   \file bgrParser.c Module to parse BedGraphs files
- *   \author Andrea Sboner (andrea.sboner@yale.edu)
- */
+// This file is free software; you can redistribute it and/or 
+// modify it under the terms of the GNU Lesser General Public 
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This file is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// Lesser General Public License for more details.
+//
+// To obtain a copy of the GNU Lesser General Public License, 
+// please write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
+
+/// @file bedgraph.cc
+/// @author David Z. Chen <d.zhekai.chen@gmail.com>
+/// @version 
+/// @since 07 Aug 2013
+///
+/// @section DESCRIPTION
+///
+/// This is the header for the module for parsing BedGraphs files.
 
 #include "bedgraph.hh"
 
@@ -15,27 +34,16 @@ BedGraphParser::~BedGraphParser() {
   delete stream_;
 }
 
-/**
- * Initialize the bgrParser module from file.
- * @param[in] fileName File name, use "-" to denote stdin
- */
 void BedGraphParser::InitFromFile(const char* filename) {  
   stream_ = LineStream::FromFile(filename);
   stream_->SetBuffer(1);
 }
 
-/**
- * Initialize the bgrParser module from pipe.
- * @param[in] command Command to be executed
- */
 void BedGraphParser::InitFromPipe(const char* command) {
   stream_ = LineStream::FromPipe(command);
   stream_->SetBuffer(1);
 }
 
-/**
- * Retrieve the next entry in the bedGraph file.
- */
 BedGraph* BedGraphParser::NextEntry() {
   while (!stream_->IsEof()) {
     char* line = stream_->GetLine();
@@ -54,9 +62,6 @@ BedGraph* BedGraphParser::NextEntry() {
   return NULL;
 }
 
-/**
- * Retrieve all entries from a bedGraph file.
- */
 std::vector<BedGraph> BedGraphParser::GetAllEntries() {
   std::vector<BedGraph> bed_graphs = std::vector<BedGraph>();
   BedGraph* bed_graph;
@@ -69,12 +74,9 @@ std::vector<BedGraph> BedGraphParser::GetAllEntries() {
   return bed_graphs;
 }
 
-/**
- * Get BedGraph values for a specified region.
- */
 std::vector<double> BedGraphParser::GetValuesForRegion(
-    std::vector<BedGraph>& bed_graphs, std::string chromosome, int start, 
-    int end) {
+    std::vector<BedGraph>& bed_graphs, std::string chromosome, 
+    int start, int end) {
   std::vector<double> entries = std::vector<double>();
   std::vector<BedGraph*> bed_graph_ptrs = std::vector<BedGraph*>();
   
