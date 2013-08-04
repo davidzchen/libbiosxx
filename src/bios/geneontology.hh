@@ -1,15 +1,36 @@
-/**
- *   \file geneOntology.h
- *   \author Lukas Habegger (lukas.habegger@yale.edu)
- */
+// This file is free software; you can redistribute it and/or 
+// modify it under the terms of the GNU Lesser General Public 
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This file is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// Lesser General Public License for more details.
+//
+// To obtain a copy of the GNU Lesser General Public License, 
+// please write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
 
-#ifndef BIOINFO_GENEONTOLOGY_H__
-#define BIOINFO_GENEONTOLOGY_H__
+/// @file geneontology.hh
+/// @author Lukas Habegger <lukas.habegger@yale.edu>
+/// @version 1.0.0
+/// @since 07 Aug 2013
+///
+/// @section DESCRIPTION
+///
+/// This is the header for the gene ontology (GO) module.
+/// See http://www.geneontology.org/GO.format.obo-1_2.shtml for details.
+
+#ifndef BIOS_GENEONTOLOGY_H__
+#define BIOS_GENEONTOLOGY_H__
 
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <iostream>
+#include <stdint.h>
 
 #include <gsl/gsl_randist.h>
 
@@ -19,11 +40,15 @@
 
 namespace bios {
 
+/// @struct GoTagValue
+/// @brief Structure representing a Gene Ontology tag value.
 struct GoTagValue {
   char* tag;
   char* value;
 };
 
+/// @struct GoTerm
+/// @brief Structure representing a Gene Ontology term.
 struct GoTerm {
   std::string id;
   std::string name;
@@ -41,6 +66,8 @@ struct GoTerm {
   std::vector<std::string> parents;
 };
 
+/// @struct GoNode
+/// @brief structure for representing a Gene Ontology node.
 struct GoNode {
   GoNode();
   ~GoNode();
@@ -53,6 +80,16 @@ struct GoNode {
     return id == other.id;
   }
 
+ /// @brief Get the children of a GoNode at a specified hiearchy level. 
+ ///
+ /// @param[in] currGoNode Get the children of this GoNode at the specified 
+ ///            hiearchy level.
+ /// @param[in] level Specifies the level within the gene ontology relative to 
+ ///            the currGoNode. 
+ ///  The level of currGoNode is 0.
+ /// Example: To get the grand-children of currGoNode the level would be 2.
+ /// @return An Array of GoNode pointers.
+ /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
   std::vector<GoNode*> GetChildrenAtSpecifiedHierarchyLevel(int level);
   void GetChildrenAtHierarchyLevel(std::vector<GoNode*>& result_nodes,
                                    int current_level, int specified_level);
@@ -66,6 +103,8 @@ struct GoNode {
   std::vector<std::string> genes_of_interest;
 };
 
+/// @struct GoGeneAssociation
+/// @brief Structure for representing a Gene Ontology association.
 struct GoGeneAssociation {
   GoGeneAssociation();
   ~GoGeneAssociation();
@@ -85,6 +124,8 @@ struct GoGeneAssociation {
   std::vector<std::string> go_ids;
 };
 
+/// @struct GoStatistic
+/// @brief Structure for representing a Gene Ontology statistic.
 struct GoStatistic {
   GoStatistic();
   ~GoStatistic();
@@ -102,6 +143,8 @@ struct GoStatistic {
   double pvalue_corrected;
 };
 
+/// @class GeneOntology
+/// @brief Class for processing a Gene Ontology file.
 class GeneOntology {
  public:
   GeneOntology(const char* go_filename);
@@ -116,23 +159,137 @@ class GeneOntology {
     kMultipleTestingCorrectionBonferroni = 2
   };
 
+  /// @brief Get the GoNodes that are part of the biological_process hierarchy.
+  ///
+  /// @return An Array of GoNode pointers
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
   std::vector<GoNode*> GetBiologicalProcessGoNodes();
+
+  /// @brief Get the GoNodes that are part of the molecular_function hierarchy.
+  ///
+  /// @return An Array of GoNode pointers
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
   std::vector<GoNode*> GetMolecularFunctionGoNodes();
+
+  /// @brief Get the GoNodes that are part of the cellular_component hierarchy.
+  ///
+  /// @return An Array of GoNode pointers
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
   std::vector<GoNode*> GetCellularComponentGoNodes();
-  std::vector<GoNode*> GetGenericGoSlimNodes();
+ 
+  /// @brief Get the GoNodes of the entire ontology.
+  ///
+  /// @return An Array of GoNode pointers
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
   std::vector<GoNode*> GetAllGoNodes();
+
+  /// @brief Get all generic slim nodes.
+  ///
+  /// @return a vector of GoNode pointers
+  std::vector<GoNode*> GetGenericGoSlimNodes();
+
+  /// Get the number of associated genes.
+  ///
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
+  /// @pre The gene annotations have been mapped to the gene ontology. 
+  /// See GeneOntology::mapGeneAnnotationsToGeneOntology()
   int GetNumberOfAssociatedGenes();
+
+  /// @brief Get the number of genes of interest that have been mapped to the 
+  /// gene ontology.
+  /// Note: duplicates gene names were removed.
+  ///
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
+  /// @pre The gene annotations have been mapped to the gene ontology. 
+  /// See GeneOntology::mapGeneAnnotationsToGeneOntology()
+  /// @pre The genes of interest have been mapped to the gene ontology. 
+  /// See GeneOntology::mapGenesOfInterestToGeneOntology()
   int GetNumberOfGenesOfInterest();
+
+  /// Resets (performs arrayClear()) the genes of interest for every GoNode.
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
+  /// @pre The gene annotations have been mapped to the gene ontology. 
+  /// See GeneOntology::mapGeneAnnotationsToGeneOntology()
+  /// @pre The genes of interest have been mapped to the gene ontology. 
+  /// See GeneOntology::mapGenesOfInterestToGeneOntology()
+  /// @post A new set of genes of interest can be mapped to the gene ontology 
+  /// by using GeneOntology::mapGenesOfInterestToGeneOntology()
   void ResetGenesOfInterest();
+
+  /// @brief Find a GoNode.
+  ///
+  /// @param[in] id A GO term identifier. Example: GO:0065003
+  /// @return A pointer to the GoNode, NULL if the GO term was not found
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
   GoNode* FindGoNode(const char* id);
+
+  /// @brief Find a GoGeneAssociation.
+  /// @param[in] geneName A geneName or geneSymbol as specified in the 
+  ///            geneAssociation file. See 
+  ///            http://www.geneontology.org/GO.format.annotation.shtml for 
+  ///            details. This geneName refers to the third column labeled as 
+  ///            DB_Object_Symbol.
+  /// @return A pointer to the GoGeneAssociation, NULL if GoGeneAssociation was 
+  ///         not found 
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
+  /// @pre The gene annotations have been mapped to the gene ontology. 
+  /// See GeneOntology::mapGeneAnnotationsToGeneOntology()
   GoGeneAssociation* FindGoGeneAssociation(const char* gene_name);
+
+  /// @brief Map genes of interest to the gene ontology.
+  ///
+  /// @param[in] genesNamesOfInterest Texta that contains the gene names of the 
+  ///            genes of interest. The gene names must be consistent with the 
+  ///            genes names found in the gene annotation file.  
+  /// @return Texta of invalid gene names. If the number of invalid gene names is
+  ///         zero, then an empty Texta is returned. 
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
+  /// @pre The gene annotations have been mapped to the gene ontology. 
+  /// See GeneOntology::mapGeneAnnotationsToGeneOntology()
   std::vector<std::string> MapGenesOfInterestToGeneOntology(
       std::vector<std::string>& genes_of_interest);
+
+  /// Map gene annotations to the gene ontology.
+  /// @param[in] goGeneAssociationFileName File that maps the genes of a specific 
+  ///            organism to the gene ontology. 
+  /// This file has to be in GO Annotation format. See 
+  /// http://www.geneontology.org/GO.format.annotation.shtml for details.
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
   void MapGeneAnnotationsToGeneOntology(
       const char* go_gene_association_file_Name);
+
+  /// Calculate the gene enrichment for every GoNode in goNodePointers.
+  /// @param[in] goNodePointers Array of goNode pointers. Gene enrichment is 
+  ///            calculated for every goNode in this Array.
+  /// @param[in] multipleTestingCorrectionMethod Specifies the multiple testing 
+  ///            correction method. Use either 
+  ///            kMultipleTestingCorrectionBenjaminiHochberg or 
+  ///            kMultipleTestingCorrectionBonferroni.
+  /// @return Array of type GoStatistic. This array is sorted by pvalue in 
+  ///         ascending order.
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
+  /// @pre The gene annotations have been mapped to the gene ontology. 
+  /// See GeneOntology::mapGeneAnnotationsToGeneOntology()
+  /// @pre The genes of interest have been mapped to the gene ontology. 
+  /// See GeneOntology::mapGenesOfInterestToGeneOntology()
   std::vector<GoStatistic> CalculateGeneEnrichment(
       std::vector<GoNode*> go_node_pointers, 
       int multiple_testing_correction_method);
+
+  /// Calculate the gene depletion for every GoNode in goNodePointers.
+  /// @param[in] goNodePointers Array of goNode pointers. Gene depletion is 
+  ///            calculated for every goNode in this Array.
+  /// @param[in] multipleTestingCorrectionMethod Specifies the multiple testing 
+  ///            correction method. Use either 
+  ///            kMultipleTestingCorrectionBenjaminiHochberg or 
+  ///            kMultipleTestingCorrectionBonferroni.
+  /// @return Array of type GoStatistic. This array is sorted by pvalue in 
+  ///         ascending order.
+  /// @pre The geneOntolgy module has been initialized. See GeneOntology::init()
+  /// @pre The gene annotations have been mapped to the gene ontology. 
+  /// See GeneOntology::mapGeneAnnotationsToGeneOntology()
+  /// @pre The genes of interest have been mapped to the gene ontology. 
+  /// See GeneOntology::mapGenesOfInterestToGeneOntology()
   std::vector<GoStatistic> CalculateGeneDepletion(
       std::vector<GoNode*> go_node_pointers, 
       int multiple_testing_correction_method);
@@ -188,4 +345,4 @@ class GeneOntology {
 }; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif /* BIOINFO_GENEONTOLOGY_H__ */
+#endif /* BIOS_GENEONTOLOGY_H__ */
