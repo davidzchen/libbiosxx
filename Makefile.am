@@ -70,6 +70,61 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = biosxx.pc
 EXTRA_DIST += biosxx.pc
 
+check_LTLIBRARIES = \
+	libgtest.la \
+	libgtest_main.la
+
+libgtest_la_SOURCES = \
+	ext/gtest/include/gtest/gtest.h \
+	ext/gtest/src/gtest-all.cc
+
+libgtest_la_CPPFLAGS = $(GTEST_CPPFLAGS)
+libgtest_la_CXXFLAGS = $(GTEST_CXXFLAGS)
+libgtest_la_LDFLAGS = $(GTEST_LDFLAGS)
+libgtest_la_LIBADD = $(GTEST_LIBS)
+
+libgtest_main_la_SOURCES = \
+	ext/gtest/include/gtest/gtest.h \
+	ext/gtest/src/gtest_main.cc
+
+libgtest_main_la_CPPFLAGS = $(GTEST_CPPFLAGS)
+libgtest_main_la_CXXFLAGS = $(GTEST_CXXFLAGS)
+libgtest_main_la_LDFLAGS = $(GTEST_LDFLAGS)
+libgtest_main_la_LIBADD = $(GTEST_LIBS)
+
+TEST_ENVIRONMENT =
+TESTS =
+UNIT_TESTS =
+check_PROGRAMS = \
+	test/bed_test
+
+test_bed_test_CPPFLAGS = -I$(top_srcdir)/src $(GTEST_CPPFLAGS)
+test_bed_test_CXXFLAGS = $(GTEST_CXXFLAGS)
+test_bed_test_LDFLAGS = $(GTEST_LDFLAGS)
+test_bed_test_LDADD = $(top_srcdir)/libbios++.la \
+			  $(GTEST_LIBS) \
+			  $(top_srcdir)/libgtest.la
+
+UNIT_TESTS += $(check_PROGRAMS)
+TESTS += $(UNIT_TESTS)
+
+TESTS_ENVIRONMENT_WITH_VALGRIND = \
+	"libtool --mode=execute valgrind --leak-check=full"
+
+.PHONY: check-with-valgrind
+check-with-valgrind:
+	$(MAKE) $(AM_MAKEFLAGS) check \
+		TESTS_ENVIRONMENT=$(TESTS_ENVIRONMENT_WITH_VALGRIND)
+
+.PHONY: check-unit-tests
+check-unit-tests:
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS=$(UNIT_TESTS)
+
+.PHONY: check-unit-tests-with-valgrind
+check-unit-tests-with-valgrind:
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS=$(UNIT_TESTS) \
+		TESTS_ENVIRONMENT=$(TESTS_ENVIRONMENT_WITH_VALGRIND)
+
 # Doxygen
 if USE_DOXYGEN
 
@@ -79,5 +134,4 @@ doxygen:
 clean-local:
 	rm -rf $(top_srcdir)/doc/html
 
-.PHONY: doxygen clean-local
 endif

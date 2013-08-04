@@ -3,13 +3,17 @@
 
 AC_PREREQ([2.59])
 AC_INIT([libbios++], [1.0.0], [david.chen@yale.edu])
-AC_CONFIG_SRCDIR([src/bios/conf.hh])
+AC_CONFIG_SRCDIR([src/bios])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR([build-aux])
 
-AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability])
-LT_INIT
+# Initialize automake
+AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability subdir-objects])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
+# Initialize libtool
+LT_INIT
 
 AC_SUBST([biosxx_SO_VERSION], [1:0:0])
 
@@ -24,11 +28,31 @@ if test -z "$DOXYGEN"; then
 	AC_MSG_WARN([Doxygen not found - continuing without Doxygen support])
 fi
 AM_CONDITIONAL([USE_DOXYGEN], [test -n "$DOXYGEN"])
+AC_LANG([C++], [C])
 
 # Checks for libraries.
 AC_CHECK_LIB([m], [log], [], [AC_MSG_ERROR([Cannot find standard math library])])
 AC_CHECK_LIB([gslcblas], [cblas_dgemm], [], [AC_MSG_ERROR([Cannot find cblas library])])
 AC_CHECK_LIB([gsl], [gsl_ran_hypergeometric_pdf], [], [AC_MSG_ERROR([Cannot find gsl library])])
+
+# Google-test
+GTEST_VERSION=1.6.0
+if test "x$have_pthread" = "xyes"; then
+    GTEST_CPPFLAGS="-DGTEST_HAS_PTHREAD=1 -I\$(top_srcdir)/ext/gtest"
+    GTEST_CXXFLAGS="$PTHREAD_CFLAGS"
+    GTEST_LDFLAGS="-L\$(top_builddir)/ext/gtest"
+    GTEST_LIBS="$PTHREAD_LIBS"
+else
+    GTEST_CPPFLAGS="-DGTEST_HAS_PTHREAD=0 -I\$(top_srcdir)/ext/gtest"
+    GTEST_CXXFLAGS=
+    GTEST_LDFLAGS="-L\$(top_builddir)/ext/gtest"
+    GTEST_LIBS=
+fi
+AC_SUBST([GTEST_VERSION])
+AC_SUBST([GTEST_CPPFLAGS])
+AC_SUBST([GTEST_CXXFLAGS])
+AC_SUBST([GTEST_LDFLAGS])
+AC_SUBST([GTEST_LIBS])
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h])
@@ -41,7 +65,7 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memset pow sqrt strchr strdup strerror strrchr strstr strtol memmem])
 
-my_CXXFLAGS = "-Wall -Werror"
+my_CXXFLAGS="-Wall -Werror"
 AC_SUBST([my_CXXFLAGS])
 
 # Output
