@@ -126,7 +126,7 @@ std::vector<std::string> read_list(const char* filename) {
   std::vector<std::string> list;
   LineStream* ls = LineStream::FromFile(filename);
   char *line;
-  while (line = ls->GetLine()) {
+  while ((line = ls->GetLine()) != NULL) {
     if (line[0] == '\0') {
       continue;
     }
@@ -143,14 +143,14 @@ std::vector<TableRow> read_table(const char* filename, const char* delimiter) {
   std::vector<TableRow> table_rows;
   LineStream* ls = LineStream::FromFile(filename); 
   char* line = NULL;
-  while (line = ls->GetLine()) {
+  while ((line = ls->GetLine()) != NULL) {
     if (line[0] == '\0') {
       continue;
     }
     TableRow row;
     WordIter* w = new WordIter(line, delimiter, false);
     char* token = NULL;
-    while (token = w->Next()) {
+    while ((token = w->Next()) != NULL) {
       row.columns.push_back(token);
     }
     table_rows.push_back(row);
