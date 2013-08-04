@@ -38,12 +38,12 @@ AC_CHECK_LIB([gsl], [gsl_ran_hypergeometric_pdf], [], [AC_MSG_ERROR([Cannot find
 # Google-test
 GTEST_VERSION=1.6.0
 if test "x$have_pthread" = "xyes"; then
-    GTEST_CPPFLAGS="-DGTEST_HAS_PTHREAD=1 -I\$(top_srcdir)/ext/gtest"
+    GTEST_CPPFLAGS="-DGTEST_HAS_PTHREAD=1 -I\$(top_srcdir)/ext/gtest -I\$(top_srcdir)/ext/gtest/include"
     GTEST_CXXFLAGS="$PTHREAD_CFLAGS"
     GTEST_LDFLAGS="-L\$(top_builddir)/ext/gtest"
     GTEST_LIBS="$PTHREAD_LIBS"
 else
-    GTEST_CPPFLAGS="-DGTEST_HAS_PTHREAD=0 -I\$(top_srcdir)/ext/gtest"
+    GTEST_CPPFLAGS="-DGTEST_HAS_PTHREAD=0 -I\$(top_srcdir)/ext/gtest -I\$(top_srcdir)/ext/gtest/include"
     GTEST_CXXFLAGS=
     GTEST_LDFLAGS="-L\$(top_builddir)/ext/gtest"
     GTEST_LIBS=

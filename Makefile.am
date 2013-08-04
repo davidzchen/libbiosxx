@@ -98,12 +98,13 @@ UNIT_TESTS =
 check_PROGRAMS = \
 	test/bed_test
 
+test_bed_test_SOURCES = test/bed_test.cc
 test_bed_test_CPPFLAGS = -I$(top_srcdir)/src $(GTEST_CPPFLAGS)
 test_bed_test_CXXFLAGS = $(GTEST_CXXFLAGS)
 test_bed_test_LDFLAGS = $(GTEST_LDFLAGS)
 test_bed_test_LDADD = $(top_srcdir)/libbios++.la \
 			  $(GTEST_LIBS) \
-			  $(top_srcdir)/libgtest.la
+			  $(top_srcdir)/libgtest_main.la
 
 UNIT_TESTS += $(check_PROGRAMS)
 TESTS += $(UNIT_TESTS)
