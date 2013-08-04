@@ -66,7 +66,7 @@ std::vector<BedGraph> BedGraphParser::GetAllEntries() {
   std::vector<BedGraph> bed_graphs = std::vector<BedGraph>();
   BedGraph* bed_graph;
   int i = 0;
-  while (bed_graph = NextEntry()) {
+  while ((bed_graph = NextEntry()) != NULL) {
     bed_graphs.push_back(*bed_graph);
     delete bed_graph;
     ++i;
@@ -76,7 +76,7 @@ std::vector<BedGraph> BedGraphParser::GetAllEntries() {
 
 std::vector<double> BedGraphParser::GetValuesForRegion(
     std::vector<BedGraph>& bed_graphs, std::string chromosome, 
-    int start, int end) {
+    uint32_t start, uint32_t end) {
   std::vector<double> entries = std::vector<double>();
   std::vector<BedGraph*> bed_graph_ptrs = std::vector<BedGraph*>();
   
@@ -87,8 +87,8 @@ std::vector<double> BedGraphParser::GetValuesForRegion(
   std::vector<BedGraph>::iterator it = std::find(bed_graphs.begin(), 
                                                  bed_graphs.end(), 
                                                  test_bed_graph);
-  int index = std::distance(bed_graphs.begin(), it);
-  int i = index;
+  uint32_t index = std::distance(bed_graphs.begin(), it);
+  uint32_t i = index;
   while (i >= 0) {
     BedGraph* bed_graph = &bed_graphs[i];
     if (chromosome != bed_graph->chromosome() || bed_graph->end() < start) {
@@ -106,9 +106,9 @@ std::vector<double> BedGraphParser::GetValuesForRegion(
     bed_graph_ptrs.push_back(bed_graph);
     i++;
   }
-  for (int i = start; i < end; i++) {
+  for (uint32_t i = start; i < end; i++) {
     int num_occurances = 0;
-    for (int j = 0; j < bed_graph_ptrs.size(); ++j) {
+    for (uint32_t j = 0; j < bed_graph_ptrs.size(); ++j) {
       BedGraph* bed_graph = bed_graph_ptrs[i];
       if (bed_graph->start() <= i && i < bed_graph->end()) {
         ++num_occurances;

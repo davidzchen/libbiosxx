@@ -49,7 +49,7 @@ namespace bios {
 class LineStream {
  public:
   LineStream();
-  ~LineStream();
+  virtual ~LineStream();
   
   static LineStream* FromFile(const char* filename);
   static LineStream* FromPipe(const char* command);

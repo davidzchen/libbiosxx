@@ -36,7 +36,6 @@ Bed::~Bed() {
 
 std::string Bed::ToString() {
   std::stringstream string_buffer;
-  SubBlock* sub_block;
   if (extended_) {
     string_buffer << chromosome_.c_str() << "\t";
     string_buffer << start_ << "\t";
@@ -48,13 +47,13 @@ std::string Bed::ToString() {
     string_buffer << thick_end_ << "\t";
     string_buffer << item_rgb_.c_str() << "\t";
     string_buffer << block_count_ << "\t";
-    for (int i = 0; i < sub_blocks_.size(); ++i) {
+    for (uint32_t i = 0; i < sub_blocks_.size(); ++i) {
       string_buffer << sub_blocks_[i].size;
-      string_buffer << (i < sub_blocks_.size() - 1) ? "," : "\t";
+      string_buffer << ((i < sub_blocks_.size() - 1) ? "," : "\t");
     }
-    for (int i = 0; i < sub_blocks_.size(); ++i) {
+    for (uint32_t i = 0; i < sub_blocks_.size(); ++i) {
       string_buffer << sub_blocks_[i].start;
-      string_buffer << (i < sub_blocks_.size() - 1) ? "," : "";
+      string_buffer << ((i < sub_blocks_.size() - 1) ? "," : "");
     }
   } else {
     string_buffer << chromosome_.c_str() << "\t";
@@ -83,7 +82,6 @@ void BedParser::InitFromCommand(const char* command) {
 }
 
 Bed* BedParser::NextEntry(void) {
-  char* line = NULL;
   while (!stream_->IsEof()) {
     char* line = stream_->GetLine();
     if (str::strStartsWithC(line, "track") || 
@@ -110,7 +108,7 @@ Bed* BedParser::NextEntry(void) {
       bed->set_block_count(atoi(w->Next()));
       WordIter* wsizes = new WordIter(w->Next(), ",", true);
       WordIter* wstarts = new WordIter(w->Next(), ",", true); 
-      for (int i = 0; i < bed->block_count(); ++i) {
+      for (uint32_t i = 0; i < bed->block_count(); ++i) {
         SubBlock sub_block;
         sub_block.size = atoi(wsizes->Next());
         sub_block.start = atoi(wstarts->Next());
@@ -131,7 +129,7 @@ std::vector<Bed> BedParser::GetAllEntries() {
   std::vector<Bed> beds = std::vector<Bed>();
   Bed* current_bed;
   int i = 0;
-  while (current_bed = NextEntry()) {
+  while ((current_bed = NextEntry()) != NULL) {
     beds.push_back(*current_bed);
     delete current_bed;
     ++i;

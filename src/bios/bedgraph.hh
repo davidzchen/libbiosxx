@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <iterator>
 #include <iostream>
+#include <stdint.h>
 
 #include "worditer.hh"
 #include "string.hh"
@@ -45,13 +46,13 @@ class BedGraph {
   ~BedGraph();
 
   std::string chromosome() const { return chromosome_; }
-  int start() const { return start_; }
-  int end() const { return end_; }
+  uint32_t start() const { return start_; }
+  uint32_t end() const { return end_; }
   double value() const { return value_; }
 
   void set_chromosome(std::string chromosome) { chromosome_ = chromosome; }
-  void set_start(int start) { start_ = start; }
-  void set_end(int end) { end_ = end; }
+  void set_start(uint32_t start) { start_ = start; }
+  void set_end(uint32_t end) { end_ = end; }
   void set_value(double value) { value_ = value; }
 
   static bool Compare(BedGraph& a, BedGraph& b) {
@@ -75,8 +76,8 @@ class BedGraph {
 
  private:
   std::string chromosome_;
-  int start_;
-  int end_;
+  uint32_t start_;
+  uint32_t end_;
   double value_;
 };
 
@@ -135,7 +136,7 @@ class BedGraphParser {
   ///            region.
   static std::vector<double> GetValuesForRegion(
       std::vector<BedGraph>& bed_graphs, std::string chromosome, 
-      int start, int end);
+      uint32_t start, uint32_t end);
 
  private:
   LineStream* stream_;
