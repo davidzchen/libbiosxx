@@ -89,7 +89,7 @@ int digits_base_ten(int x) {
 
 static double calculate_sum_term(std::vector<int>& ties) {
   double sum_term = 0.0;
-  for (int i = 0; i < ties.size(); ++i) {
+  for (uint32_t i = 0; i < ties.size(); ++i) {
     sum_term += (pow(ties[i], 3) - ties[i]);
   }
   return sum_term;
@@ -152,12 +152,12 @@ double spearman_correlation(std::vector<double>& a, std::vector<double>& b) {
   std::sort(value_pairs.begin(), value_pairs.end(), 
             ValuePair::CompareByValue1);
   std::vector<int> ties1;
-  int i = 0; 
+  uint32_t i = 0; 
   while (i < value_pairs.size()) {
     ValuePair& vp = value_pairs[i];
     int sum_ranks = i + 1;
-    int tie_count = 1;
-    int j = i + 1;
+    uint32_t tie_count = 1;
+    uint32_t j = i + 1;
     while (j < value_pairs.size()) {
       ValuePair& next_vp = value_pairs[j];
       if (vp.value1 == next_vp.value1) {
@@ -171,7 +171,7 @@ double spearman_correlation(std::vector<double>& a, std::vector<double>& b) {
     if (tie_count > 1) {
       ties1.push_back(tie_count);
     }
-    for (int k = i; k < tie_count + i; ++k) {
+    for (uint32_t k = i; k < tie_count + i; ++k) {
       value_pairs[k].rank1 = sum_ranks / tie_count;
     }
     i = j;
@@ -185,7 +185,7 @@ double spearman_correlation(std::vector<double>& a, std::vector<double>& b) {
     ValuePair& vp = value_pairs[i];
     int sum_ranks = i + 1;
     int tie_count = 1;
-    int j = i + 1;
+    uint32_t j = i + 1;
     while (j < value_pairs.size()) {
       ValuePair& next_vp = value_pairs[j];
       if (vp.value2 == next_vp.value2) {
@@ -199,7 +199,7 @@ double spearman_correlation(std::vector<double>& a, std::vector<double>& b) {
     if (tie_count > 1) {
       ties2.push_back(tie_count);
     }
-    for (int k = i; k < i + tie_count; k++) {
+    for (uint32_t k = i; k < i + tie_count; k++) {
       value_pairs[k].rank2 = sum_ranks / tie_count;
     }
     i = j;
@@ -208,7 +208,7 @@ double spearman_correlation(std::vector<double>& a, std::vector<double>& b) {
   double c1 = calculate_c1(ties1, ties2, n);
   double c2 = calculate_c2(ties1, ties2, n);
   int sum_squared_rank_differentials = 0;
-  for (int i = 0; i < value_pairs.size(); i++) {
+  for (uint32_t i = 0; i < value_pairs.size(); i++) {
     ValuePair& vp = value_pairs[i];
     int rank_differential = vp.rank1 - vp.rank2;
     sum_squared_rank_differentials += (rank_differential * rank_differential);

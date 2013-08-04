@@ -1,5 +1,5 @@
-#ifndef BIOINFO_WORDITER_H__
-#define BIOINFO_WORDITER_H__
+#ifndef BIOS_WORDITER_H__
+#define BIOS_WORDITER_H__
 
 #include <cstdio>
 #include <cstring>
@@ -24,4 +24,4 @@ class WordIter {
 }; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif /* BIOINFO_WORDITER_H__ */
+#endif /* BIOS_WORDITER_H__ */

@@ -1,5 +1,5 @@
-#ifndef BIOINFO_MISC_H__
-#define BIOINFO_MISC_H__
+#ifndef BIOS_MISC_H__
+#define BIOS_MISC_H__
 
 #include <cstdlib>
 #include <cstring>
@@ -48,4 +48,4 @@ std::vector<TableRow> read_table(const char* filename, const char* delimiter);
 }; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif /* BIOINFO_MISC_H__ */
+#endif /* BIOS_MISC_H__ */

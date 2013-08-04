@@ -137,7 +137,7 @@ Sequencer::CodonRow Sequencer::codon_table_[] = {
 };
 
 void Sequencer::InitNucleotideValues() {
-  for (int i = 0; i < NUMELE(nt_val_); ++i) {
+  for (uint32_t i = 0; i < NUMELE(nt_val_); ++i) {
     nt_val_upper_[i] = nt_val_lower_[i] = nt_val_[i] = -1;
     nt_val_no_n_[i] = T_BASE_VAL;
     if (isspace(i) || isdigit(i)) {
@@ -389,7 +389,7 @@ aaSeq* Sequencer::TranslateSeqN(dnaSeq* in_seq, unsigned offset,
   
   aaSeq* seq = new aaSeq;
   DNA* dna = in_seq->sequence;
-  int actual_size = 0;
+  uint32_t actual_size = 0;
   size_t size = in_size / 3 + 1;
   seq->sequence = (char*) malloc(size);
   memset(seq->sequence, 0, size);
@@ -549,10 +549,10 @@ Sequencer::AminoAcidRow Sequencer::amino_acid_table_[] = {
 
 /* Initialize aaVal and valToAa tables. */
 void Sequencer::InitAminoAcidValues() {
-  for (int i = 0; i < NUMELE(aa_val_); ++i) {
+  for (uint32_t i = 0; i < NUMELE(aa_val_); ++i) {
     aa_val_[i] = -1;
   }
-  for (int i = 0; i < NUMELE(amino_acid_table_); ++i) {
+  for (uint32_t i = 0; i < NUMELE(amino_acid_table_); ++i) {
     char c = amino_acid_table_[i].letter;
     char lowc = tolower(c);
     aa_val_[(int) c] = aa_val_[(int) lowc] = i;

@@ -18,8 +18,8 @@
  *   \author Adapted by Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-#ifndef BIOINFO_SEQ_H__
-#define BIOINFO_SEQ_H__
+#ifndef BIOS_SEQ_H__
+#define BIOS_SEQ_H__
 
 #include <string>
 #include <sstream>
@@ -39,7 +39,7 @@ struct Seq {
 
   char *name;           /* Name of sequence. */
   char *sequence;       /* Sequence base by base. */
-  int size;             /* Size of sequence. */
+  uint32_t size;             /* Size of sequence. */
   BitField* mask;           /* Repeat mask (optional) */
 }; 
 
@@ -171,4 +171,4 @@ class Sequencer {
 }; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif /* BIOINFO_SEQ_H__ */
+#endif /* BIOS_SEQ_H__ */

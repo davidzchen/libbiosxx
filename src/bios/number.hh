@@ -3,13 +3,14 @@
  *   \author Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-#ifndef BIOINFO_NUMBER_H__
-#define BIOINFO_NUMBER_H__
+#ifndef BIOS_NUMBER_H__
+#define BIOS_NUMBER_H__
 
 #include <vector>
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <stdint.h>
 
 namespace bios {
 
@@ -89,4 +90,4 @@ class GraphCoordTrans {
 }; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif
+#endif /* BIOS_NUMBER_H__ */

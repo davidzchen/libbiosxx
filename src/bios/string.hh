@@ -3,8 +3,8 @@
  *   \author Lukas Habegger (lukas.habegger@yale.edu)
  */
 
-#ifndef BIOINFO_STRING_H__ 
-#define BIOINFO_STRING_H__
+#ifndef BIOS_STRING_H__ 
+#define BIOS_STRING_H__
 
 #include <cctype>
 #include <cstring>
@@ -87,4 +87,4 @@ int isBlankStr(char *s) ;
 }; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif /* BIOINFO_STRING_H__ */
+#endif /* BIOS_STRING_H__ */

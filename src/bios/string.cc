@@ -469,9 +469,9 @@ char *strCopySubstr(char *string, char begin, char end, std::string& substr) {
   char *pend = NULL;
   char *nextPos = NULL;
   substr.clear();
-  if (pbegin = strchr(string, begin)) {
+  if ((pbegin = strchr(string, begin)) != NULL) {
     ++pbegin;
-    if (pend = strchr(pbegin, end)) {
+    if ((pend = strchr(pbegin, end)) != NULL) {
       nextPos = pend + 1;
       --pend;
       substr.copy(pbegin, pend - pbegin + 1);
@@ -506,8 +506,8 @@ int strTranslate(char *s, char *fromChars, char *toChars) {
   char *hit ;
   int cnt = 0 ;
 
-  while (c = *++from) {
-    if (hit = strchr(fromChars, c)) {
+  while ((c = *++from) != '\0') {
+    if ((hit = strchr(fromChars, c)) != NULL) {
       ++cnt ;
       if (hit - fromChars < toLen) {
         *to++ = toChars[hit - fromChars];
