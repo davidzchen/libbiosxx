@@ -7,7 +7,6 @@ rm -rf aclocal.m4 \
        autom4te.cache \
        autoscan.log \
        config.guess \
-       bios.pc \
        config.h \
        config.h.in~ \
        config.h.in \
@@ -22,6 +21,7 @@ rm -rf aclocal.m4 \
        stamp-h1 \
        libtool \
        config.log \
+       biosxx.pc \
        `find . -name Makefile.in`
 
 echo autoclean: cleaning m4

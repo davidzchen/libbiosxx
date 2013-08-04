@@ -3,17 +3,19 @@
 
 AC_PREREQ([2.59])
 AC_INIT([libbios++], [1.0.0], [david.chen@yale.edu])
-AC_CONFIG_SRCDIR([src/Makefile.am])
+AC_CONFIG_SRCDIR([src/bios/conf.hh])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE([-Wall -Werror])
+AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability])
 LT_INIT
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_SUBST([biosxx_SO_VERSION], [1:0:0])
 
 # Checks for programs.
+AC_PROG_SED
+AC_PROG_MKDIR_P
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_LIBTOOL
@@ -39,9 +41,23 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memset pow sqrt strchr strdup strerror strrchr strstr strtol memmem])
 
+my_CXXFLAGS = "-Wall -Werror"
+AC_SUBST([my_CXXFLAGS])
+
 # Output
 AM_COND_IF([USE_DOXYGEN], [AC_CONFIG_FILES([doc/Doxyfile])])
-AC_CONFIG_FILES([Makefile 
-		 src/Makefile 
-		 biosxx.pc:biosxx.pc.in])
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
+AC_MSG_RESULT([
+    $PACKAGE $VERSION
+    =====
+
+    prefix:       ${prefix}
+    sysconfdir:   ${sysconfdir}
+    libdir:       ${libdir}
+    includedir:   ${includedir}
+
+    compiler:     ${CXX}
+    cxxflags:     ${CXXFLAGS}
+    ldflags:      ${LDFLAGS}
+])
