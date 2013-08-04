@@ -90,7 +90,7 @@ libgtest_main_la_SOURCES = \
 libgtest_main_la_CPPFLAGS = $(GTEST_CPPFLAGS)
 libgtest_main_la_CXXFLAGS = $(GTEST_CXXFLAGS)
 libgtest_main_la_LDFLAGS = $(GTEST_LDFLAGS)
-libgtest_main_la_LIBADD = $(GTEST_LIBS)
+libgtest_main_la_LIBADD = $(GTEST_LIBS) libgtest.la
 
 TEST_ENVIRONMENT =
 TESTS =
