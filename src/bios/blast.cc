@@ -1,7 +1,26 @@
-/** 
- *   \file blastParser.c Module to parse tab-delimited BLAST output
- *   \author Lukas Habegger (lukas.habegger@yale.edu)
- */
+// This file is free software; you can redistribute it and/or 
+// modify it under the terms of the GNU Lesser General Public 
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This file is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// Lesser General Public License for more details.
+//
+// To obtain a copy of the GNU Lesser General Public License, 
+// please write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
+
+/// @file blast.cc
+/// @author Lukas Habegger <lukas.habegger@yale.edu>
+/// @version 1.0.0
+/// @since 07 Aug 2013
+///
+/// @section DESCRIPTION
+///
+/// This is the header for the module for parsing tab-delimited BLAST output.
 
 #include "blast.hh"
 
@@ -46,28 +65,16 @@ BlastParser::~BlastParser() {
   delete stream_;
 }
 
-/**
- * Initialize the blastParser module from file.
- * @param[in] fileName File name, use "-" to denote stdin
- */
 void BlastParser::InitFromFile(const char* filename) {
   stream_ = LineStream::FromFile(filename);
   stream_->SetBuffer(1);
 }
 
-/**
- * Initialize the blastParser module from pipe.
- * @param[in] command Command to be executed
- */
 void BlastParser::InitFromPipe(const char* command) {
   stream_ = LineStream::FromPipe(command);
   stream_->SetBuffer(1);
 }
 
-/**
- * Get the next BlastQuery.
- * @pre The module has been initialized using BlastParser::init().
- */
 BlastQuery* BlastParser::NextQuery() {
   if (blast_query_ != NULL) {
     delete blast_query_;

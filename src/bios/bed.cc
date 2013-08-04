@@ -14,8 +14,8 @@
 // or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
 
 /// @file bed.cc
-/// @author David Z. Chen <d.zhekai.chen@gmail.com>
-/// @version 
+/// @author Andrea Sboner <ans2077@med.cornell.edu>
+/// @version 1.0.0
 /// @since 07 Aug 2013
 ///
 /// @section DESCRIPTION

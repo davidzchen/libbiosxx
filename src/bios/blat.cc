@@ -1,7 +1,26 @@
-/** 
- *   \file blatParser.c Module to parse psl BLAT output
- *   \author Lukas Habegger (lukas.habegger@yale.edu)
- */
+// This file is free software; you can redistribute it and/or 
+// modify it under the terms of the GNU Lesser General Public 
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This file is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// Lesser General Public License for more details.
+//
+// To obtain a copy of the GNU Lesser General Public License, 
+// please write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
+
+/// @file blast.hh
+/// @author Lukas Habegger <lukas.habegger@yale.edu>
+/// @version 1.0.0
+/// @since 07 Aug 2013
+///
+/// @section DESCRIPTION
+///
+/// This is the header for the module for parsing tab-delimited BLAST output.
 
 #include "blat.hh"
 
@@ -20,10 +39,6 @@ BlatParser::~BlatParser() {
   }
 }
 
-/**
- * Initialize the blatParser module from file.
- * @param[in] fileName File name, use "-" to denote stdin
- */
 void BlatParser::InitFromFile(const char* filename) {
   stream_ = LineStream::FromFile(filename);
   stream_->SetBuffer(1);
@@ -32,10 +47,6 @@ void BlatParser::InitFromFile(const char* filename) {
   }
 }
 
-/**
- * Initialize the blatParser module from pipe.
- * @param[in] command Command to be executed
- */
 void BlatParser::InitFromPipe(const char* command) {
   stream_ = LineStream::FromPipe(command);
   stream_->SetBuffer(1);
@@ -44,7 +55,7 @@ void BlatParser::InitFromPipe(const char* command) {
   }
 }
 
-void BlatParser::ProcessCommaSeparatedList(std::vector<int> results, 
+void BlatParser::ProcessCommaSeparatedList(std::vector<int>& results, 
                                            char* str) {
   WordIter* w = new WordIter(str, ",", false);
   char *tok;
@@ -57,10 +68,6 @@ void BlatParser::ProcessCommaSeparatedList(std::vector<int> results,
   delete w;
 }
 
-/**
- * Returns a pointer to next BlatQuery. 
- * @pre The module has been initialized using BlatParser::init().
- */
 BlatQuery* BlatParser::NextQuery() {
   if (blat_query_ != NULL) {
     delete blat_query_;

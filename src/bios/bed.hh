@@ -14,16 +14,16 @@
 // or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
 
 /// @file bed.hh
-/// @author David Z. Chen <d.zhekai.chen@gmail.com>
-/// @version 
+/// @author Andrea Sboner <ans2077@med.cornell.edu>
+/// @version 1.0.0
 /// @since 07 Aug 2013
 ///
 /// @section DESCRIPTION
 ///
 /// This is the header for the module for parsing BED files.
 
-#ifndef BIOINFO_BED_H__
-#define BIOINFO_BED_H__
+#ifndef BIOS_BED_H__
+#define BIOS_BED_H__
 
 #include <string>
 #include <sstream>
@@ -160,4 +160,4 @@ class BedParser {
 }; // namespace bios
 
 /* vim: set ai ts=2 sts=2 sw=2 et: */
-#endif // BIOINFO_BED_H__
+#endif // BIOS_BED_H__
