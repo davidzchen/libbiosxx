@@ -88,7 +88,7 @@ BlastQuery* BlastParser::NextQuery() {
   blast_query_ = new BlastQuery;
   int first = 1;
   char* line;
-  while (line = stream_->GetLine()) {
+  while ((line = stream_->GetLine()) != NULL) {
     if (line[0] == '\0') {
       continue;
     }

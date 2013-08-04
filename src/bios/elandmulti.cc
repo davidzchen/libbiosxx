@@ -41,7 +41,7 @@ ElandMultiParser::~ElandMultiParser() {
  */
 ElandMultiQuery* ElandMultiParser::NextQuery() {
   char* line;
-  while (line = stream_->GetLine()) {
+  while ((line = stream_->GetLine()) != NULL) {
     if (line[0] == '\0') {
       continue;
     }
@@ -75,7 +75,7 @@ ElandMultiQuery* ElandMultiParser::NextQuery() {
       return query;
     }
     WordIter* w2 = new WordIter(token, ",", false);
-    while (token = w2->Next()) {
+    while ((token = w2->Next()) != NULL) {
       ElandMultiEntry entry;
       int token_length = strlen(token);
       if (token[token_length - 2] == 'F') {

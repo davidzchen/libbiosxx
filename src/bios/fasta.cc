@@ -45,7 +45,7 @@ Seq* FastaParser::ProcessNextSequence(bool truncate_name) {
   int count = 0;
   char* line;
   std::stringstream string_buffer;
-  while (line = stream_->GetLine()) {
+  while ((line = stream_->GetLine()) != NULL) {
     if (line[0] == '\0') {
       continue;
     }
@@ -92,7 +92,7 @@ Seq* FastaParser::NextSequence(bool truncate_name) {
 std::vector<Seq> FastaParser::ReadAllSequences(bool truncate_name) {
   std::vector<Seq> seqs;
   Seq* seq = NULL;
-  while (seq = ProcessNextSequence(truncate_name)) {
+  while ((seq = ProcessNextSequence(truncate_name)) != NULL) {
     seqs.push_back(*seq);
   }
   return seqs;

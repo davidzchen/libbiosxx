@@ -99,7 +99,7 @@ void BowtieEntry::ProcessMismatches(char* token) {
   }
   WordIter* w = new WordIter(token, ",", false);
   char* item;
-  while (item = w->Next()) {
+  while ((item = w->Next()) != NULL) {
     BowtieMismatch mismatch;
     char* pos = strchr(item, ':');
     *pos = '\0';
@@ -141,7 +141,7 @@ BowtieQuery* BowtieParser::ProcessNextQuery() {
   bowtie_query_ = new BowtieQuery;
   int first = 1;
   char* line = NULL;
-  while (line = stream_->GetLine()) {
+  while ((line = stream_->GetLine()) != NULL) {
     if (line[0] == '\0') {
       continue;
     }
@@ -175,7 +175,7 @@ BowtieQuery* BowtieParser::NextQuery() {
 std::vector<BowtieQuery> BowtieParser::GetAllQueries() {
   std::vector<BowtieQuery> queries;
   BowtieQuery* query;
-  while (query = ProcessNextQuery()) {
+  while ((query = ProcessNextQuery()) != NULL) {
     queries.push_back(*query);
     delete query;
   }

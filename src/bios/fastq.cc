@@ -49,7 +49,7 @@ Fastq* FastqParser::ProcessNextSequence (bool truncate_name) {
 
   Fastq* fq = NULL;
   char* line = NULL;
-  while (line = stream_->GetLine()) {
+  while ((line = stream_->GetLine()) != NULL) {
     if (line[0] == '\0') {
       continue;
     }
@@ -94,7 +94,7 @@ Fastq* FastqParser::NextSequence(bool truncate_name) {
 std::vector<Fastq> FastqParser::ReadAllSequences(bool truncate_name) {
   std::vector<Fastq> seqs;
   Fastq* fq = NULL;
-  while (fq = ProcessNextSequence(truncate_name)) {
+  while ((fq = ProcessNextSequence(truncate_name)) != NULL) {
     seqs.push_back(*fq);
   }
   return seqs;

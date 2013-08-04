@@ -32,6 +32,7 @@
 
 #include <cstring>
 #include <cstdio>
+#include <stdint.h>
 
 namespace bios {
 
@@ -44,7 +45,7 @@ class BitField {
   ~BitField();
 
   int size() const { return size_; }
-  const char* bit_field() { return bit_field_; }
+  const uint8_t* bit_field() { return bit_field_; }
 
   /// @brief Resize the bit field.
   ///
@@ -186,7 +187,7 @@ class BitField {
 
  private:
   int size_;
-  char* bit_field_;
+  uint8_t* bit_field_;
 };
 
 }; // namespace bios

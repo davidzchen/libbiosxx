@@ -29,7 +29,7 @@ ElandParser::~ElandParser() {
  */
 ElandQuery* ElandParser::NextQuery() {
   char *line;
-  while (line = stream_->GetLine()){
+  while ((line = stream_->GetLine()) != NULL) {
     if (line[0] == '\0') {
       continue;
     }

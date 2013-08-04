@@ -89,20 +89,20 @@ class BitsInByte {
   bool initialized_;
 };
 
-static char kOneBit[8] = { 0x80, 0x40, 0x20, 0x10, 0x8, 0x4, 0x2, 0x1 };
-static char kLeftMask[8] = { 0xFF, 0x7F, 0x3F, 0x1F, 0xF, 0x7, 0x3, 0x1 };
-static char kRightMask[8] = { 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF };
+static uint8_t kOneBit[8] = { 0x80, 0x40, 0x20, 0x10, 0x8, 0x4, 0x2, 0x1 };
+static uint8_t kLeftMask[8] = { 0xFF, 0x7F, 0x3F, 0x1F, 0xF, 0x7, 0x3, 0x1 };
+static uint8_t kRightMask[8] = { 0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF };
 
 BitField::BitField(int size) {
   int bytes = ((size + 7) >> 3);
-  bit_field_ = new char[bytes];
+  bit_field_ = new uint8_t[bytes];
   memset(bit_field_, 0, bytes);
   size_ = size;
 }
 
 BitField::BitField(BitField& orig) {
   int bytes = ((orig.size() + 7) >> 3);
-  bit_field_ = new char[bytes];
+  bit_field_ = new uint8_t[bytes];
   memset(bit_field_, 0, bytes);
   size_ = orig.size();
   memcpy(bit_field_, orig.bit_field(), bytes);
@@ -115,7 +115,7 @@ BitField::~BitField() {
 void BitField::Resize(int size) {
   int old_bytes = ((size_ + 7) >> 3);
   int new_bytes = ((size + 7) >> 3);
-  char* buffer = new char[new_bytes];
+  uint8_t* buffer = new uint8_t[new_bytes];
   memset(buffer, 0, new_bytes);
   memcpy(buffer, bit_field_, old_bytes);
   delete bit_field_;
@@ -174,7 +174,7 @@ int BitField::CountRange(int start_index, int bit_count) {
 }
 
 int BitField::Find(int start_index, int val) {
-  unsigned char not_byte_val = val ? 0 : 0xff;
+  uint8_t not_byte_val = val ? 0 : 0xff;
   int i_bit = start_index;
   int end_byte = ((size_ - 1) >> 3);
   int i_byte;
@@ -239,8 +239,8 @@ void BitField::ClearRange(int start_index, int bit_count) {
 
 void BitField::And(BitField& b) {
   int bytes = ((b.size() + 7) >> 3);
-  char* a_field = bit_field_;
-  const char* b_field = b.bit_field();
+  uint8_t* a_field = bit_field_;
+  const uint8_t* b_field = b.bit_field();
   while (--bytes >= 0) {
     *a_field = (*a_field & *b_field++);
     a_field++;
@@ -249,8 +249,8 @@ void BitField::And(BitField& b) {
 
 void BitField::Or(BitField& b) {
   int bytes = ((b.size() + 7) >> 3);
-  char* a_field = bit_field_;
-  const char* b_field = b.bit_field();
+  uint8_t* a_field = bit_field_;
+  const uint8_t* b_field = b.bit_field();
   while (--bytes >= 0) {
     *a_field = (*a_field | *b_field++);
     a_field++;
@@ -259,8 +259,8 @@ void BitField::Or(BitField& b) {
 
 void BitField::Xor(BitField& b) {
   int bytes = ((b.size() + 7) >> 3);
-  char* a_field = bit_field_;
-  const char* b_field = b.bit_field();
+  uint8_t* a_field = bit_field_;
+  const uint8_t* b_field = b.bit_field();
   while (--bytes >= 0) {
     *a_field = (*a_field ^ *b_field++);
     a_field++;
@@ -269,7 +269,7 @@ void BitField::Xor(BitField& b) {
 
 void BitField::Not() {
   int bytes = ((size_ + 7) >> 3);
-  char* a_field = bit_field_;
+  uint8_t* a_field = bit_field_;
   while (--bytes >= 0) {
     *a_field = ~*a_field;
     a_field++;

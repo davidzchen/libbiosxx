@@ -59,7 +59,7 @@ void BlatParser::ProcessCommaSeparatedList(std::vector<int>& results,
                                            char* str) {
   WordIter* w = new WordIter(str, ",", false);
   char *tok;
-  while (tok = w->Next()) {
+  while ((tok = w->Next()) != NULL) {
     if (tok[0] == '\0') {
       continue;
     }
@@ -81,7 +81,7 @@ BlatQuery* BlatParser::NextQuery() {
   blat_query_ = new BlatQuery;
   int first = 1;
   char* line = NULL;
-  while (line = stream_->GetLine()) {
+  while ((line = stream_->GetLine()) != NULL) {
     if (line[0] == '\0') {
       continue;
     }
