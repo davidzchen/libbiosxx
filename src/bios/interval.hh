@@ -132,8 +132,8 @@ struct Interval {
 /// @struct SuperInterval
 /// @brief Structure representing a superinterval.
 struct SuperInterval {
-  SuperInterval();
-  ~SuperInterval();
+  SuperInterval() {}
+  ~SuperInterval() {}
 
   static bool Compare(const SuperInterval& a, const SuperInterval& b) {
     int diff = strcmp(a.chromosome.c_str(), b.chromosome.c_str());

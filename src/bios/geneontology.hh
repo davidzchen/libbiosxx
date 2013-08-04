@@ -106,8 +106,8 @@ struct GoNode {
 /// @struct GoGeneAssociation
 /// @brief Structure for representing a Gene Ontology association.
 struct GoGeneAssociation {
-  GoGeneAssociation();
-  ~GoGeneAssociation();
+  GoGeneAssociation() {}
+  ~GoGeneAssociation() {}
 
   static bool CompareByGeneName(const GoGeneAssociation& a, 
                                 const GoGeneAssociation& b) {
@@ -127,8 +127,8 @@ struct GoGeneAssociation {
 /// @struct GoStatistic
 /// @brief Structure for representing a Gene Ontology statistic.
 struct GoStatistic {
-  GoStatistic();
-  ~GoStatistic();
+  GoStatistic() {}
+  ~GoStatistic() {}
 
   static bool CompareByPvalue(const GoStatistic& a, const GoStatistic& b) {
     return a.pvalue < b.pvalue;

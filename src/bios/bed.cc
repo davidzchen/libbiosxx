@@ -82,6 +82,9 @@ void BedParser::InitFromCommand(const char* command) {
 }
 
 Bed* BedParser::NextEntry(void) {
+  if (stream_ == NULL) {
+    return NULL;
+  }
   while (!stream_->IsEof()) {
     char* line = stream_->GetLine();
     if (str::strStartsWithC(line, "track") || 
@@ -128,11 +131,9 @@ Bed* BedParser::NextEntry(void) {
 std::vector<Bed> BedParser::GetAllEntries() {
   std::vector<Bed> beds = std::vector<Bed>();
   Bed* current_bed;
-  int i = 0;
   while ((current_bed = NextEntry()) != NULL) {
     beds.push_back(*current_bed);
     delete current_bed;
-    ++i;
   }
   return beds;
 }

@@ -42,8 +42,8 @@ namespace bios {
 /// @brief Class representing a BedGraph file entry.
 class BedGraph {
  public:
-  BedGraph();
-  ~BedGraph();
+  BedGraph() {}
+  ~BedGraph() {}
 
   std::string chromosome() const { return chromosome_; }
   uint32_t start() const { return start_; }
