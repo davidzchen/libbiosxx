@@ -96,7 +96,16 @@ TEST_ENVIRONMENT =
 TESTS =
 UNIT_TESTS =
 check_PROGRAMS = \
+	test/worditer_test \
 	test/bed_test
+
+test_worditer_test_SOURCES = test/worditer_test.cc
+test_worditer_test_CPPFLAGS = -I$(top_srcdir)/src $(GTEST_CPPFLAGS)
+test_worditer_test_CXXFLAGS = $(GTEST_CXXFLAGS)
+test_worditer_test_LDFLAGS = $(GTEST_LDFLAGS)
+test_worditer_test_LDADD = $(top_srcdir)/libbios++.la \
+			  $(GTEST_LIBS) \
+			  $(top_srcdir)/libgtest_main.la
 
 test_bed_test_SOURCES = test/bed_test.cc
 test_bed_test_CPPFLAGS = -I$(top_srcdir)/src $(GTEST_CPPFLAGS)

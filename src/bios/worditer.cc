@@ -2,17 +2,22 @@
 
 namespace bios {
 
-WordIter::WordIter(char* str, const char* seps, bool collapse_separators) {
+WordIter::WordIter(const char* str, const char* seps, 
+                   bool collapse_separators) {
   if (str == NULL || seps == NULL) {
     return;
   }
+  str_ = strdup(str);
   seps_ = seps;
-  position_ = str;
+  position_ = str_;
   collapse_separators_ = collapse_separators;
   at_end_ = false;
 }
 
 WordIter::~WordIter() {
+  if (str_ != NULL) {
+    free(str_);
+  }
 }
 
 char* WordIter::Next(int* index) {
@@ -24,22 +29,22 @@ char* WordIter::Next(int* index) {
     return NULL;
   }
   char* position = position_;
-  if (collapse_separators_) {
+  if (collapse_separators_ != false) {
     --position;
-    while (*++position && strchr(seps_, *position))
+    while (*++position != '\0' && strchr(seps_, *position) != NULL)
       ;
   } else {
-    if (!*position) {
+    if (*position == '\0') {
       at_end_ = true;
-      return position;
+      return NULL;
     }
-    if (strchr(seps_, *position)) {
+    if (strchr(seps_, *position) != NULL) {
       ++position_;
       *position = '\0';
       return position;
     }
   }
-  if (!*position) {
+  if (*position == '\0') {
     at_end_ = true;
     return NULL;
   }
@@ -48,13 +53,13 @@ char* WordIter::Next(int* index) {
   // Now run until end of this word.
   char* word = position;
   --position;
-  while (*++position && !strchr(seps_, *position))
+  while (*++position != '\0' && strchr(seps_, *position) == NULL)
     ;
   if (index != NULL) {
     *index = position - word;
   }
 
-  if (!*position) {
+  if (*position == '\0') {
     at_end_ = true;
   } else {
     *position = '\0';

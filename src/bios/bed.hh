@@ -25,6 +25,8 @@
 #ifndef BIOS_BED_H__
 #define BIOS_BED_H__
 
+#include <iostream>
+
 #include <string>
 #include <sstream>
 #include <vector>

@@ -87,6 +87,10 @@ Bed* BedParser::NextEntry(void) {
   }
   while (!stream_->IsEof()) {
     char* line = stream_->GetLine();
+    if (line == NULL) {
+      break;
+    }
+    std::cout << line << std::endl;
     if (str::strStartsWithC(line, "track") || 
         str::strStartsWithC(line, "browser")) {
       continue;

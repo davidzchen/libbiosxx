@@ -3,18 +3,20 @@
 
 #include <cstdio>
 #include <cstring>
+#include <cstdlib>
 
 namespace bios {
 
 class WordIter {
  public:
-  WordIter(char* str, const char* seps, bool collapse_separators);
+  WordIter(const char* str, const char* seps, bool collapse_separators);
   ~WordIter();
 
   char* Next();
   char* Next(int* index);
 
  private:
+  char* str_;
   char* position_;
   const char* seps_;
   bool collapse_separators_;
