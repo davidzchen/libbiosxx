@@ -1,0 +1,24 @@
+EXTRA_DIST = m4
+ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+AM_MAKEFLAGS = --no-print-directory
+
+AM_CPPFLAGS = \
+	-I${top_srcdir}/src
+
+AM_CXXFLAGS = ${my_CXXFLAGS}
+
+PC_SED = \
+	$(AM_V_GEN)$(MKDIR_P) $(dir $@) && $(SED) \
+	-e 's,@VERSION\@,$(VERSION),g' \
+	-e 's,@prefix\@,$(prefix),g' \
+	-e 's,@exec_prefix\@,$(exec_prefix),g' \
+	-e 's,@libdir\@,$(libdir),g' \
+	-e 's,@includedir\@,$(includedir),g' \
+	< $< > $@ || rm $@
+
+%.pc: %.pc.in Makefile
+	$(PC_SED)
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = biosxx.pc
+EXTRA_DIST += biosxx.pc

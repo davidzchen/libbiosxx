@@ -1,0 +1,46 @@
+lib_LTLIBRARIES = libbios++.la
+libbios___la_SOURCES = \
+    src/bios/bed.cc \
+    src/bios/bedgraph.cc \
+    src/bios/bitfield.cc \
+    src/bios/blast.cc \
+    src/bios/blat.cc \
+    src/bios/bowtie.cc \
+	src/bios/conf.cc \
+    src/bios/eland.cc \
+    src/bios/elandmulti.cc \
+    src/bios/exportpe.cc \
+    src/bios/fasta.cc \
+    src/bios/fastq.cc \
+    src/bios/geneontology.cc \
+    src/bios/interval.cc \
+    src/bios/linestream.cc \
+	src/bios/misc.cc \
+    src/bios/number.cc \
+    src/bios/seq.cc \
+    src/bios/string.cc \
+	src/bios/worditer.cc
+
+libbios___la_LIBADD = -lm -lgsl
+
+nobase_dist_include_HEADERS = \
+	src/bios/bed.hh \
+	src/bios/bedgraph.hh \
+	src/bios/bitfield.hh \
+	src/bios/blast.hh \
+	src/bios/blat.hh \
+	src/bios/bowtie.hh \
+	src/bios/conf.hh \
+	src/bios/eland.hh \
+	src/bios/elandmulti.hh \
+	src/bios/exportpe.hh \
+	src/bios/fasta.hh \
+	src/bios/fastq.hh \
+	src/bios/geneontology.hh \
+	src/bios/interval.hh \
+	src/bios/linestream.hh \
+	src/bios/misc.hh \
+	src/bios/number.hh \
+	src/bios/seq.hh \
+	src/bios/string.hh \
+	src/bios/worditer.hh

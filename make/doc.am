@@ -1,0 +1,10 @@
+# Doxygen
+if USE_DOXYGEN
+
+doxygen:
+	cd doc && doxygen Doxyfile
+
+clean-local:
+	rm -rf $(top_srcdir)/doc/html
+
+endif
