@@ -102,15 +102,18 @@ struct noop {
   void operator()(...) const { }
 };
 
-FileLineStream::FileLineStream(const char* filename) : LineStream()
+FileLineStream::FileLineStream(const char* filename)
+    : LineStream(),
+      stream_(NULL),
+      file_(NULL) {
   if (filename == NULL) {
     return;
   }
   if (strcmp(filename, "-") == 0) {
-    stream_.reset(&std::cin, noop());
+    stream_ = &std::cin;
   } else {
     file_ = new std::ifstream(filename);
-    stream_.reset(file_);
+    stream_ = file_;
   }
 }
 
@@ -123,10 +126,10 @@ FileLineStream::~FileLineStream() {
 
 std::string FileLineStream::GetNextLine() {
   std::string line;
-  if (stream_.eof()) {
+  if (stream_->eof()) {
     return line;
   }
-  std::getline(stream_, line);
+  std::getline(*stream_, line);
   if (line.size() > 1 && line[line.size() - 2] == '\r') {
     line[line.size() - 2] = '\0';
   } else if (line.size() > 0 && line[line.size() - 1] == '\n') {
@@ -137,7 +140,7 @@ std::string FileLineStream::GetNextLine() {
 }
 
 bool FileLineStream::IsEof() {
-  return stream_.eof();
+  return stream_->eof();
 }
 
 //-----------------------------------------------------------------------------
@@ -162,72 +165,22 @@ PipeLineStream::~PipeLineStream() {
 }
 
 std::string PipeLineStream::GetNextLine() {
-  int ll = getLine(fp_, &line_, &line_len_);
-  if (ll == 0) {
-    status_ = pclose(fp_);
-    fp_ = NULL;
-    free(line_);
-    return NULL;
+  std::string line;
+  if (stream_.eof()) {
+    return line;
   }
-  if (ll > 1 && line_[ll - 2] == '\r') {
-    line_[ll - 2] = '\0';
-  } else if (ll > 0 && line_[ll - 1] == '\n') {
-    line_[ll - 1] = '\0';
+  std::getline(stream_, line);
+  if (line.size() > 1 && line[line.size() - 2] == '\r') {
+    line_[line.size() - 2] = '\0';
+  } else if (line.size() > 0 && line_[line.size() - 1] == '\n') {
+    line_[line.size() - 1] = '\0';
   }
   ++count_;
-  return line_;
+  return line;
 }
 
 bool PipeLineStream::IsEof() {
-  return fp_ == NULL;
-}
-
-//-----------------------------------------------------------------------------
-// BufferLinestream methods
-//-----------------------------------------------------------------------------
-
-BufferLineStream::BufferLineStream(char* buffer) 
-    : LineStream(),
-      word_iter_(NULL) { 
-  if (buffer == NULL) {
-    return;
-  }
-  bool collapse_seps = true;
-  int len = strlen(buffer) ;
-  if (len > 0) {
-    if (buffer[len - 1] == '\n') {
-      buffer[--len] = '\0' ;
-    }
-  } else {
-    collapse_seps = true; /* immediately return NULL */
-  }
-  word_iter_ = new WordIter(buffer, "\n", collapse_seps);
-}
-
-BufferLineStream::~BufferLineStream() {
-  if (word_iter_ != NULL) {
-    delete word_iter_;
-    word_iter_ = NULL;
-  }
-}
-
-char* BufferLineStream::GetNextLine() {
-  int len;
-  char* token = word_iter_->Next(&len);
-  if (token == NULL) {
-    delete word_iter_;
-    word_iter_ = NULL;
-    return NULL;
-  }
-  ++count_;
-  if (len && token[len - 1] == '\r') {
-    token[len-1] = '\0';
-  }
-  return token;
-}
-
-bool BufferLineStream::IsEof() {
-  return word_iter_ == NULL;
+  return stream_.eof();
 }
 
 }; // namespace bios

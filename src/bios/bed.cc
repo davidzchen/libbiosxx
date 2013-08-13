@@ -63,21 +63,19 @@ std::string Bed::ToString() {
   return string_buffer.str();
 }
 
-BedParser::BedParser()
-    : stream_(NULL) {
+BedParser::BedParser() {
 }
 
 BedParser::~BedParser() {
-  delete stream_;
 }
 
 void BedParser::InitFromFile(const char* filename) {
-  stream_ = LineStream::FromFile(filename);
+  stream_ = new FileLineStream(filename);
   stream_->SetBuffer(1);
 }
 
 void BedParser::InitFromCommand(const char* command) {
-  stream_ = LineStream::FromPipe(command);
+  stream_ = new PipeLineStream(command);
   stream_->SetBuffer(1);
 }
 
@@ -86,7 +84,7 @@ Bed* BedParser::NextEntry(void) {
     return NULL;
   }
   while (!stream_->IsEof()) {
-    char* line = stream_->GetLine();
+    std::string line = stream_->GetLine();
     if (line == NULL) {
       break;
     }
