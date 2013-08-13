@@ -1,30 +1,17 @@
-/*****************************************************************************
-* Copyright (C) 2002,  F. Hoffmann-La Roche & Co., AG, Basel, Switzerland.   *
-*                                                                            *
-* This file is part of "Roche Bioinformatics Software Objects and Services"  *
-*                                                                            *
-* This file is free software; you can redistribute it and/or                 *
-* modify it under the terms of the GNU Lesser General Public                 *
-* License as published by the Free Software Foundation; either               *
-* version 2.1 of the License, or (at your option) any later version.         *
-*                                                                            *
-* This file is distributed in the hope that it will be useful,               *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of             *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU          *
-* Lesser General Public License for more details.                            *
-*                                                                            *
-* To obtain a copy of the GNU Lesser General Public License                  *
-* please write to the Free Software                                          *
-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA  *
-* or visit the WWW site http://www.gnu.org/copyleft/lesser.txt               *
-*                                                                            *
-* SCOPE: this licence applies to this file. Other files of the               *
-*        "Roche Bioinformatics Software Objects and Services" may be         *
-*        subject to other licences.                                          *
-*                                                                            *
-* CONTACT: clemens.broger@roche.com or detlef.wolf@roche.com                 *
-*                                                                            *
-*****************************************************************************/
+// This file is free software; you can redistribute it and/or 
+// modify it under the terms of the GNU Lesser General Public 
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This file is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// Lesser General Public License for more details.
+//
+// To obtain a copy of the GNU Lesser General Public License, 
+// please write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
 
 /// @file bed.cc
 /// @author Lukas Habegger <lukas.habegger@yale.edu>
@@ -38,12 +25,13 @@
 #ifndef BIOS_LINESTREAM_H__
 #define BIOS_LINESTREAM_H__
 
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
 #include <string>
 #include <iostream>
+#include <deque>
 #include <unistd.h>
+
+#include <boost/iostreams/device/file_descriptor.hpp>
+#include <boost/iostreams/stream.hpp>
 
 #include "worditer.hh"
 #include "misc.hh"
@@ -51,7 +39,7 @@
 namespace bios {
 
 /// @class LineStream
-/// @brief Base class for read lines from an input source.
+/// @brief Base class for reading lines from an input source.
 class LineStream {
  public:
   LineStream();
@@ -87,19 +75,11 @@ class LineStream {
   /// @note The memory returned belongs to this routine; it may be read and 
   ///       written to, but not free'd or realloc'd by the user of this routine; 
   ///       it stays stable until the next call ls_nextLine(this1).
-  char* GetLine();
+  std::string GetLine();
 
   /// Returns the number of the current line.
   /// @param[in] this1 A line stream 
   int GetLineCount();
-
-  /// Redirect a linestream.
-  /// @param[in] this1 A line stream created by one of ls_create*()
-  /// @param[in] filename  Name of file to write lines to; special cases: '-'  
-  ///            means stdout, NULL means /dev/null (discard) 
-  /// @post this1 contains no more lines; file 'filename' contains the contents of 
-  ///       'this1'
-  void Cat(const char* filename);
 
   /// Set how many lines the linestream should buffer.
   /// @param[in] this1 A line stream 
@@ -117,19 +97,10 @@ class LineStream {
   /// @post Next call to ls_nextLine() will return the same line again
   void Back(int line_count);
 
+  /// @brief Returns whether the stream has reached the end of file.
+  ///
+  /// @return true if end of file is reached, false otherwise.
   virtual bool IsEof();
-
-  /// Skips remainder of line stream and returns exit status which only meaningful 
-  /// when created from a pipe - exit status for file and buffer will always be 0.
-  /// @param[in] this1 A line stream 
-  /// @return If 'this1' was created by ls_createFromPipe(command), the exit 
-  ///         status of 'command' is returned; else 0 
-  /// @post line stream is read to its end - ls_nextLine() must not be called 
-  ///       anymore.
-  /// @note For reasons of efficiency, skip does not actually read the linestream 
-  ///       therefore ls_lineCountGet() 
-  /// will not return the correct line number after this function has been called.
-  virtual int SkipGetStatus();
 
  protected: 
   /// Returns the next line of a file and closes the file if no further line was 
@@ -142,8 +113,8 @@ class LineStream {
  protected:
   int count_;
   int status_;
-  std::string* buffer_;
-  int buffer_back_;
+  std::deque<std::string> buffer_;
+  int buffer_size_;
 };
 
 /// @class FileLineStream
@@ -152,17 +123,15 @@ class FileLineStream : public LineStream {
  public:
   FileLineStream(const char* filename);
   ~FileLineStream();
-
+  
   bool IsEof();
-  int SkipGetStatus();
 
  protected:
-  char* GetNextLine();
+  std::string GetNextLine();
 
  private:
-  FILE* fp_;
-  char* line_;
-  int line_len_;
+  std::ifstream* file_;
+  std::shared_ptr<std::istream> stream_;
 };
 
 /// @class PipeLineStream
@@ -173,15 +142,13 @@ class PipeLineStream : public LineStream {
   ~PipeLineStream();
 
   bool IsEof();
-  int SkipGetStatus();
 
  protected: 
-  char* GetNextLine();
+  std::string GetNextLine();
 
  private:
-  FILE* fp_;
-  char* line_;
-  int line_len_;
+  FILE* pipe_;
+  std::istream stream_;
 };
 
 /// @class BufferLineStream
@@ -192,10 +159,9 @@ class BufferLineStream : public LineStream {
   ~BufferLineStream();
 
   bool IsEof();
-  int SkipGetStatus();
   
  protected:
-  char* GetNextLine();
+  std::string GetNextLine();
 
  private:
   WordIter* word_iter_;
