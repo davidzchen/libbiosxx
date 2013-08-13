@@ -41,7 +41,8 @@ AC_LANG([C++], [C])
 AC_CHECK_LIB([m], [log], [], [AC_MSG_ERROR([Cannot find standard math library])])
 AC_CHECK_LIB([gslcblas], [cblas_dgemm], [], [AC_MSG_ERROR([Cannot find cblas library])])
 AC_CHECK_LIB([gsl], [gsl_ran_hypergeometric_pdf], [], [AC_MSG_ERROR([Cannot find gsl library])])
-AC_CHECK_LIB([boost_iostreams], [], [], [AC_MSG_ERROR([Cannot find boost_iostreams library])])
+AX_BOOST_BASE([1.5], [], [AC_MSG_ERROR([Cannot find boost library])])
+AX_BOOST_IOSTREAMS
 
 #------------------------------------------------------------------------------
 # Google-test
