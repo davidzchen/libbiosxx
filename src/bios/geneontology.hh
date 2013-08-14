@@ -43,8 +43,8 @@ namespace bios {
 /// @struct GoTagValue
 /// @brief Structure representing a Gene Ontology tag value.
 struct GoTagValue {
-  char* tag;
-  char* value;
+  std::string tag;
+  std::string value;
 };
 
 /// @struct GoTerm

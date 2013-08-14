@@ -120,12 +120,11 @@ void GeneOntology::ResetGenesOfInterest() {
 }
 
 void GeneOntology::ReadGoOntology(const char* obo_filename) {
-  LineStream* ls = LineStream::FromFile(obo_filename);
+  FileLineStream ls(obo_filename);
   bool go_term_found = false;
   GoTerm* go_term = NULL;
-  char* line;
-  while ((line = ls->GetLine()) != NULL) {
-    if (strcmp(line, "[Term]") == 0) {
+  for (std::string line; ls.GetLine(line); ) {
+    if (line == "[Term]") {
       if (go_term_found == true) {
         go_terms_.push_back(*go_term);
         delete go_term;
@@ -145,83 +144,86 @@ void GeneOntology::ReadGoOntology(const char* obo_filename) {
     }
 
     go_term = new GoTerm;
-    char* pos1 = NULL;
-    char* pos2 = NULL;
-    if (str::strStartsWithC(line, "id:")) {
-      pos1 = strchr(line, ' ');
-      go_term->id = pos1 + 1;
-    } else if (str::strStartsWithC(line, "name:")) {
-      pos1 = strchr(line, ' ');
-      go_term->name = pos1 + 1;
-    } else if (str::strStartsWithC(line, "namespace:")) {
-      pos1 = strchr(line, ' ');
-      go_term->name_space = pos1 + 1;
-    } else if (str::strStartsWithC(line, "alt_id:")) {
-      pos1 = strchr(line, ' ');
-      go_term->alt_ids.push_back(pos1 + 1);
-    } else if (str::strStartsWithC(line, "def:")) {
-      pos1 = strstr(line, " [");
-      if (pos1 == NULL) {
+    if (str::StartsWith(line, "id:")) {
+      size_t pos = line.find(' ');
+      go_term->id = line.substr(pos + 1, line.size() - pos);
+    } else if (str::StartsWith(line, "name:")) {
+      size_t pos = line.find(' ');
+      go_term->name = line.substr(pos + 1, line.size() - pos);
+    } else if (str::StartsWith(line, "namespace:")) {
+      size_t pos = line.find(' ');
+      go_term->name_space = line.substr(pos + 1, line.size() - pos);
+    } else if (str::StartsWith(line, "alt_id:")) {
+      size_t pos = line.find(' ');
+      std::string alt_id = line.substr(pos + 1, line.size() - pos);
+      go_term->alt_ids.push_back(alt_id);
+    } else if (str::StartsWith(line, "def:")) {
+      size_t pos = line.find(" [");
+      if (pos == std::string::npos) {
         std::cerr << "Expected ' [' in def line: " << line << std::endl;
         return;
       }
-      *pos1 = '\0';
-      pos1 = strchr(line, ' ');
-      str::strTrim(pos1, (char*) " \"", (char*) " \"");
-      go_term->definition = pos1;
-    } else if (str::strStartsWithC(line, "subset:")) {
-      pos1 = strchr (line,' ');
-      go_term->subsets.push_back(pos1 + 1);
-      if (strcmp(pos1 + 1, "goslim_generic") == 0) {
+      std::string definition = line.substr(0, pos);
+      pos = definition.find(' ');
+      //str::strTrim(pos1, (char*) " \"", (char*) " \"");
+      //go_term->definition = pos1;
+    } else if (str::StartsWith(line, "subset:")) {
+      size_t pos = line.find(' ');
+      std::string subset = line.substr(pos + 1, line.size() - pos);
+      go_term->subsets.push_back(subset);
+      if (subset == "goslim_generic") {
         go_term->is_generic_go_slim = true;
       }
-    } else if (str::strStartsWithC(line, "comment:")) {
-      pos1 = strchr(line, ' ');
-      go_term->comment = pos1 + 1;
-    } else if (strcmp(line, "is_obsolete: true") == 0) {
+    } else if (str::StartsWith(line, "comment:")) {
+      size_t pos = line.find(' ');
+      go_term->comment = line.substr(pos + 1, line.size() - pos);
+    } else if (line == "is_obsolete: true") {
       go_term->is_obsolete = true;
-    } else if (str::strStartsWithC(line, "synonym:")) {
-      pos1 = strrchr(line, '"');
-      *pos1 = '\0';
-      pos1 = strchr(line, '"');
-      go_term->synonyms.push_back(pos1 + 1);
-    } else if (str::strStartsWithC(line, "consider:")) {
-      pos1 = strchr(line, ' ');
-      go_term->considers.push_back(pos1 + 1);
-    } else if (str::strStartsWithC(line, "xref:")) {
-      pos1 = strchr(line, ' ');
-      pos2 = strchr(pos1 + 1, ':');
-      *pos2 = '\0';
-      GoTagValue go_tag_value;
-      go_tag_value.tag = pos1 + 1;
-      go_tag_value.value = pos2 + 1;
-      go_term->xrefs.push_back(go_tag_value);
-    } else if (str::strStartsWithC(line, "is_a:")) {
-      if ((pos1 = strchr(line, '!')) != NULL) {
-        *(pos1 - 1) = '\0';
+    } else if (str::StartsWith(line, "synonym:")) {
+      size_t pos0 = line.find('"');
+      size_t pos1 = line.rfind('"');
+      std::string synonym = line.substr(pos0, pos1 - pos0 + 1);
+      go_term->synonyms.push_back(synonym);
+    } else if (str::StartsWith(line, "consider:")) {
+      size_t pos = line.find(' ');
+      std::string consider = line.substr(pos, line.size() - pos);
+      go_term->considers.push_back(consider);
+    } else if (str::StartsWith(line, "xref:")) {
+      size_t pos0 = line.find(' ');
+      size_t pos1 = line.find(':', pos0 + 1);
+      GoTagValue tag_value;
+      tag_value.tag = line.substr(pos0 + 1, pos1 - pos0 + 1);
+      tag_value.value = line.substr(pos1 + 1, line.size() - pos1);
+      go_term->xrefs.push_back(tag_value);
+    } else if (str::StartsWith(line, "is_a:")) {
+      size_t pos = line.find('!');
+      size_t bound = line.size();
+      if (pos == std::string::npos) {
+        bound = pos;
       }
-      pos1 = strchr(line, ' ');
-      go_term->parents.push_back(pos1 + 1);
-    } else if (str::strStartsWithC(line, "relationship:")) {
-      if ((pos1 = strchr(line, '!')) != NULL) {
-        *(pos1 - 1) = '\0';
+      pos = line.find(' ');
+      std::string parent = line.substr(pos + 1, bound - pos);
+      go_term->parents.push_back(parent);
+    } else if (str::StartsWith(line, "relationship:")) {
+      size_t pos0 = line.find('!');
+      size_t bound = line.size();
+      if (pos0 == std::string::npos) {
+        bound = pos0;
       }
-      pos1 = strchr(line, ' ');
-      pos2 = strchr(pos1 + 1, ' ');
-      *pos2 = '\0';
-      GoTagValue go_tag_value;
-      go_tag_value.tag = pos1 + 1;
-      go_tag_value.value = pos2 + 1;
-      go_term->relationships.push_back(go_tag_value);
-    } else if (str::strStartsWithC(line, "replaced_by:")) {
+      pos0 = line.find(' ');
+      size_t pos1 = line.find(' ', pos0 + 1);
+      GoTagValue tag_value;
+      tag_value.tag = line.substr(pos0 + 1, pos1 - pos0);
+      tag_value.value = line.substr(pos1 + 1, line.size() - pos1);
+      go_term->relationships.push_back(tag_value);
+    } else if (str::StartsWith(line, "replaced_by:")) {
       // Do nothing.
-    } else if (str::strStartsWithC(line, "disjoint_from:")) {
+    } else if (str::StartsWith(line, "disjoint_from:")) {
       // Do nothing.
     } else {
       std::cerr << "Unexpected line: " << line << std::endl;
     }
   }
-  delete ls;
 }
 
 GoNode* GeneOntology::FindGoNode(const char* id) {
@@ -288,24 +290,21 @@ void GeneOntology::ConvertGoTermsToGoNodes() {
 
 void GeneOntology::ReadGoAnnotations(const char* annotation_filename) {
   std::vector<GoGeneAssociationEntry> association_entries;
-  LineStream* ls = LineStream::FromFile(annotation_filename);
-  char* line = NULL;
-  while ((line = ls->GetLine()) != NULL) {
+  FileLineStream ls(annotation_filename);
+  for (std::string line; ls.GetLine(line); ) {
     if (line[0] == '\0' || line[0] == '!') {
       continue;
     }
     GoGeneAssociationEntry association_entry;
-    WordIter* w = new WordIter(line, "\t", false);
-    association_entry.db = w->Next();
-    association_entry.db_gene_name = w->Next();
-    association_entry.gene_name = w->Next();
+    WordIter w(line, "\t", false);
+    association_entry.db = w.Next();
+    association_entry.db_gene_name = w.Next();
+    association_entry.gene_name = w.Next();
     // optional column [qualifier], not considered
-    w->Next(); 
-    association_entry.go_id = w->Next();
-    delete w;
+    w.Next(); 
+    association_entry.go_id = w.Next();
     association_entries.push_back(association_entry);
   }
-  delete ls;
   std::sort(association_entries.begin(), association_entries.end(),
             GoGeneAssociationEntry::CompareByGeneName);
   uint32_t i = 0;

@@ -16,7 +16,7 @@
 
 namespace bios {
 
-struct singleEnd {
+struct SingleEnd {
   std::string ToString();
 
   std::string machine;            // 1 machine
@@ -47,8 +47,8 @@ struct ExportPE {
   ExportPE();
   ~ExportPE();
 
-  singleEnd* end1;
-  singleEnd* end2;
+  SingleEnd* end1;
+  SingleEnd* end2;
 };
 
 class ExportPEParser {

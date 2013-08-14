@@ -29,7 +29,7 @@ FastqParser::~FastqParser() {
  * @post FastqParser::nextSequence(), FastqParser::readAllSequences() can be called.
  */
 void FastqParser::InitFromFile(const char* filename) {
-  stream_ = LineStream::FromFile(filename);
+  stream_ = new FileLineStream(filename);
   stream_->SetBuffer(1);
 }
 
@@ -38,7 +38,7 @@ void FastqParser::InitFromFile(const char* filename) {
  * @post FastqParser::nextSequence(), FastqParser::readAllSequences() can be called.
  */
 void FastqParser::InitFromPipe(const char* command) {
-  stream_ = LineStream::FromPipe(command);
+  stream_ = new PipeLineStream(command);
   stream_->SetBuffer(1);
 }
 
@@ -48,29 +48,28 @@ Fastq* FastqParser::ProcessNextSequence (bool truncate_name) {
   }
 
   Fastq* fq = NULL;
-  char* line = NULL;
-  while ((line = stream_->GetLine()) != NULL) {
-    if (line[0] == '\0') {
+  for (std::string line; stream_->GetLine(line); ) {
+    if (line.empty()) {
       continue;
     }
     if (line[0] == '@') {      
       fq = new Fastq;
       Seq* seq = fq->seq;
-      seq->name = strdup(line + 1);
+      seq->name = strdup(line.c_str() + 1);
       if (truncate_name) {
         seq->name = str::firstWordInLine(str::skipLeadingSpaces(seq->name));
       }
-      line = stream_->GetLine(); // reading sequence
-      seq->sequence = strdup(line);
+      stream_->GetLine(line); // reading sequence
+      seq->sequence = strdup(line.c_str());
       seq->size = strlen(seq->sequence);
-      line = stream_->GetLine(); // reading quality ID
+      stream_->GetLine(line); // reading quality ID
       if (line[0] != '+') {
         std::cerr << "Expected quality ID: '+' or '+" << seq->name << "'"
                   << std::endl;
         return NULL;
       }
-      line = stream_->GetLine(); // reading quality
-      fq->quality = strdup(line);
+      stream_->GetLine(line); // reading quality
+      fq->quality = strdup(line.c_str());
       break;
     }
   }   

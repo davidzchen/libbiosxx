@@ -13,7 +13,7 @@ namespace bios {
  * @param [in] currEntry: a pointer to the single end entry
  * @return string formatted as an export file
  */
-std::string singleEnd::ToString() {
+std::string SingleEnd::ToString() {
   std::stringstream string_buffer;
   string_buffer << machine.c_str() << "\t";
   string_buffer << run_number << "\t";
@@ -96,8 +96,8 @@ ExportPEParser::~ExportPEParser() {
  */
 void ExportPEParser::InitFromFile(const char* filename1, 
                                   const char* filename2) {
-  stream1_ = LineStream::FromFile(filename1);
-  stream2_ = LineStream::FromFile(filename2);
+  stream1_ = new FileLineStream(filename1);
+  stream2_ = new FileLineStream(filename2);
 }
 
 /**
@@ -106,50 +106,50 @@ void ExportPEParser::InitFromFile(const char* filename1,
  * @param[in] cmd2 command to be executed for the second end
  */
 void ExportPEParser::InitFromPipe(const char* cmd1, const char* cmd2) {
-  stream1_ = LineStream::FromPipe(cmd1);
-  stream2_ = LineStream::FromPipe(cmd2);
+  stream1_ = new PipeLineStream(cmd1);
+  stream2_ = new PipeLineStream(cmd2);
 }
 
 int ExportPEParser::ProcessSingleEndEntry(ExportPE* entry, int read_number) {
-  char* line;
+  std::string line;
+  bool ret;
   if (read_number == 1) {
-    line = stream1_->GetLine();
+    ret = stream1_->GetLine(line);
   } else {
-    line = stream2_->GetLine();
+    ret = stream2_->GetLine(line);
   }
-  if (stream1_->IsEof() || stream2_->IsEof()) {
+  if (ret == false || stream1_->IsEof() || stream2_->IsEof()) {
     return 0;  // no more entries
   }
-  WordIter* w = new WordIter(line, "\t", false);
-  singleEnd* end = new singleEnd;
-  end->machine = w->Next();
-  end->run_number = atoi(w->Next());
-  end->lane = atoi(w->Next());
-  end->tile = atoi(w->Next());
-  end->x_coord = atoi(w->Next());
-  end->y_coord = atoi(w->Next());
-  end->index = w->Next();
-  end->read_number =  atoi(w->Next());
-  end->sequence = w->Next();
-  end->quality = w->Next();
-  end->chromosome =  w->Next();
-  end->contig = w->Next();
-  end->position = atoi(w->Next());
-  end->strand =  w->Next()[0] ;
-  end->match_descriptor = w->Next();
-  end->single_score = atoi(w->Next());
-  end->paired_score = atoi(w->Next());
-  end->partner_chromosome = w->Next();
-  end->partner_contig = w->Next();
-  end->partner_offset = atoi(w->Next());
-  end->partner_strand = w->Next()[0];
-  end->filter = w->Next()[0];
+  WordIter w(line, "\t", false);
+  SingleEnd* end = new SingleEnd;
+  end->machine = w.Next();
+  end->run_number = atoi(w.Next());
+  end->lane = atoi(w.Next());
+  end->tile = atoi(w.Next());
+  end->x_coord = atoi(w.Next());
+  end->y_coord = atoi(w.Next());
+  end->index = w.Next();
+  end->read_number =  atoi(w.Next());
+  end->sequence = w.Next();
+  end->quality = w.Next();
+  end->chromosome =  w.Next();
+  end->contig = w.Next();
+  end->position = atoi(w.Next());
+  end->strand =  w.Next()[0] ;
+  end->match_descriptor = w.Next();
+  end->single_score = atoi(w.Next());
+  end->paired_score = atoi(w.Next());
+  end->partner_chromosome = w.Next();
+  end->partner_contig = w.Next();
+  end->partner_offset = atoi(w.Next());
+  end->partner_strand = w.Next()[0];
+  end->filter = w.Next()[0];
   if (read_number == 1) {
     entry->end1 = end;
   } else {
     entry->end2 = end;
   }
-  delete w;
   return 1; // still more entries
 }
 
@@ -159,8 +159,8 @@ ExportPE* ExportPEParser::ProcessNextEntry() {
   more_entries += ProcessSingleEndEntry(entry, 1);
   more_entries += ProcessSingleEndEntry(entry, 2);
   if (more_entries > 0) {
-    singleEnd* end1 = entry->end1;
-    singleEnd* end2 = entry->end2;
+    SingleEnd* end1 = entry->end1;
+    SingleEnd* end2 = entry->end2;
     std::stringstream id1;
     std::stringstream id2;
     id1 << end1->machine << ":" << end1->run_number << ":" << end1->lane << ":"

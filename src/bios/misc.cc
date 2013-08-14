@@ -124,15 +124,13 @@ int stripNlGetLength(char *line) {
  */
 std::vector<std::string> read_list(const char* filename) {
   std::vector<std::string> list;
-  LineStream* ls = LineStream::FromFile(filename);
-  char *line;
-  while ((line = ls->GetLine()) != NULL) {
-    if (line[0] == '\0') {
+  FileLineStream ls(filename);
+  for (std::string line; ls.GetLine(line); ) {
+    if (line.empty()) {
       continue;
     }
     list.push_back(line);
   }
-  delete ls;
   return list;
 }
 
@@ -141,22 +139,18 @@ std::vector<std::string> read_list(const char* filename) {
  */
 std::vector<TableRow> read_table(const char* filename, const char* delimiter) {
   std::vector<TableRow> table_rows;
-  LineStream* ls = LineStream::FromFile(filename); 
-  char* line = NULL;
-  while ((line = ls->GetLine()) != NULL) {
-    if (line[0] == '\0') {
+  FileLineStream ls(filename); 
+  for (std::string line; ls.GetLine(line); ) {
+    if (line.empty()) {
       continue;
     }
     TableRow row;
-    WordIter* w = new WordIter(line, delimiter, false);
-    char* token = NULL;
-    while ((token = w->Next()) != NULL) {
+    WordIter w(line, delimiter, false);
+    for (char* token; (token = w.Next()) != NULL; ) {
       row.columns.push_back(token);
     }
     table_rows.push_back(row);
-    delete w;
   }
-  delete ls;
   return table_rows;
 }
 

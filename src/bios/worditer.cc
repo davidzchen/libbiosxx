@@ -4,7 +4,7 @@ namespace bios {
 
 WordIter::WordIter(const std::string& str, const char* seps, 
                    bool collapse_separators) {
-  if (str == NULL || seps == NULL) {
+  if (seps == NULL) {
     return;
   }
   str_ = strdup(str.c_str());

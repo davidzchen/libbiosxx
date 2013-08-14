@@ -1,6 +1,7 @@
 #ifndef BIOS_WORDITER_H__
 #define BIOS_WORDITER_H__
 
+#include <string>
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>

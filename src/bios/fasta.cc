@@ -23,7 +23,7 @@ FastaParser::~FastaParser() {
  * @post FastaParser::nextSequence(), FastaParser::readAllSequences() can be called.
  */
 void FastaParser::InitFromFile(const char* filename) {
-  stream_ = LineStream::FromFile(filename);
+  stream_ = new FileLineStream(filename);
   stream_->SetBuffer(1);
 }
 
@@ -32,7 +32,7 @@ void FastaParser::InitFromFile(const char* filename) {
  * @post FastaParser::nextSequence(), FastaParser::readAllSequences() can be called.
  */
 void FastaParser::InitFromPipe(const char* command) {
-  stream_ = LineStream::FromPipe(command);
+  stream_ = new PipeLineStream(command);
   stream_->SetBuffer(1);
 }
 
@@ -43,16 +43,15 @@ Seq* FastaParser::ProcessNextSequence(bool truncate_name) {
 
   Seq* seq = new Seq;
   int count = 0;
-  char* line;
   std::stringstream string_buffer;
-  while ((line = stream_->GetLine()) != NULL) {
-    if (line[0] == '\0') {
+  for (std::string line; stream_->GetLine(line); ) {
+    if (line.empty()) {
       continue;
     }
     if (line[0] == '>') {
       ++count;
       if (count == 1) {
-        seq->name = strdup(line + 1);
+        seq->name = strdup(line.c_str() + 1);
         if (truncate_name) {
           seq->name = str::firstWordInLine(str::skipLeadingSpaces(seq->name));
         }
@@ -60,7 +59,7 @@ Seq* FastaParser::ProcessNextSequence(bool truncate_name) {
       } else if (count == 2) {
         seq->sequence = strdup((char*) string_buffer.str().c_str());
         seq->size = string_buffer.str().size();
-        stream_->Back(1);
+        stream_->Back(line);
         return seq;
       }
     }

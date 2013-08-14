@@ -69,6 +69,7 @@
 #include <stdint.h>
 
 #include "linestream.hh"
+#include "worditer.hh"
 #include "number.hh"
 
 namespace bios {
@@ -93,7 +94,7 @@ struct Interval {
   /// @param[in] source An integer that specifies the source. This is useful when 
   ///            multiple files are used.
   /// See IntervalFind::addIntervalsToSearchSpace() for details.
-  Interval(const char* line, int source);
+  Interval(std::string& line, int source);
   ~Interval();
 
   /// @brief Write an Interval to a string.
@@ -221,7 +222,7 @@ class IntervalFind {
   /// @param results
   /// @param str the string to process.
   static void ProcessCommaSeparatedList(std::vector<int>& results, 
-                                        const char* str);
+                                        std::string& str);
 
  private:
   void AssignSuperIntervals();

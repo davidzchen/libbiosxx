@@ -29,19 +29,21 @@ namespace bios {
 Interval::Interval() {
 }
 
-Interval::Interval(const char* line, int source) {
-  WordIter* w = new WordIter((char*) line, "\t", 0);
+Interval::Interval(std::string& line, int source) {
+  WordIter w(line, "\t", false);
   source = source;
-  name = w->Next();
-  chromosome = w->Next();
-  strand = w->Next()[0];
-  start = atoi(w->Next());
-  end = atoi(w->Next());
-  sub_interval_count = atoi(w->Next());
+  name = w.Next();
+  chromosome = w.Next();
+  strand = w.Next()[0];
+  start = atoi(w.Next());
+  end = atoi(w.Next());
+  sub_interval_count = atoi(w.Next());
   std::vector<int> starts;
   std::vector<int> ends;
-  IntervalFind::ProcessCommaSeparatedList(starts, w->Next());
-  IntervalFind::ProcessCommaSeparatedList(ends, w->Next());
+  std::string starts_str = w.Next();
+  std::string ends_str = w.Next();
+  IntervalFind::ProcessCommaSeparatedList(starts, starts_str);
+  IntervalFind::ProcessCommaSeparatedList(ends, ends_str);
   if (starts.size() != ends.size()) {
     std::cerr << "Unequal number of subIntervalStarts and subIntervalEnds"
               << std::endl;
@@ -53,7 +55,6 @@ Interval::Interval(const char* line, int source) {
     sub_interval.end = ends[i];
     sub_intervals.push_back(sub_interval);
   }
-  delete w;
 }
 
 Interval::~Interval() {
@@ -116,30 +117,26 @@ std::vector<Interval*> IntervalFind::GetIntervalPointers() {
 }
 
 void IntervalFind::ProcessCommaSeparatedList(std::vector<int>& results, 
-                                             const char* str) {
-  WordIter* w = new WordIter((char*) str, ",", false);
-  char* tok = NULL;
-  while ((tok = w->Next()) != NULL) {
+                                             std::string& str) {
+  WordIter w(str, ",", false);
+  for (char* tok = NULL; (tok = w.Next()) != NULL; ) {
     if (tok[0] == '\0') {
       continue;
     }
     results.push_back(atoi(tok));
   }
-  delete w;
 }
 
 void IntervalFind::ParseFileContent(std::vector<Interval>& intervals, 
                                     const char* filename, int source) {
-  LineStream* ls = LineStream::FromFile(filename);
-  char* line = NULL;
-  while ((line = ls->GetLine()) != NULL) {
-    if (line[0] == '\0') {
+  FileLineStream ls(filename);
+  for (std::string line; ls.GetLine(line); ) {
+    if (line.empty()) {
       continue;
     }
     Interval interval(line, source);
     intervals.push_back(interval);
   }
-  delete ls;
 }
 
 void IntervalFind::AddIntervalsToSearchSpace(const char* filename, 
