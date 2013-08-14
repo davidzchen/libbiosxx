@@ -109,7 +109,7 @@ class BlatParser {
   ///
   /// @param    results   The vector to store the resulting ints.
   /// @param    str       The string to process.
-  void ProcessCommaSeparatedList(std::vector<int>& results, char* str);
+  void ProcessCommaSeparatedList(std::vector<int>& results, std::string& str);
 
  private:
   LineStream* stream_;

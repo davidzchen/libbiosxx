@@ -71,7 +71,7 @@ class Conf {
   /// key/value pair into the map.
   ///
   /// @return   0 if successful, -1 if unsuccessful.
-  int ParseLine(char* line, int n);
+  int ParseLine(std::string& line, int n);
 
  private:
   std::map<std::string, std::string> map_;

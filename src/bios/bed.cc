@@ -67,6 +67,9 @@ BedParser::BedParser() {
 }
 
 BedParser::~BedParser() {
+  if (stream_ != NULL) {
+    delete stream_;
+  }
 }
 
 void BedParser::InitFromFile(const char* filename) {
@@ -83,48 +86,41 @@ Bed* BedParser::NextEntry(void) {
   if (stream_ == NULL) {
     return NULL;
   }
-  while (!stream_->IsEof()) {
-    std::string line = stream_->GetLine();
-    if (line == NULL) {
-      break;
-    }
+  for (std::string line; stream_->GetLine(line); ) {
     std::cout << line << std::endl;
-    if (str::strStartsWithC(line, "track") || 
-        str::strStartsWithC(line, "browser")) {
+    if (str::StartsWith(line, "track") || 
+        str::StartsWith(line, "browser")) {
       continue;
     }
     Bed* bed = new Bed();
-    WordIter* w = new WordIter(line, "\t", true);
-    std::string chromosome(w->Next());
+    WordIter w(line, "\t", true);
+    std::string chromosome(w.Next());
     bed->set_chromosome(chromosome);
-    bed->set_start(atoi(w->Next()));
-    bed->set_end(atoi(w->Next()));
-    char *next = w->Next();
+    bed->set_start(atoi(w.Next()));
+    bed->set_end(atoi(w.Next()));
+    char *next = w.Next();
     if (next != NULL) {
       std::string name(next);
       bed->set_name(name);
       bed->set_extended(true);
-      bed->set_score(atoi(w->Next()));
-      bed->set_strand(w->Next()[0]);
-      bed->set_thick_start(atoi(w->Next()));
-      bed->set_thick_end(atoi(w->Next()));
-      std::string item_rgb(w->Next());
+      bed->set_score(atoi(w.Next()));
+      bed->set_strand(w.Next()[0]);
+      bed->set_thick_start(atoi(w.Next()));
+      bed->set_thick_end(atoi(w.Next()));
+      std::string item_rgb(w.Next());
       bed->set_item_rgb(item_rgb);
-      bed->set_block_count(atoi(w->Next()));
-      WordIter* wsizes = new WordIter(w->Next(), ",", true);
-      WordIter* wstarts = new WordIter(w->Next(), ",", true); 
+      bed->set_block_count(atoi(w.Next()));
+      WordIter wsizes(w.Next(), ",", true);
+      WordIter wstarts(w.Next(), ",", true); 
       for (uint32_t i = 0; i < bed->block_count(); ++i) {
         SubBlock sub_block;
-        sub_block.size = atoi(wsizes->Next());
-        sub_block.start = atoi(wstarts->Next());
+        sub_block.size = atoi(wsizes.Next());
+        sub_block.start = atoi(wstarts.Next());
         bed->AddSubBlock(sub_block);
       }
-      delete wsizes;
-      delete wstarts;
     } else {
       bed->set_extended(false);
     }
-    delete w;
     return bed;
   }
   return NULL;

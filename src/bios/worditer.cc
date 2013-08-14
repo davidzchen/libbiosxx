@@ -2,12 +2,12 @@
 
 namespace bios {
 
-WordIter::WordIter(const char* str, const char* seps, 
+WordIter::WordIter(const std::string& str, const char* seps, 
                    bool collapse_separators) {
   if (str == NULL || seps == NULL) {
     return;
   }
-  str_ = strdup(str);
+  str_ = strdup(str.c_str());
   seps_ = seps;
   position_ = str_;
   collapse_separators_ = collapse_separators;

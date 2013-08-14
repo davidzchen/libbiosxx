@@ -133,7 +133,7 @@ class BowtieQuery {
     sequence_name_ = sequence_name;
   }
 
-  void ProcessLine(char* line);
+  void ProcessLine(std::string& line);
 
  private:
   std::string sequence_name_;

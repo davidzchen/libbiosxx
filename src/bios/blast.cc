@@ -32,22 +32,21 @@ BlastQuery::BlastQuery() {
 BlastQuery::~BlastQuery() {
 }
 
-void BlastQuery::ProcessLine(char* line) {
+void BlastQuery::ProcessLine(std::string& line) {
   BlastEntry entry;
-  WordIter* w = new WordIter(line, "\t", false);
-  std::string t_name(w->Next());
+  WordIter w(line, "\t", false);
+  std::string t_name(w.Next());
   entry.t_name = t_name;
-  entry.percent_identity = atof(w->Next());
-  entry.alignment_length = atoi(w->Next());
-  entry.mis_matches = atoi(w->Next());
-  entry.gap_openings = atoi(w->Next());
-  entry.q_start = atoi(w->Next());
-  entry.q_end = atoi(w->Next());
-  entry.t_start = atoi(w->Next());
-  entry.t_end = atoi(w->Next());
-  entry.evalue = atof(w->Next());
-  entry.bit_score = atof(w->Next());
-  delete w;
+  entry.percent_identity = atof(w.Next());
+  entry.alignment_length = atoi(w.Next());
+  entry.mis_matches = atoi(w.Next());
+  entry.gap_openings = atoi(w.Next());
+  entry.q_start = atoi(w.Next());
+  entry.q_end = atoi(w.Next());
+  entry.t_start = atoi(w.Next());
+  entry.t_end = atoi(w.Next());
+  entry.evalue = atof(w.Next());
+  entry.bit_score = atof(w.Next());
   entries.push_back(entry);
 }
 
@@ -66,12 +65,12 @@ BlastParser::~BlastParser() {
 }
 
 void BlastParser::InitFromFile(const char* filename) {
-  stream_ = LineStream::FromFile(filename);
+  stream_ = new FileLineStream(filename);
   stream_->SetBuffer(1);
 }
 
 void BlastParser::InitFromPipe(const char* command) {
-  stream_ = LineStream::FromPipe(command);
+  stream_ = new PipeLineStream(command);
   stream_->SetBuffer(1);
 }
 
@@ -87,18 +86,21 @@ BlastQuery* BlastParser::NextQuery() {
 
   blast_query_ = new BlastQuery;
   int first = 1;
-  char* line;
-  while ((line = stream_->GetLine()) != NULL) {
-    if (line[0] == '\0') {
+  for (std::string line; stream_->GetLine(line); ) {
+    if (line.empty()) {
       continue;
     }
-    char* pos = strchr(line, '\t');
-    *pos = '\0';
-    query_name_ = line;
+    size_t pos = line.find('\t');
+    if (pos == std::string::npos) {
+      continue;
+    }
+
+    query_name_.replace(0, pos + 1, line);
     if (first == 1 || prev_query_name_ == query_name_) {
-      blast_query_->ProcessLine(pos + 1);
+      std::string query_line = line.substr(pos + 1, line.size() - pos);
+      blast_query_->ProcessLine(query_line);
     } else {
-      stream_->Back(1);
+      stream_->Back(line);
       return blast_query_;
     }
     if (first == 1) {
@@ -107,6 +109,7 @@ BlastQuery* BlastParser::NextQuery() {
     }
     prev_query_name_ = query_name_;
   }
+
   if (first == 1) {
     return NULL;
   } else {

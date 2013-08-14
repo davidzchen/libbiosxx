@@ -84,12 +84,12 @@ BowtieParser::~BowtieParser() {
  * @param[in] fileName File name, use "-" to denote stdin
  */
 void BowtieParser::InitFromFile(const char* filename) {
-  stream_ = LineStream::FromFile(filename);
+  stream_ = new FileLineStream(filename);
   stream_->SetBuffer(1);
 }
 
 void BowtieParser::InitFromPipe(const char* command) {
-  stream_ = LineStream::FromPipe(command);
+  stream_ = new PipeLineStream(command);
   stream_->SetBuffer(1);
 }
 
@@ -97,9 +97,8 @@ void BowtieEntry::ProcessMismatches(char* token) {
   if (token[0] == '\0') {
     return;
   }
-  WordIter* w = new WordIter(token, ",", false);
-  char* item;
-  while ((item = w->Next()) != NULL) {
+  WordIter w(token, ",", false);
+  for (char* item; (item = w.Next()) != NULL; ) {
     BowtieMismatch mismatch;
     char* pos = strchr(item, ':');
     *pos = '\0';
@@ -108,23 +107,21 @@ void BowtieEntry::ProcessMismatches(char* token) {
     mismatch.read_base = *(pos + 3);
     mismatches_.push_back(mismatch);
   }
-  delete w;
 }
 
-void BowtieQuery::ProcessLine(char* line) {
+void BowtieQuery::ProcessLine(std::string& line) {
   BowtieEntry entry;
-  WordIter* w = new WordIter(line, "\t", false);
-  entry.set_strand((w->Next())[0]);
-  std::string chromosome(w->Next());
+  WordIter w(line, "\t", false);
+  entry.set_strand((w.Next())[0]);
+  std::string chromosome(w.Next());
   entry.set_chromosome(chromosome);
-  entry.set_position(atoi(w->Next()));
-  std::string sequence(w->Next());
+  entry.set_position(atoi(w.Next()));
+  std::string sequence(w.Next());
   entry.set_sequence(sequence);
-  std::string quality(w->Next());
+  std::string quality(w.Next());
   entry.set_quality(quality);
-  w->Next();
-  entry.ProcessMismatches(w->Next());
-  delete w;
+  w.Next();
+  entry.ProcessMismatches(w.Next());
   entries_.push_back(entry);
 }
 
@@ -140,19 +137,17 @@ BowtieQuery* BowtieParser::ProcessNextQuery() {
 
   bowtie_query_ = new BowtieQuery;
   int first = 1;
-  char* line = NULL;
-  while ((line = stream_->GetLine()) != NULL) {
-    if (line[0] == '\0') {
+  for (std::string line; stream_->GetLine(line); ) {
+    if (line.empty()) {
       continue;
     }
-    char* pos = strchr(line, '\t');
-    *pos = '\0';
-    std::string query_name(line);
-    query_name_ = query_name;
+    size_t pos = line.find('\t');
+    query_name_.replace(0, pos + 1, line);
     if (first == 1 || prev_query_name_ == query_name_) {
-      bowtie_query_->ProcessLine(pos + 1);
+      std::string query_line = line.substr(pos + 1, line.size() - pos);
+      bowtie_query_->ProcessLine(query_line);
     } else {
-      stream_->Back(1);
+      stream_->Back(line);
       return bowtie_query_;
     }
     if (first == 1) {

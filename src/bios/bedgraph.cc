@@ -35,27 +35,25 @@ BedGraphParser::~BedGraphParser() {
 }
 
 void BedGraphParser::InitFromFile(const char* filename) {  
-  stream_ = LineStream::FromFile(filename);
+  stream_ = new FileLineStream(filename);
   stream_->SetBuffer(1);
 }
 
 void BedGraphParser::InitFromPipe(const char* command) {
-  stream_ = LineStream::FromPipe(command);
+  stream_ = new PipeLineStream(command);
   stream_->SetBuffer(1);
 }
 
 BedGraph* BedGraphParser::NextEntry() {
-  while (!stream_->IsEof()) {
-    char* line = stream_->GetLine();
-    if (!str::strStartsWithC(line, "track")) {
+  for (std::string line; stream_->GetLine(line); ) {
+    if (!str::StartsWith(line, "track")) {
       BedGraph* bed_graph = new BedGraph();
-      WordIter* w = new WordIter(line, "\t", true);
-      std::string chromosome(w->Next());
+      WordIter  w(line, "\t", true);
+      std::string chromosome(w.Next());
       bed_graph->set_chromosome(chromosome);
-      bed_graph->set_start(atoi(w->Next()));
-      bed_graph->set_end(atoi(w->Next()));
-      bed_graph->set_value(atof(w->Next()));
-      delete w;
+      bed_graph->set_start(atoi(w.Next()));
+      bed_graph->set_end(atoi(w.Next()));
+      bed_graph->set_value(atof(w.Next()));
       return bed_graph;
     }
   }

@@ -57,7 +57,7 @@ struct BlastEntry {
 struct BlastQuery {
   BlastQuery();
   ~BlastQuery();
-  void ProcessLine(char* line);
+  void ProcessLine(std::string& line);
 
   std::string q_name;
   std::vector<BlastEntry> entries;

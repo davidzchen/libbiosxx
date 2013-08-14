@@ -27,12 +27,11 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <deque>
 #include <memory>
+#include <cstring>
 #include <unistd.h>
-
-#include <boost/iostreams/device/file_descriptor.hpp>
-#include <boost/iostreams/stream.hpp>
 
 namespace bios {
 
@@ -52,7 +51,7 @@ class LineStream {
   /// @note The memory returned belongs to this routine; it may be read and 
   ///       written to, but not free'd or realloc'd by the user of this routine; 
   ///       it stays stable until the next call ls_nextLine(this1).
-  std::string GetLine();
+  bool GetLine(std::string& line);
 
   /// Returns the number of the current line.
   /// @param[in] this1 A line stream 
@@ -72,12 +71,20 @@ class LineStream {
   ///            only lineCnt==1 is supported)
   /// @pre ls_bufferSet() was called.
   /// @post Next call to ls_nextLine() will return the same line again
-  void Back(int line_count);
+  void Back(std::string& str);
 
   /// @brief Returns whether the stream has reached the end of file.
   ///
   /// @return true if end of file is reached, false otherwise.
-  virtual bool IsEof();
+  virtual bool IsEof() const;
+
+  bool operator!() const {
+    return IsEof();
+  }
+
+  operator bool() const {
+    return IsEof();
+  }
 
  protected: 
   /// Returns the next line of a file and closes the file if no further line was 
@@ -85,13 +92,13 @@ class LineStream {
   /// @param[in] this1 line stream object
   /// @return The line, NULL if no further line was found
   /// @note Memory managed by this routine
-  virtual std::string GetNextLine();
+  virtual bool GetNextLine(std::string& line);
 
  protected:
   int count_;
   int status_;
   std::deque<std::string> buffer_;
-  int buffer_size_;
+  unsigned int buffer_size_;
 };
 
 /// @class FileLineStream
@@ -101,14 +108,38 @@ class FileLineStream : public LineStream {
   FileLineStream(const char* filename);
   ~FileLineStream();
   
-  bool IsEof();
+  bool IsEof() const;
 
  protected:
-  std::string GetNextLine();
+  bool GetNextLine(std::string& line);
 
  private:
-  std::ifstream* file_;
   std::istream* stream_;
+  std::ifstream* file_;
+};
+
+// Adapted from code provided by ihuk for the thread:
+// http://stackoverflow.com/questions/1683051/file-and-istream-connect-the-two
+class pipe_streambuf : public std::streambuf {
+ public:
+  pipe_streambuf();
+  ~pipe_streambuf();
+
+  pipe_streambuf* open(const char* command, const char* mode);
+  void close();
+
+ protected:
+  std::streamsize xsgetn(char_type* ptr, std::streamsize n);
+  int_type underflow();
+  std::streamsize showmanyc();
+ 
+ private:
+  enum {
+    kBufferSize = 1024
+  };
+
+  FILE* fp_;
+  char_type* buffer_;
 };
 
 /// @class PipeLineStream
@@ -118,14 +149,14 @@ class PipeLineStream : public LineStream {
   PipeLineStream(const char* pipe);
   ~PipeLineStream();
 
-  bool IsEof();
+  bool IsEof() const;
 
  protected: 
-  std::string GetNextLine();
+  bool GetNextLine(std::string& line);
 
  private:
-  FILE* pipe_;
-  std::istream stream_;
+  pipe_streambuf* pipe_;
+  std::istream* stream_;
 };
 
 }; // namespace bios

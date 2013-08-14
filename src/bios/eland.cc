@@ -8,7 +8,7 @@
 namespace bios {
 
 ElandParser::ElandParser(const char* filename) {
-  stream_ = LineStream::FromFile(filename);
+  stream_ = new FileLineStream(filename);
 }
 
 ElandParser::~ElandParser() {
@@ -28,45 +28,40 @@ ElandParser::~ElandParser() {
    \endverbatim
  */
 ElandQuery* ElandParser::NextQuery() {
-  char *line;
-  while ((line = stream_->GetLine()) != NULL) {
-    if (line[0] == '\0') {
+  for (std::string line; stream_->GetLine(line); ) {
+    if (line.empty()) {
       continue;
     }
-    WordIter* w = new WordIter(line, "\t", false);
+    WordIter w = WordIter(line, "\t", false);
     ElandQuery* query = new ElandQuery;
     // remove the '>' character at beginning of the line
-    query->sequence_name = w->Next() + 1;
-    query->sequence = w->Next();
-    query->match_code = w->Next();
+    query->sequence_name = w.Next() + 1;
+    query->sequence = w.Next();
+    query->match_code = w.Next();
     if (query->match_code == "QC") {
-      delete w;
       return query;
     }
-    query->exact_matches = atoi(w->Next());
-    query->one_error_matches = atoi(w->Next());
-    query->two_error_matches = atoi(w->Next());
-    char* token = w->Next();
+    query->exact_matches = atoi(w.Next());
+    query->one_error_matches = atoi(w.Next());
+    query->two_error_matches = atoi(w.Next());
+    char* token = w.Next();
     if (token == NULL) {
-      delete w;
       return query;
     }
     char* pos;
     if (!(pos = strchr(token, '.'))) {
       std::cerr << "Expected '.' in chromosome name: " << token << std::endl;
-      delete w;
       return NULL;
     }
     *pos = '\0';
     query->chromosome = pos + 1;
-    query->position = atoi(w->Next());
-    token = w->Next();
+    query->position = atoi(w.Next());
+    token = w.Next();
     if (token[0] == 'F') {
       query->strand = '+'; 
     } else if (token[0] == 'R') {
       query->strand = '-'; 
     } 
-    delete w;
     return query;
   }
   return NULL;

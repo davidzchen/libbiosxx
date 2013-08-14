@@ -9,7 +9,7 @@ namespace bios {
 
 class WordIter {
  public:
-  WordIter(const char* str, const char* seps, bool collapse_separators);
+  WordIter(const std::string& str, const char* seps, bool collapse_separators);
   ~WordIter();
 
   char* Next();

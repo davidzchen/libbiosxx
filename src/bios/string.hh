@@ -30,20 +30,27 @@ static inline char* stringIn(char* needle, char* haystack) {
 /**
  * Check if s1 starts with s2.
  * strStartsWith() always works, but is slower than strStartsWithC()
- * @note s2 must not be an expression with side effects since it is evaluated twice
+ * @note s2 must not be an expression with side effects since it is evaluated 
+ * twice
  */
-static inline int strStartsWith(char* s1, char* s2) {
+static inline int StartsWith(char* s1, char* s2) {
   int len = strlen(s2);
   return strncmp(s1, s2, len) == 0;
 }
 
 /**
  * Check if s1 starts with s2.
- * Same as strStartsWith, but can only be used if s2 is a string constant, e.g. if (strStartsWithC(s, "CC   ")) ...strStartsWith() always works, but is slower than strStartsWithC()
+ * Same as str::StartsWith, but can only be used if s2 is a string constant, 
+ * e.g. if (str::StartsWithC(s, "CC   ")) ...str::StartsWith() always works, 
+ * but is slower than str::StartsWithC()
  */
-static inline int strStartsWithC(char* s1, const char* s2) {
+static inline int StartsWith(char* s1, const char* s2) {
   int len = sizeof(s2) - 1;
   return strncmp(s1, s2, len) == 0;
+}
+
+static inline int StartsWith(std::string& s1, const char* s2) {
+  return s1.find(s2) == 0;
 }
 
 char* rStringIn(char* needle, char *haystack);

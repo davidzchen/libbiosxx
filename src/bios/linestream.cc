@@ -40,45 +40,26 @@ LineStream::LineStream()
 }
 
 LineStream::~LineStream() {
-  if (buffer_ != NULL) {
-    delete buffer_;
-  }
 }
 
-LineStream* LineStream::FromFile(const char* filename) {
-  return new FileLineStream(filename);
-}
-
-LineStream* LineStream::FromPipe(const char* command) {
-  return new PipeLineStream(command);
-}
-
-LineStream* LineStream::FromBuffer(char* buffer) {
-  return new BufferLineStream(buffer);
-}
-
-char* LineStream::GetNextLine() {
+bool LineStream::GetNextLine(std::string& line) {
   return NULL;
 }
 
-bool LineStream::IsEof() {
+bool LineStream::IsEof() const {
   return false;
 }
 
-int LineStream::SkipGetStatus() {
-  return 0;
-}
-
-std::string LineStream::GetLine() {
+bool LineStream::GetLine(std::string& line) {
   if (buffer_size_ > 0 && buffer_.size() > 0) {
-    std::string line = buffer_.top();
-    buffer_.pop();
-    return line;
+    line = buffer_.front();
+    buffer_.pop_front();
+    return true;
   }
-  return GetNextLine();
+  return GetNextLine(line);
 }
 
-void LineStream::Back(std::string str) {
+void LineStream::Back(std::string& str) {
   if (buffer_.size() >= buffer_size_) {
     // Throw exception;
     return;
@@ -124,10 +105,9 @@ FileLineStream::~FileLineStream() {
   }
 }
 
-std::string FileLineStream::GetNextLine() {
-  std::string line;
+bool FileLineStream::GetNextLine(std::string& line) {
   if (stream_->eof()) {
-    return line;
+    return false;
   }
   std::getline(*stream_, line);
   if (line.size() > 1 && line[line.size() - 2] == '\r') {
@@ -136,11 +116,86 @@ std::string FileLineStream::GetNextLine() {
     line[line.size() - 1] = '\0';
   }
   ++count_;
-  return line;
+  return true;
 }
 
-bool FileLineStream::IsEof() {
+bool FileLineStream::IsEof() const {
   return stream_->eof();
+}
+
+//-----------------------------------------------------------------------------
+// pipe_streambuf methods
+//
+// Adapted from code provided by ihuk for the thread:
+// http://stackoverflow.com/questions/1683051/file-and-istream-connect-the-two
+//-----------------------------------------------------------------------------
+
+pipe_streambuf::pipe_streambuf() 
+    : fp_(NULL) {
+}
+
+pipe_streambuf::~pipe_streambuf() {
+  close();
+}
+
+pipe_streambuf* pipe_streambuf::open(const char* command, const char* mode) {
+  fp_ = popen(command, mode);
+  if (fp_ == NULL) {
+    return NULL;
+  }
+  buffer_ = new char_type[kBufferSize];
+  if (buffer_ == NULL) {
+    return NULL;
+  }
+  setg(buffer_, buffer_, buffer_);
+  return this;
+}
+
+void pipe_streambuf::close() {
+  if (fp_ != NULL) {
+    pclose(fp_);
+    fp_ = NULL;
+  }
+}
+
+std::streamsize pipe_streambuf::xsgetn(char_type* s, std::streamsize n) {
+  std::streamsize got = showmanyc();
+  if (n <= got) {
+    memcpy(s, gptr(), n * sizeof(char_type));
+    gbump(n);
+    return n;
+  }
+  memcpy(s, gptr(), got * sizeof(char_type));
+  gbump(got);
+  if (traits_type::eof() == underflow()) {
+    return got;
+  }
+  return got + xsgetn(s + got, n - got);
+}
+
+pipe_streambuf::int_type pipe_streambuf::underflow() {
+  if (gptr() == 0) {
+    return traits_type::eof();
+  }
+  if (gptr() < egptr()) {
+    return traits_type::to_int_type(*gptr());
+  }
+  size_t len = fread(eback(), sizeof(char_type), kBufferSize, fp_);
+  setg(eback(), eback(), eback() + sizeof(char_type) * len);
+  if (len == 0) {
+    return traits_type::eof();
+  }
+  return traits_type::to_int_type(*gptr());
+}
+
+std::streamsize pipe_streambuf::showmanyc() {
+  if (gptr() == 0) {
+    return 0;
+  }
+  if (gptr() < egptr()) {
+    return egptr() - gptr();
+  }
+  return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -148,39 +203,42 @@ bool FileLineStream::IsEof() {
 //-----------------------------------------------------------------------------
 
 PipeLineStream::PipeLineStream(const char* command) : LineStream() {
-  namespace io = boost::iostreams;
-  pipe_ = popen(command, "r");
-  if (fp_ == NULL) {
+  if (command == NULL) {
     return;
   }
-  io::stream_buffer<io::file_descriptor_source> fpstream(fileno(pipe_));
-  stream_ = std::istream(&fpstream);
+  pipe_ = new pipe_streambuf;
+  pipe_->open(command, "r");
+  stream_ = new std::istream(pipe_);
 }
 
 PipeLineStream::~PipeLineStream() {
   if (pipe_ != NULL) {
-    pclose(pipe_);
+    pipe_->close();
+    delete pipe_;
     pipe_ = NULL;
   }
+  if (stream_ != NULL) {
+    delete stream_;
+    stream_ = NULL;
+  }
 }
 
-std::string PipeLineStream::GetNextLine() {
-  std::string line;
-  if (stream_.eof()) {
-    return line;
+bool PipeLineStream::GetNextLine(std::string& line) {
+  if (stream_->eof()) {
+    return false;
   }
-  std::getline(stream_, line);
+  std::getline(*stream_, line);
   if (line.size() > 1 && line[line.size() - 2] == '\r') {
-    line_[line.size() - 2] = '\0';
-  } else if (line.size() > 0 && line_[line.size() - 1] == '\n') {
-    line_[line.size() - 1] = '\0';
+    line[line.size() - 2] = '\0';
+  } else if (line.size() > 0 && line[line.size() - 1] == '\n') {
+    line[line.size() - 1] = '\0';
   }
   ++count_;
-  return line;
+  return true;
 }
 
-bool PipeLineStream::IsEof() {
-  return stream_.eof();
+bool PipeLineStream::IsEof() const {
+  return stream_->eof();
 }
 
 }; // namespace bios

@@ -39,7 +39,8 @@ Conf::~Conf() {
   map_.clear();
 }
 
-int Conf::ParseLine(char* line, int n) {
+int Conf::ParseLine(std::string& conf_line, int n) {
+  char* line = strdup(conf_line.c_str());
   char* start = line;
   char* end = start + strlen(line) - 1;
   char* c = strchr(line, '#');
@@ -115,26 +116,25 @@ int Conf::ParseLine(char* line, int n) {
 
   free(key);
   free(val);
+  free(line);
   return 0;
 }
 
 int Conf::Read() {
-  LineStream* ls = LineStream::FromFile(filename_);
-  if (ls == NULL) {
+  FileLineStream ls(filename_);
+  if (!ls) {
     fprintf(stderr, "Cannot open config file %s\n", filename_);
     return -1;
   }
 
   int n = 1;
-  char* line = NULL;
-  while ((line = ls->GetLine()) != NULL) {
+  for (std::string line; ls.GetLine(line); ) {
     if (ParseLine(line, n) < 0) {
       fprintf(stderr, "Failed to load config file %s\n", filename_);
       return -1;
     }
     ++n;
   }
-  delete ls;
   return n;
 }
 

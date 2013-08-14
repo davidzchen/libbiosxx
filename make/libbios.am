@@ -1,5 +1,6 @@
 lib_LTLIBRARIES = libbios++.la
 libbios___la_SOURCES = \
+    src/bios/linestream.cc \
     src/bios/bed.cc \
     src/bios/bedgraph.cc \
     src/bios/bitfield.cc \
@@ -14,7 +15,6 @@ libbios___la_SOURCES = \
     src/bios/fastq.cc \
     src/bios/geneontology.cc \
     src/bios/interval.cc \
-    src/bios/linestream.cc \
 	src/bios/misc.cc \
     src/bios/number.cc \
     src/bios/seq.cc \

@@ -19,7 +19,7 @@ ElandMultiQuery::~ElandMultiQuery() {
  * @param[in] fileName File name, use "-" to denote stdin
  */
 ElandMultiParser::ElandMultiParser(const char* filename) {
-  stream_ = LineStream::FromFile(filename);
+  stream_ = new FileLineStream(filename);
 }
 
 /**
@@ -40,22 +40,20 @@ ElandMultiParser::~ElandMultiParser() {
    \endverbatim
  */
 ElandMultiQuery* ElandMultiParser::NextQuery() {
-  char* line;
-  while ((line = stream_->GetLine()) != NULL) {
-    if (line[0] == '\0') {
+  for (std::string line; stream_->GetLine(line); ) {
+    if (line.empty()) {
       continue;
     }
-    WordIter* w1 = new WordIter(line, "\t", false);
+    WordIter w1(line, "\t", false);
     ElandMultiQuery* query = new ElandMultiQuery;
     // remove the '>' character at beginning of the line
-    std::string sequence_name(w1->Next() + 1);
-    std::string sequence(w1->Next());
+    std::string sequence_name(w1.Next() + 1);
+    std::string sequence(w1.Next());
     query->sequence_name = sequence_name; 
     query->sequence = sequence;
-    char* token = w1->Next();
+    char* token = w1.Next();
     if (strcmp(token, "NM") == 0 || strcmp(token, "QC") == 0 || 
         strcmp(token, "RM") == 0) {
-      delete w1;
       return query;
     }
     char* first_colon = strchr(token, ':');
@@ -69,13 +67,12 @@ ElandMultiQuery* ElandMultiParser::NextQuery() {
     query->exact_matches = atoi(token);
     query->one_error_matches = atoi(first_colon + 1);
     query->two_error_matches = atoi(last_colon + 1);
-    token = w1->Next();
+    token = w1.Next();
     if (token == NULL) {
-      delete w1;
       return query;
     }
-    WordIter* w2 = new WordIter(token, ",", false);
-    while ((token = w2->Next()) != NULL) {
+    WordIter w2(token, ",", false);
+    while ((token = w2.Next()) != NULL) {
       ElandMultiEntry entry;
       int token_length = strlen(token);
       if (token[token_length - 2] == 'F') {
@@ -100,8 +97,6 @@ ElandMultiQuery* ElandMultiParser::NextQuery() {
       entry.chromosome = chromosome;
       query->entries.push_back(entry);
     }
-    delete w1;
-    delete w2;
     return query;
   }
   return NULL;
