@@ -9,35 +9,9 @@ namespace bios {
 
 namespace str {
 
-/**
- * Get a substring.
- * @param str A valid string (not NULL)
- * @param start Etart index (inclusive)
- * @param end End index (inclusive)
- * @return The substring
- */
-char* subString(char* str, int start, int end) {
-  std::stringstream string_buffer;
-  int i = start;
-  while (i <= end) {
-    string_buffer << str[i];
-    i++;
-  }
-  return strdup(string_buffer.str().c_str());
-}
+size_t find_between(std::string& haystack, const char* needle,
+                    size_t start, size_t end) {
 
-/**
- * Return last position of needle in haystack, or NULL if it's not there.
- */
-char* rStringIn(char* needle, char* haystack) {
-  int nSize = strlen(needle);
-  char* pos;
-  for (pos = haystack + strlen(haystack) - nSize; pos >= haystack; pos -= 1) {
-    if (memcmp(needle, pos, nSize) == 0) {
-      return pos;
-    }
-  }
-  return NULL;
 }
 
 /**
@@ -58,17 +32,6 @@ char* stringBetween(char* start, char* end, char* haystack) {
     }
   }
   return NULL;
-}
-
-/**
- * Return last character in string. 
- * If s == NULL or s[o] == 0, return 0
- */
-char lastChar(char* s) {
-  if (s == NULL || s[0] == 0) {
-    return 0;
-  }
-  return s[strlen(s)-1];
 }
 
 /**

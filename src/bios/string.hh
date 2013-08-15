@@ -18,43 +18,15 @@ namespace bios {
 
 namespace str {
 
-char* subString(char* str, int start, int end);
-
-/**
- * Returns position of needle in haystack or NULL if it's not there. 
- */
-static inline char* stringIn(char* needle, char* haystack) {
-  return strstr(haystack, needle);
+static inline bool starts_with(std::string& haystack, const char* needle) {
+  return haystack.find(needle) == 0;
 }
 
-/**
- * Check if s1 starts with s2.
- * strStartsWith() always works, but is slower than strStartsWithC()
- * @note s2 must not be an expression with side effects since it is evaluated 
- * twice
- */
-static inline int StartsWith(char* s1, char* s2) {
-  int len = strlen(s2);
-  return strncmp(s1, s2, len) == 0;
-}
+size_t find_between(std::string& haystack, const char* needle, 
+                    size_t start, size_t end);
 
-/**
- * Check if s1 starts with s2.
- * Same as str::StartsWith, but can only be used if s2 is a string constant, 
- * e.g. if (str::StartsWithC(s, "CC   ")) ...str::StartsWith() always works, 
- * but is slower than str::StartsWithC()
- */
-static inline int StartsWith(char* s1, const char* s2) {
-  int len = sizeof(s2) - 1;
-  return strncmp(s1, s2, len) == 0;
-}
+void toggle_case(std::string* str, size_t size);
 
-static inline int StartsWith(std::string& s1, const char* s2) {
-  return s1.find(s2) == 0;
-}
-
-char* rStringIn(char* needle, char *haystack);
-char* stringBetween(char* start, char *end, char *haystack);
 void toggleCase(char* s, int size);
 void stripChar(char* s, char c);
 int countChars(char* s, char c);

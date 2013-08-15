@@ -144,20 +144,20 @@ void GeneOntology::ReadGoOntology(const char* obo_filename) {
     }
 
     go_term = new GoTerm;
-    if (str::StartsWith(line, "id:")) {
+    if (str::starts_with(line, "id:")) {
       size_t pos = line.find(' ');
       go_term->id = line.substr(pos + 1, line.size() - pos);
-    } else if (str::StartsWith(line, "name:")) {
+    } else if (str::starts_with(line, "name:")) {
       size_t pos = line.find(' ');
       go_term->name = line.substr(pos + 1, line.size() - pos);
-    } else if (str::StartsWith(line, "namespace:")) {
+    } else if (str::starts_with(line, "namespace:")) {
       size_t pos = line.find(' ');
       go_term->name_space = line.substr(pos + 1, line.size() - pos);
-    } else if (str::StartsWith(line, "alt_id:")) {
+    } else if (str::starts_with(line, "alt_id:")) {
       size_t pos = line.find(' ');
       std::string alt_id = line.substr(pos + 1, line.size() - pos);
       go_term->alt_ids.push_back(alt_id);
-    } else if (str::StartsWith(line, "def:")) {
+    } else if (str::starts_with(line, "def:")) {
       size_t pos = line.find(" [");
       if (pos == std::string::npos) {
         std::cerr << "Expected ' [' in def line: " << line << std::endl;
@@ -167,35 +167,35 @@ void GeneOntology::ReadGoOntology(const char* obo_filename) {
       pos = definition.find(' ');
       //str::strTrim(pos1, (char*) " \"", (char*) " \"");
       //go_term->definition = pos1;
-    } else if (str::StartsWith(line, "subset:")) {
+    } else if (str::starts_with(line, "subset:")) {
       size_t pos = line.find(' ');
       std::string subset = line.substr(pos + 1, line.size() - pos);
       go_term->subsets.push_back(subset);
       if (subset == "goslim_generic") {
         go_term->is_generic_go_slim = true;
       }
-    } else if (str::StartsWith(line, "comment:")) {
+    } else if (str::starts_with(line, "comment:")) {
       size_t pos = line.find(' ');
       go_term->comment = line.substr(pos + 1, line.size() - pos);
     } else if (line == "is_obsolete: true") {
       go_term->is_obsolete = true;
-    } else if (str::StartsWith(line, "synonym:")) {
+    } else if (str::starts_with(line, "synonym:")) {
       size_t pos0 = line.find('"');
       size_t pos1 = line.rfind('"');
       std::string synonym = line.substr(pos0, pos1 - pos0 + 1);
       go_term->synonyms.push_back(synonym);
-    } else if (str::StartsWith(line, "consider:")) {
+    } else if (str::starts_with(line, "consider:")) {
       size_t pos = line.find(' ');
       std::string consider = line.substr(pos, line.size() - pos);
       go_term->considers.push_back(consider);
-    } else if (str::StartsWith(line, "xref:")) {
+    } else if (str::starts_with(line, "xref:")) {
       size_t pos0 = line.find(' ');
       size_t pos1 = line.find(':', pos0 + 1);
       GoTagValue tag_value;
       tag_value.tag = line.substr(pos0 + 1, pos1 - pos0 + 1);
       tag_value.value = line.substr(pos1 + 1, line.size() - pos1);
       go_term->xrefs.push_back(tag_value);
-    } else if (str::StartsWith(line, "is_a:")) {
+    } else if (str::starts_with(line, "is_a:")) {
       size_t pos = line.find('!');
       size_t bound = line.size();
       if (pos == std::string::npos) {
@@ -204,7 +204,7 @@ void GeneOntology::ReadGoOntology(const char* obo_filename) {
       pos = line.find(' ');
       std::string parent = line.substr(pos + 1, bound - pos);
       go_term->parents.push_back(parent);
-    } else if (str::StartsWith(line, "relationship:")) {
+    } else if (str::starts_with(line, "relationship:")) {
       size_t pos0 = line.find('!');
       size_t bound = line.size();
       if (pos0 == std::string::npos) {
@@ -213,12 +213,12 @@ void GeneOntology::ReadGoOntology(const char* obo_filename) {
       pos0 = line.find(' ');
       size_t pos1 = line.find(' ', pos0 + 1);
       GoTagValue tag_value;
-      tag_value.tag = line.substr(pos0 + 1, pos1 - pos0);
+      tag_value.tag = line.substr(pos0 + 1, bound - pos0);
       tag_value.value = line.substr(pos1 + 1, line.size() - pos1);
       go_term->relationships.push_back(tag_value);
-    } else if (str::StartsWith(line, "replaced_by:")) {
+    } else if (str::starts_with(line, "replaced_by:")) {
       // Do nothing.
-    } else if (str::StartsWith(line, "disjoint_from:")) {
+    } else if (str::starts_with(line, "disjoint_from:")) {
       // Do nothing.
     } else {
       std::cerr << "Unexpected line: " << line << std::endl;
