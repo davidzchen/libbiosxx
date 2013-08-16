@@ -1,7 +1,27 @@
-/** 
- *   \file stringUtil.c Additional string utilities
- *   \author Lukas Habegger (lukas.habegger@yale.edu)
- */
+// This file is free software; you can redistribute it and/or 
+// modify it under the terms of the GNU Lesser General Public 
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This file is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// Lesser General Public License for more details.
+//
+// To obtain a copy of the GNU Lesser General Public License, 
+// please write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
+
+/// @file string.hh
+/// @author David Z. Chen <d.zhekai.chen@gmail.com>
+/// @version 1.0.0
+/// @since 07 Aug 2013
+///
+/// @section DESCRIPTION
+///
+/// This module implements additional functions for manipulating std::string 
+/// strings.
 
 #include "string.hh"
 
@@ -9,103 +29,50 @@ namespace bios {
 
 namespace str {
 
-size_t find_between(std::string& haystack, const char* needle,
-                    size_t start, size_t end) {
-
-}
-
-/**
- * Return string between start and end strings, or NULL if none found.  
- * The first such instance is returned. 
- * @note String must be freed by caller. 
- */
-char* stringBetween(char* start, char* end, char* haystack) {
-  char* pos, *p;
-  int len;
-  if ((p = stringIn(start, haystack)) != NULL) {
-    pos = p + strlen(start);
-    if ((p = stringIn(end, pos)) != NULL) {
-      len = p - pos;
-      pos = (char*) clone_mem(pos, len + 1);
-      pos[len] = 0;
-      return pos;
-    }
+bool string_between(std::string& between, std::string& haystack,
+                    std::string& start, std::string& end) {
+  size_t start_pos = haystack.find(start);
+  if (start_pos == std::string::npos) {
+    return false;
   }
-  return NULL;
+  size_t end_pos = haystack.find(end, start_pos + start.size());
+  if (end_pos == std::string::npos) {
+    return false;
+  }
+  between = haystack.substr(start_pos + start.size(), 
+                            end_pos - start_pos + start.size());
+  return true;
 }
 
-/**
- * Toggle upper and lower case chars in string. 
- */
-void toggleCase(char* s, int size) {
-  for (int i = 0; i < size; ++i) {
-    char c = s[i];
+void toggle_case(std::string& str) {
+  for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+    char c = *it;
     if (isupper(c)) {
       c = tolower(c);
     } else if (islower(c)) {
       c = toupper(c);
     }
-    s[i] = c;
+    *it = c;
   }
 }
 
-/**
- * Substitute newChar for oldChar throughout string s. 
- */
-void subChar(char* s, char oldChar, char newChar) {
-  for (;;) {
-    char c = *s;
-    if (c == 0) {
-      break;
-    }
-    if (c == oldChar) {
-      *s = newChar;
-    }
-    ++s;
-  }
-}
-
-/**
- * Remove all occurences of c from s. 
- */
-void stripChar(char* s, char c) {
-  char* in = s, *out = s;
-  for ( ; ; ) {
-    char b = *out = *in++;
-    if (b == 0) {
-      break;
-    }
-    if (b != c) {
-      ++out;
-    }
-  }
-}
-
-/**
- * Return number of characters c in string s. 
- */
-int countChars(char* s, char c) {
-  char a;
-  int count = 0;
-  while ((a = *s++) != 0) {
-    if (a == c) {
+size_t count_char(std::string& str, char c) {
+  size_t count = 0;
+  for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+    if (*it == c) {
       ++count;
     }
   }
   return count;
 }
 
-/**
- * Count number of characters that from start in a,b that are same. 
- */
-int countSame(char* a, char* b) {
-  int count = 0;
-  for (int i = 0; ; ++i) {
-    char c = a[i];
-    if (b[i] != c) {
+size_t count_same(std::string& a, std::string& b) {
+  size_t count = 0;
+  for (unsigned int i = 0; ; ++i) {
+    if (a[i] == '\0' || b[i] == '\0') {
       break;
     }
-    if (c == 0) {
+    if (b[i] != a[i]) {
       break;
     }
     ++count;
@@ -113,9 +80,6 @@ int countSame(char* a, char* b) {
   return count;
 }
 
-/** 
- * Return first non-white space. 
- */
 char* skipLeadingSpaces(char* s) {
   if (s == NULL) {
     return NULL;
