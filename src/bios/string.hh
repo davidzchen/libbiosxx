@@ -86,6 +86,20 @@ bool string_between(std::string& bewteen, std::string& haystack,
 /// @param    str        The string to modify.
 void toggle_case(std::string& str);
 
+/// @brief Changes all characters of the string to upper case.
+///
+/// This function modifies the input string.
+///
+/// @param    str        The input string converted to all uppercase.
+void to_upper(std::string& str);
+
+/// @brief Changes all characters of the string to lower case.
+///
+/// This function modifies the input string.
+///
+/// @param    str        The input string converted to all lowercase.
+void to_lower(std::string& s);
+
 /// @brief returns the number of characters c in the string s.
 ///
 /// @param    str        The input string.
@@ -110,8 +124,22 @@ size_t count_char(std::string& str, char c);
 ///           the same.
 size_t count_same(std::string& a, std::string& b);
 
-char* skipLeadingSpaces(char* s);
+/// @brief returns the index of the first non-whitespace character in str.
+///
+/// @param    str        The string.
+///
+/// @return   The index of the first non-whitespace character in str.
+size_t skip_leading_spaces(std::string& str);
+
+/// @brief Returns the index of the first whitespace-character in str.
+///
+/// @param    str        The string.
+///
+/// @return   The index of the first whitespace character in str.
 char* skipToSpaces(char* s);
+
+int strTrim(char *s, char *left, char *right) ;
+
 void eraseTrailingSpaces(char* s);
 void eraseWhiteSpace(char* s);
 char* trimSpaces(char* s);
@@ -130,12 +158,9 @@ char* skipToNumeric(char* s);
 char* insertWordEveryNthPosition (char *string, char *word, int n);
 
 void strReplace(char **s1, char *s2) ;
-void toupperStr(char *s) ; /* converts string to uppercase */
-void tolowerStr(char *s) ; /* converts string to lowercase */
 char *strCaseStr (char *s, char *t) ;  /* case-insensitive strstr() */
 char *strCopySubstr(char *string, char begin, char end, std::string substr);
 int strTranslate(char *s, char *fromChars, char *toChars) ;
-int strTrim(char *s, char *left, char *right) ;
 void strScramble(char *s) ;
 void strUnscramble(char *s) ;
 int isBlankStr(char *s) ;

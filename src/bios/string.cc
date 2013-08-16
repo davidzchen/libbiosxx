@@ -56,6 +56,18 @@ void toggle_case(std::string& str) {
   }
 }
 
+void to_upper(std::string& str) {
+  for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+    *it = toupper(*it);
+  }
+}
+
+void to_lower(std::string& str) {
+  for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+    *it = tolower(*it);
+  }
+}
+
 size_t count_char(std::string& str, char c) {
   size_t count = 0;
   for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
@@ -80,35 +92,19 @@ size_t count_same(std::string& a, std::string& b) {
   return count;
 }
 
-char* skipLeadingSpaces(char* s) {
-  if (s == NULL) {
-    return NULL;
-  }
-  for (;;) {
-    char c = *s;
-    if (!isspace(c)) {
-      return s;
+size_t skip_leading_spaces(std::string& str) {
+  for (size_t i = 0; i < str.size(); ++i) {
+    if (!isspace(str[i])) {
+      return i;
     }
-    ++s;
   }
 }
 
-/**
- * Return first white space or NULL if none. 
- */
-char* skipToSpaces(char* s) {
-  if (s == NULL) {
-    return NULL;
-  }
-  for ( ; ; ) {
-    char c = *s;
-    if (c == 0) {
-      return NULL;
+size_t skip_to_spaces(std::string& str) {
+  for (size_t i = 0; i < str.size(); ++i) {
+    if (isspace(str[i])) {
+      return i;
     }
-    if (isspace(c)) {
-      return s;
-    }
-    ++s;
   }
 }
 
@@ -331,26 +327,6 @@ void strReplace(char **s1, char *s2) {
   free(*s1) ;
   if (s2) {
     *s1 = strdup(s2) ;
-  }
-}
-
-/** 
- * Converts string to uppercase. 
- */
-void toupperStr(char *s) { 
-  char *cp = s - 1 ;
-  while (*++cp) {
-    *cp = toupper(*cp) ;
-  }
-}
-
-/** 
- * Converts string to lowercase. 
- */
-void tolowerStr(char *s) {
-  char *cp = s - 1 ;
-  while (*++cp) {
-    *cp = tolower(*cp) ;
   }
 }
 
