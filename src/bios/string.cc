@@ -92,35 +92,27 @@ size_t count_same(std::string& a, std::string& b) {
   return count;
 }
 
-size_t skip_leading_spaces(std::string& str) {
-  for (size_t i = 0; i < str.size(); ++i) {
-    if (!isspace(str[i])) {
-      return i;
-    }
+void rtrim(std::string& str) {
+  size_t pos = str.find_last_not_of(kWhiteSpaces);
+  if (pos == std::string::npos) {
+    str.clear();
+  } else {
+    str.erase(found + 1);
   }
 }
 
-size_t skip_to_spaces(std::string& str) {
-  for (size_t i = 0; i < str.size(); ++i) {
-    if (isspace(str[i])) {
-      return i;
-    }
+void ltrim(std::string& str) {
+  size_t pos = str.find_first_not_of(kWhiteSpaces);
+  if (pos == std::string::npos) {
+    str.clear();
+  } else {
+    str.erase(0, pos);
   }
 }
 
-/**
- * Replace trailing white space with zeroes.
- */
-void eraseTrailingSpaces(char* s) {
-  int len = strlen(s);
-  for (int i = len - 1; i >= 0; --i) {
-    char c = s[i];
-    if (isspace(c)) {
-      s[i] = 0;
-    } else {
-      break;
-    }
-  }
+void trim(std::string& str) {
+  rtrim(str);
+  ltrim(str);
 }
 
 /**
@@ -143,48 +135,31 @@ void eraseWhiteSpace(char* s) {
   *out++ = 0;
 }
 
-/**
- * Remove leading and trailing white space.
- */
-char* trimSpaces(char* s) {
-  if (s != NULL) {
-    s = skipLeadingSpaces(s);
-    eraseTrailingSpaces(s);
+bool first_word_in_line(std::string& word, std::string& line) {
+  size_t start = line.find_first_not_of(kWhiteSpaces);
+  if (start == std::string::npos) {
+    return false;
   }
-  return s;
+  size_t end = line.find_first_of(kWhiteSpaces, start);
+  if (end == std::string::npos) {
+    end = line.size();
+  }
+  word = line.substr(start, end - start);
+  return true;
 }
 
-/**
- * Return 1 if there is white space in string. 0 otherwise. 
- */
-int hasWhiteSpace(char* s) {
-  char c;
-  while ((c = *s++) != 0) {
-    if (isspace(c)) {
-      return 1;
-    }
+std::string last_word_in_line(std::string& line) {
+  size_t end = line.find_last_not_of(kWhiteSpaces);
+  if (end == std::string::npos) {
+    return false;
   }
-  return 0;
+  size_t start = line.find_last_of(kWhiteSpaces, end);
+  if (start == std::string::npos) {
+    start = 0;
+  }
+  word = line.substr(start, end - start);
 }
 
-/**
- * Returns first word in line if any (white space separated).
- * Puts 0 in place of white space after word. 
- */
-char* firstWordInLine(char* line) {
-  char* e;
-  line = skipLeadingSpaces(line);
-  if ((e = skipToSpaces(line)) != NULL) {
-    *e = 0;
-  }
-  return line;
-}
-
-/** 
- * Returns last word in line if any (white space separated).
- * Returns NULL if string is empty.  Removes any terminating white space
- * from line. 
- */
 char* lastWordInLine(char* line) {
   char* s = line;
   char* word = NULL, *wordEnd = NULL;
@@ -205,84 +180,34 @@ char* lastWordInLine(char* line) {
   return word;
 }
 
-/**
- * Adds head to suffix. In this case returns 'headsuffix'. 
- */
-char* addSuffix(char* head, char* suffix) {
-  std::stringstream string_buffer;
-  string_buffer << head << suffix;
-  return strdup(string_buffer.str().c_str());
-}
-
-/** 
- * Remove end of string from first occurrence of char c. 
- * chopSuffixAt(s, '.') is equivalent to regular chopSuffix. 
- * @see chopSuffix()
- */
-void chopSuffixAt(char* s, char c) {
-  char* e = strrchr(s, c);
-  if (e != NULL) {
-    *e = 0;
+void chop_suffix_at(std::string& str, char c) {
+  size_t pos = str.find_last_of(c);
+  if (pos == std::string::npos) {
+    return;
   }
+  str.erase(pos, str.size() - pos - 1);
 }
 
-/**
- * Remove suffix (last dot in string and beyond) if any. 
- */
-void chopSuffix(char* s) {
-  chopSuffixAt(s,'.');
-}
-
-/**
- * Like chopPrefix, but can chop on any character, not just dot.
- * @see chopPrefix() 
- */
-char* chopPrefixAt(char* s, char c) {
-  char* e = strchr(s, c);
-  if (e == NULL) {
-    return s;
+void chop_prefix_at(std::string& str, char c) {
+  size_t pos = str.find_first_of(c);
+  if (pos == std::string::npos) {
+    return;
   }
-  *e++ = 0;
-  return e;
+  str.erase(0, pos + 1);
 }
 
-/** 
- * This will replace the first dot in a string with 0, and return the character after this.  
- * If there is no '.' in the string this will just return the unchanged s passed in. 
- */
-char* chopPrefix(char* s) {
-  return chopPrefixAt(s, '.');
-}
-
-static const char* const kNaStr = "N/A";
-static const char* const kEmptyStr = "";
-
-/**
- * Return NULL if s is all spaces, otherwise s. 
- */
-char* nullIfAllSpace(char* s) {
-  s = skipLeadingSpaces(s);
-  if (s != NULL)
-    if (s[0] == 0)
-      s = NULL;
-  return s;
-}
-
-/** 
- * Return "true" or "false". 
- */
-const char* trueFalseString(int b) {
-  return (b ? "true" : "false");
-}
-
-/**
- * Return first char of s that's not a digit.
- */
-char* skipNumeric(char* s) {
-  while (isdigit(*s)) {
-    ++s;
+size_t first_non_numeric(std::string& str, size_t pos) {
+  if (pos >= str.size()) {
+    return std::string::npos;
   }
-  return s;
+  while (isdigit(s[pos]) != false) {
+    ++pos;
+  }
+  return pos;
+}
+
+size_t first_non_numeric(std::string& str) {
+  return first_non_numeric(str, 0);
 }
 
 /** 
@@ -310,24 +235,6 @@ char* insertWordEveryNthPosition(char* string, char* word, int n) {
     }  
   }
   return strdup(string_buffer.str().c_str());
-}
-
-/** 
- * Replace previous contents of s1 with copy of s2. s2 can be NULL. 
-   This function is the same as strdup() from the C library, 
-   except that it free()s the target string before duplicating.
- * @param[in] s1 Place where a pointer to a string is stored
- * @param[in] s2 Contents of s2 will replace contents of s1
- * @param[out] s2 Pervious contents free()d, new memory allocated
- */
-void strReplace(char **s1, char *s2) { 
-  if (!s1) {
-    return;
-  }
-  free(*s1) ;
-  if (s2) {
-    *s1 = strdup(s2) ;
-  }
 }
 
 /**
