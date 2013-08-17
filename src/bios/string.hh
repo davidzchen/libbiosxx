@@ -263,15 +263,53 @@ size_t first_non_numeric(std::string& str, size_t pos);
 
 size_t first_non_numeric(std::string& str);
 
-char* skipToNumeric(char* s);
-char* insertWordEveryNthPosition (char *string, char *word, int n);
+/// @brief Returns the index of the first numeric character in the string.
+///
+/// @param    str        The input string.
+///
+/// @return   Index of the first numerical character in the string.
+size_t first_numeric(std::string& str, size_t pos);
+
+size_t first_numeric(std::string& str);
+
+/// @brief Returns a new string consisting of the original input string with
+///        the input word inserted at each nth position.
+///
+/// @param    str        The input string.
+/// @param    word       The word to insert.
+/// @param    n          The position to insert the word.
+///
+/// @return   A new string consisting of the input string with the word
+///           inserted at every nth position.
+
+std::string& insert_word_every_nth(std::string& str, const char* word, int n);
+
+std::string& insert_word_every_nth(std::string& str, std::string& word, 
+                                  int n);
+
 char *strCaseStr (char *s, char *t) ;  /* case-insensitive strstr() */
 char *strCopySubstr(char *string, char begin, char end, std::string substr);
 int strTranslate(char *s, char *fromChars, char *toChars) ;
-void strScramble(char *s) ;
-void strUnscramble(char *s) ;
-int isBlankStr(char *s) ;
+
 int strTrim(char *s, char *left, char *right) ;
+
+/// @brief Encrypts the input string such that it is unreadable to humans but
+///        can easily be unscrambled() again.
+///
+/// The input string must not contain 0xff. This function modifies the input
+/// string.
+///
+/// @param    str        The input string.
+void scramble(std::string& str);
+
+/// @brief Undos the encryption performed on the input string by scramble().
+///
+/// The input string must not contain 0xff. This function modifies the input
+/// string.
+///
+/// @param    str        The input string.
+void unscramble(std::string& str);
+
 
 }; // namespace string
 

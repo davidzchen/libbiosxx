@@ -27,7 +27,7 @@
 
 namespace bios {
 
-namespace str {
+namespace string {
 
 bool string_between(std::string& between, std::string& haystack,
                     std::string& start, std::string& end) {
@@ -160,26 +160,6 @@ std::string last_word_in_line(std::string& line) {
   word = line.substr(start, end - start);
 }
 
-char* lastWordInLine(char* line) {
-  char* s = line;
-  char* word = NULL, *wordEnd = NULL;
-  for ( ; ; ) {
-    s = skipLeadingSpaces(s);
-    if (s == NULL || s[0] == 0) {
-      break;
-    }
-    word = s;
-    s = wordEnd = skipToSpaces(s);
-    if (s == NULL) {
-      break;
-    }
-  }
-  if (wordEnd != NULL) {
-    *wordEnd = 0;
-  }
-  return word;
-}
-
 void chop_suffix_at(std::string& str, char c) {
   size_t pos = str.find_last_of(c);
   if (pos == std::string::npos) {
@@ -210,22 +190,23 @@ size_t first_non_numeric(std::string& str) {
   return first_non_numeric(str, 0);
 }
 
-/** 
- * Skip up to where numeric digits appear.
- */
-char* skipToNumeric(char* s) {
-  while (*s != 0 && !isdigit(*s)) {
-    ++s;
+size_t first_numeric(std::string& str, size_t pos) {
+  if (pos >= str.size()) {
+    return std::string::npos;
   }
-  return s;
+  while (!isdigit(s[pos]) != false) {
+    ++pos;
+  }
+  return pos;
 }
 
-/**
- * Insert word at every nth postion, but not at the end.
- */
-char* insertWordEveryNthPosition(char* string, char* word, int n) {
+size_t first_numeric(std::string& str) {
+  return first_numeric(str, 0);
+}
+
+std::string& insert_word_every_nth(std::string& str, const char* word, int n) {
   std::stringstream string_buffer;
-  int len = strlen (string);
+  int len = str.size();
   int i = 0;
   while (i < len) {
     string_buffer << string[i];
@@ -234,7 +215,12 @@ char* insertWordEveryNthPosition(char* string, char* word, int n) {
       string_buffer << word;
     }  
   }
-  return strdup(string_buffer.str().c_str());
+  return std::string(string_buffer.str());
+}
+
+std::string& insert_word_every_nth(std::string& str, std::string& word, 
+                                   int n) {
+  return insert_word_every_nth(str, word.c_str(), n);
 }
 
 /**
@@ -384,43 +370,21 @@ int strTrim(char *s, char *left, char *right) {
   return len ;
 }
 
-/**
- * Encrypt the input string such that it is unreadable to humans and can 
- * easily be strUnscrambled() again.
- * @param[in] s Must not contain 0xFF
- * @param[out] s Scrambled
- */
-void strScramble(char *s) { 
-  char *cp = s - 1 ;
-  while (*++cp) {
-    if ((unsigned char)*cp == 255) {
+void scramble(std::string& str) { 
+  for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+    if (*it == 255) {
       std::cerr << "clsv_scramble: cannot scramble 0xFF" << std::endl;
       return;
     }
-    *cp = *cp ^ 255 ;
+    *it = *it ^ 255;
   }
 }
 
-/**
- * Antidot for strScramble().
- */
-void strUnscramble(char *s) { 
-  strScramble(s) ;  /* scramble + scramble = unscramble */
+void unscramble(std::string& s) { 
+  scramble(s);
 }
 
-/**
- * Check if s is blank.
- * @return True, if string consists of whitespace only or is of length 0, else 
- *         returns false 
- */
-int isBlankStr(char *s) {
-  char *cp = s-1 ;
-  while (*++cp && isspace(*cp))
-    ;
-  return *cp == '\0' ;
-}
-
-}; // namespace str
+}; // namespace string
 
 }; // namespace bios
 
