@@ -133,8 +133,9 @@ void erase_whitespace(std::string& str) {
   *out++ = 0;
 }
 
-bool first_word_in_line(std::string& word, std::string& line) {
-  size_t start = line.find_first_not_of(kWhiteSpaces);
+std::string first_word_in_line(std::string& line, size_t pos) {
+  std::string word("");
+  size_t start = line.find_first_not_of(kWhiteSpaces, pos);
   if (start == std::string::npos) {
     return false;
   }
@@ -143,19 +144,29 @@ bool first_word_in_line(std::string& word, std::string& line) {
     end = line.size();
   }
   word = line.substr(start, end - start);
-  return true;
+  return word;
 }
 
-std::string last_word_in_line(std::string& line) {
-  size_t end = line.find_last_not_of(kWhiteSpaces);
+std::string first_word_in_line(std::string& line) {
+  return first_word_in_line(line, 0);
+}
+
+std::string last_word_in_line(std::string& line, size_t pos) {
+  std::string word("");
+  size_t end = line.find_last_not_of(kWhiteSpaces, pos);
   if (end == std::string::npos) {
-    return false;
+    return word;
   }
   size_t start = line.find_last_of(kWhiteSpaces, end);
   if (start == std::string::npos) {
     start = 0;
   }
   word = line.substr(start, end - start);
+  return word;
+}
+
+std::string last_word_in_line(std::string& line) {
+  return last_word_in_line(line, 0);
 }
 
 void chop_suffix_at(std::string& str, char c) {
@@ -264,34 +275,38 @@ size_t copy_substr(std::string& str, char begin, char end,
   return substr_end + 1;
 }
 
-// XXX
 int translate(std::string& str, const char* from_chars, const char* to_chars) {
-}
-
-int strTranslate(char *s, char *fromChars, char *toChars) { 
-  char *from = s - 1 ;
-  char *to = s ;
-  char c ;
-  int toLen = strlen(toChars) ;
-  char *hit ;
-  int cnt = 0 ;
-
-  while ((c = *++from) != '\0') {
-    if ((hit = strchr(fromChars, c)) != NULL) {
-      ++cnt ;
-      if (hit - fromChars < toLen) {
-        *to++ = toChars[hit - fromChars];
+  if (from_chars == NULL || to_chars == NULL) {
+    return 0;
+  }
+  size_t to_chars_len = strlen(to_chars);
+  int count = 0;
+  std::string::iterator from_it = str.begin();
+  std::string::iterator to_it = from_it;
+  for ( ; from_it != str.end(); ++from_it) {
+    char* hit = strchr(from_chars, *it);
+    if (hit != NULL) {
+      ++count;
+      size_t hit_index = hit - from_chars;
+      if (hit_index < to_chars_len) {
+        *to = to_chars[hit_index];
+        ++to_it;
       }
     } else {
-      *to++ = c ;
+      *to_it = *from_it;
+      ++to_it;
     }
   }
-  *to = '\0' ;
-  return cnt ;
+  str.erase(to_it, str.end());
+  return count;
 }
 
 // XXX
 void trim_chars(std::string& str, const char* left, const char* right) { 
+
+}
+
+{
   int len ;
   char *cp ;
   if (!s) {

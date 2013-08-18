@@ -46,7 +46,7 @@ void BedGraphParser::InitFromPipe(const char* command) {
 
 BedGraph* BedGraphParser::NextEntry() {
   for (std::string line; stream_->GetLine(line); ) {
-    if (!str::starts_with(line, "track")) {
+    if (!string::starts_with(line, "track")) {
       BedGraph* bed_graph = new BedGraph();
       WordIter  w(line, "\t", true);
       std::string chromosome(w.Next());

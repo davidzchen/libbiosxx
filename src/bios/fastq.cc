@@ -57,7 +57,8 @@ Fastq* FastqParser::ProcessNextSequence (bool truncate_name) {
       Seq* seq = fq->seq;
       seq->name = strdup(line.c_str() + 1);
       if (truncate_name) {
-        seq->name = str::firstWordInLine(str::skipLeadingSpaces(seq->name));
+        size_t pos = string::skip_leading_spaces(seq->name);
+        seq->name = string::first_word_in_line(seq->name, pos);
       }
       stream_->GetLine(line); // reading sequence
       seq->sequence = strdup(line.c_str());

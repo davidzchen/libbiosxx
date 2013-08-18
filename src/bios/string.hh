@@ -209,19 +209,35 @@ static bool is_whitespace(std::string& str) {
 
 /// @brief Returns a copy of the first word in the line.
 ///
-/// @param    word       The word to return to the caller.
+/// @param    str        The input string.
+/// @param    pos        Position of the first character in the string to be
+///                      considered in the search.
+///
+/// @return   Copy of the first word in the line.
+std::string first_word_in_line(std::string& line, size_t pos);
+
+/// @brief Returns a copy of the first word in the line.
+///
 /// @param    str        The input string.
 ///
-/// @return   true if the last word is found and copied, false otherwise.
-bool first_word_in_line(std::string& word, std::string& line);
+/// @return   Copy of the first word in the line.
+std::string first_word_in_line(std::string& line);
 
 /// @brief Returns a copy of the last word in the line.
 ///
-/// @param    word       The word to return to the caller.
+/// @param    str        The input string.
+/// @param    pos        Position of the last character in the string to be
+///                      considered in the search.
+///
+/// @return   Copy of the last word in the line.
+std::string last_word_in_line(std::string& line, size_t pos);
+
+/// @brief Returns a copy of the last word in the line.
+///
 /// @param    str        The input string.
 ///
-/// @return   true if last word is found and copied, false otherwise.
-bool last_word_in_line(std::string& word, std::string& line);
+/// @return   Copy of the last word in the line.
+std::string last_word_in_line(std::string& line);
 
 /// @brief Removes the end of the input string starting at the first occurrence
 ///        of char c.
@@ -300,7 +316,7 @@ size_t first_numeric(std::string& str);
 ///
 /// @return   A new string consisting of the input string with the word
 ///           inserted at every nth position.
-std::string& insert_word_every_nth(std::string& str, const char* word, int n);
+std::string insert_word_every_nth(std::string& str, const char* word, int n);
 
 /// @brief Returns a new string consisting of the original input string with
 ///        the input word inserted at each nth position.
@@ -311,7 +327,7 @@ std::string& insert_word_every_nth(std::string& str, const char* word, int n);
 ///
 /// @return   A new string consisting of the input string with the word
 ///           inserted at every nth position.
-std::string& insert_word_every_nth(std::string& str, std::string& word, 
+std::string insert_word_every_nth(std::string& str, std::string& word, 
                                   int n);
 
 /// @brief Case insensitive version of find.

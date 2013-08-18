@@ -88,8 +88,8 @@ Bed* BedParser::NextEntry(void) {
   }
   for (std::string line; stream_->GetLine(line); ) {
     std::cout << line << std::endl;
-    if (str::starts_with(line, "track") || 
-        str::starts_with(line, "browser")) {
+    if (string::starts_with(line, "track") || 
+        string::starts_with(line, "browser")) {
       continue;
     }
     Bed* bed = new Bed();
