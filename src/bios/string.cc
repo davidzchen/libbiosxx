@@ -115,6 +115,7 @@ void trim(std::string& str) {
   ltrim(str);
 }
 
+// XXX
 void erase_whitespace(std::string& str) {
   char* in, *out;
   char c;
@@ -263,6 +264,7 @@ size_t copy_substr(std::string& str, char begin, char end,
   return substr_end + 1;
 }
 
+// XXX
 int translate(std::string& str, const char* from_chars, const char* to_chars) {
 }
 
@@ -288,6 +290,7 @@ int strTranslate(char *s, char *fromChars, char *toChars) {
   return cnt ;
 }
 
+// XXX
 void trim_chars(std::string& str, const char* left, const char* right) { 
   int len ;
   char *cp ;
