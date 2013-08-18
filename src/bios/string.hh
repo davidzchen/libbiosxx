@@ -73,6 +73,12 @@ static inline bool starts_with(std::string& haystack, std::string& needle) {
   return haystack.find(needle) == 0;
 }
 
+/// @brief Returns whether the haystack begins with the substring needle.
+///
+/// @param    haystack   The string to search in.
+/// @param    needle     The substring to search for.
+///
+/// @return true if haystack begins with needle, false otherwise.
 static inline bool starts_with(std::string& haystack, const char* needle) {
   return haystack.find(needle) == 0;
 }
@@ -177,7 +183,10 @@ void ltrim(std::string& str);
 /// @param    str        The input string.
 void trim(std::string& str);
 
-void eraseWhiteSpace(char* s);
+/// @brief Removes all white space from the input string.
+///
+/// @param    str        The input string.
+void erase_whitespace(std::string& str);
 
 /// @brief Returns whether the input string contains any whitespace characters.
 ///
@@ -261,6 +270,11 @@ static void chop_prefix(std::string& str) {
 /// @return   Index of the first non-numerical character in the string.
 size_t first_non_numeric(std::string& str, size_t pos);
 
+/// @brief Returns the index of the first non-numeric character in the string.
+///
+/// @param    str        The input string.
+///
+/// @return   Index of the first non-numerical character in the string.
 size_t first_non_numeric(std::string& str);
 
 /// @brief Returns the index of the first numeric character in the string.
@@ -270,6 +284,11 @@ size_t first_non_numeric(std::string& str);
 /// @return   Index of the first numerical character in the string.
 size_t first_numeric(std::string& str, size_t pos);
 
+/// @brief Returns the index of the first numeric character in the string.
+///
+/// @param    str        The input string.
+///
+/// @return   Index of the first numerical character in the string.
 size_t first_numeric(std::string& str);
 
 /// @brief Returns a new string consisting of the original input string with
@@ -281,17 +300,91 @@ size_t first_numeric(std::string& str);
 ///
 /// @return   A new string consisting of the input string with the word
 ///           inserted at every nth position.
-
 std::string& insert_word_every_nth(std::string& str, const char* word, int n);
 
+/// @brief Returns a new string consisting of the original input string with
+///        the input word inserted at each nth position.
+///
+/// @param    str        The input string.
+/// @param    word       The word to insert.
+/// @param    n          The position to insert the word.
+///
+/// @return   A new string consisting of the input string with the word
+///           inserted at every nth position.
 std::string& insert_word_every_nth(std::string& str, std::string& word, 
                                   int n);
 
-char *strCaseStr (char *s, char *t) ;  /* case-insensitive strstr() */
-char *strCopySubstr(char *string, char begin, char end, std::string substr);
-int strTranslate(char *s, char *fromChars, char *toChars) ;
+/// @brief Case insensitive version of find.
+///
+/// This method searches for the substring needle in the string haystack but
+/// ignores case.
+///
+/// @param    haystack   The string to search.
+/// @param    needle     The substring to look for.
+///
+/// @param    The index in haystack that the first instance of needle is found.
+size_t find_case(std::string& haystack, const char* needle);
 
-int strTrim(char *s, char *left, char *right) ;
+/// @brief Case insensitive version of find.
+///
+/// This method searches for the substring needle in the string haystack but
+/// ignores case.
+///
+/// @param    haystack   The string to search.
+/// @param    needle     The substring to look for.
+///
+/// @param    The index in haystack that the first instance of needle is found.
+size_t find_case(std::string& haystack, std::string& needle);
+
+/// @brief Copy a substring delimited by the given characters, excluding those
+///        characters.
+///
+/// @param    str        The input string.
+/// @param    begin      The character that delimits the start of the 
+///                      substring.
+/// @param    end        The character that delimits the end of the substring.
+///
+/// @return   The index after the location of end, or std::string::npos if no
+///           substring extracted.
+size_t copy_substr(std::string& str, char begin, char end, 
+                   std::string& substr);
+
+/// @brief Translates each character in the input string using the provided
+///        character mappings.
+///
+/// This function modifies the input string. This function translates each
+/// character from the input string which matches one of the characters in
+/// 'from_chars' wtih the corresponding character from 'to_chars', or, if the
+/// position in 'to_chars' is not filled, deletes the character from the input
+/// string.
+///
+/// This function is similar to the UNIX command and the Perl function 'tr'.
+/// For example, translate("abc", "ac", "b") modifies "abc" into "bb" and
+/// returns 2. translate("a|b|c", "|", "|") would return the number of '|'
+/// characters.
+///
+/// @param    str        The input string.
+/// @param    from_chars The characters to translate from.
+/// @param    to_chars   The characters to translate to.
+/// 
+/// @return   The number of characters translated or modified.
+int translate(std::string& str, const char* from_chars, const char* to_chars);
+
+/// @brief Removes leading and trailing characters from the input string.
+///
+/// This function modifies the input string. For example:
+/// trim_chars("<<=text=>>", "=<", "=") returns 7 and leaves the output
+/// "text=>>".
+///
+/// @param    str        The input string. If this string is empty, then
+///                      nothing will happen.
+/// @param    left       The set of characters to be removed from the left
+///                      end of the input string, or NULL or empty string to
+///                      leave the beginning of the input string as is.
+/// @param    right      The set of characters to be removed from the right
+///                      end of the input string, or NULL or empty string to
+///                      leave the tail of the input string as is.
+void trim_chars(std::string& str, const char* left, const char* right);
 
 /// @brief Encrypts the input string such that it is unreadable to humans but
 ///        can easily be unscrambled() again.
@@ -309,7 +402,6 @@ void scramble(std::string& str);
 ///
 /// @param    str        The input string.
 void unscramble(std::string& str);
-
 
 }; // namespace string
 

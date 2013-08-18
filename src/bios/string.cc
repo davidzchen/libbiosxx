@@ -115,10 +115,7 @@ void trim(std::string& str) {
   ltrim(str);
 }
 
-/**
- * Remove white space from a string.
- */
-void eraseWhiteSpace(char* s) {
+void erase_whitespace(std::string& str) {
   char* in, *out;
   char c;
   
@@ -223,77 +220,52 @@ std::string& insert_word_every_nth(std::string& str, std::string& word,
   return insert_word_every_nth(str, word.c_str(), n);
 }
 
-/**
- * Case-insensitive version of strstr(3C) from the C-libarary.
- * @param[in] s String to be searched in (subject)
- * @param[in] t String to look for in s (query)
- * @return If t is the empty string return s, else if t does not occur in s 
- *         return NULL, 
-   else pointer to first position of t in s
- */
-char *strCaseStr (char *s, char *t) { 
-  char *p , *r ;
-  if (*t == '\0') {
-    return s ;
+size_t find_case(std::string& haystack, const char* needle, 
+                 size_t needle_size) {
+  if (needle_size == 0 || needle == NULL) {
+    return std::string::npos;
   }
-  for ( ; *s != '\0'; s++) {
-    for (p = s, r = t; *r != '\0' && tolower(*p) == tolower(*r); p++, r++) 
-      ;
-    if (r > t && *r == '\0') {
-      return s ;
+  for (size_t i = 0; i < haystack.size(); ++i) {
+    size_t j = i;
+    size_t k = 0;
+    while (j < haystack.size() && k < needle_size && 
+        tolower(haystack[j]) == tolower(needle[j])) {
+      ++j;
+      ++k;
+    }
+    if (k == needle_size) {
+      return i;
     }
   }
-  return NULL ;
+  return std::string::npos;
 }
 
-/**
- * From a supplied string copy a substring delimited by two supplied 
- * characters, excluding these characters.
- * @param[in] string String to copy from
- * @param[in] begin Start copying after the leftmost occurrence of this 
- *            character in string
- * @param[in] end Stop copying before the leftmost occurrence of this 
- *            character from occurrence of begin on; 
-   may be null-terminated to copy to the end of string
- * @param[in] substr Stringa, must exist
- * @param[out] substr Filled with string extracted; empty string if nothing 
- *             extracted;
- * @return Position after location of end, NULL if no substring extracted
- */
-char *strCopySubstr(char *string, char begin, char end, std::string& substr) { 
-  char *pbegin = NULL;
-  char *pend = NULL;
-  char *nextPos = NULL;
-  substr.clear();
-  if ((pbegin = strchr(string, begin)) != NULL) {
-    ++pbegin;
-    if ((pend = strchr(pbegin, end)) != NULL) {
-      nextPos = pend + 1;
-      --pend;
-      substr.copy(pbegin, pend - pbegin + 1);
-    }
+size_t find_case(std::string& haystack, const char* needle) {
+  return find_case(haystack, needle, strlen(needle));
+}
+
+size_t find_case(std::string& haystack, std::string& needle) {
+  return find_case(haystack, needle.c_str(), needle.size());
+}
+
+size_t copy_substr(std::string& str, char begin, char end, 
+                   std::string& substr) {
+  size_t substr_begin = str.find(&begin);
+  if (substr_begin == std::string::npos) {
+    return std::string::npos;
   }
-  return nextPos;
+  ++substr_begin;
+  size_t substr_end = str.find(&end, substr_begin);
+  if (substr_end == std::string::npos) {
+    return std::string::npos;
+  }
+  substr = str.substr(substr_begin, substr_end - substr_begin);
+  return substr_end + 1;
 }
 
-/** 
- * Translates each character from 's' which matches one of the characters in 
- * 'fromChars' with the corresponding character from 'toChars' or, if this 
- * position in 'toChars' is not filled, deletes this character from s, thus 
- * shortening 's'.
- * This function resembles the Unix command and the Perl function 'tr'.
-  \verbatim
-   example: strTranslate("abc", "ac", "b") modifies
-            "abc" into "bb" and returns 2
-            strTranslate("a|b|c", "|", "|")
-            just counts the number of '|' chars
-  \endverbatim   
- * @param[in] s
- * @param[in] fromChars
- * @param[in] toChars
- * @param[out] s
- * @return Number of chars translated or modified
-*/
+int translate(std::string& str, const char* from_chars, const char* to_chars) {
+}
+
 int strTranslate(char *s, char *fromChars, char *toChars) { 
   char *from = s - 1 ;
   char *to = s ;
@@ -316,26 +288,7 @@ int strTranslate(char *s, char *fromChars, char *toChars) {
   return cnt ;
 }
 
-/**
- * Remove leading and trailing characters from s. 
-  \verbatim
-  example: strTrim("<<=text=>>", "=<", "=")
-           returns 7 and leaves output "text=>>" 
- \endverbatim  	   
- * @param[in] s Zero-terminated string of char or NULL (nothing will happen)
- * @param[in] left Set of chars to be removed from left end of s, NULL or empty 
- *            string to leave beginning of s as is
- * @param[in] right Set of chars to be removed from right end of s, NULL or 
- *            empty string to leave tail of s as is
- * @param[out] s Changed
- * @return Length of s after trim
- */
-/* tried to keep this efficent:
-   - don't use strlen() unless unavoidable
-   - first remove right side, because then there is less
-   to be shifted left
-*/ 
-int strTrim(char *s, char *left, char *right) { 
+void trim_chars(std::string& str, const char* left, const char* right) { 
   int len ;
   char *cp ;
   if (!s) {
