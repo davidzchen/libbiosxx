@@ -303,7 +303,23 @@ int translate(std::string& str, const char* from_chars, const char* to_chars) {
 
 // XXX
 void trim_chars(std::string& str, const char* left, const char* right) { 
+  size_t len = str.size();
+  // Move to the last character of the sequence, then run as long as there are
+  // only characters from 'right' or the beginning of the string is reached.
+  if (str.empty() == false && right != NULL) {
+    std::string::iterator it = str.end();
+    while (it != str.begin() && strchr(right, *it) != NULL) {
+      str.remove(it);
+      --it;
+    }
 
+  }
+  // Move to the first character not in 'left' then start shuffling
+  // characters from this position onward down to the beginning of the string.
+  if (str.empty() == false && left != NULL) {
+
+  }
+  return len;
 }
 
 {
