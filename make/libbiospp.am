@@ -1,0 +1,46 @@
+lib_LTLIBRARIES = libbios++.la
+libbios___la_SOURCES = \
+    bios/linestream.cc \
+    bios/bed.cc \
+    bios/bedgraph.cc \
+    bios/bitfield.cc \
+    bios/blast.cc \
+    bios/blat.cc \
+    bios/bowtie.cc \
+    bios/conf.cc \
+    bios/eland.cc \
+    bios/elandmulti.cc \
+    bios/exportpe.cc \
+    bios/fasta.cc \
+    bios/fastq.cc \
+    bios/geneontology.cc \
+    bios/interval.cc \
+    bios/misc.cc \
+    bios/number.cc \
+    bios/seq.cc \
+    bios/string.cc \
+    bios/worditer.cc
+
+libbios___la_LIBADD = -lm -lgsl
+
+nobase_dist_include_HEADERS = \
+    bios/bed.hh \
+    bios/bedgraph.hh \
+    bios/bitfield.hh \
+    bios/blast.hh \
+    bios/blat.hh \
+    bios/bowtie.hh \
+    bios/conf.hh \
+    bios/eland.hh \
+    bios/elandmulti.hh \
+    bios/exportpe.hh \
+    bios/fasta.hh \
+    bios/fastq.hh \
+    bios/geneontology.hh \
+    bios/interval.hh \
+    bios/linestream.hh \
+    bios/misc.hh \
+    bios/number.hh \
+    bios/seq.hh \
+    bios/string.hh \
+    bios/worditer.hh

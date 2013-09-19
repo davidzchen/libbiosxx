@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.59])
-AC_INIT([libbios++], [1.0.0], [d.zhekai.chen@gmail.com])
-AC_CONFIG_SRCDIR([src/bios])
+AC_INIT([libbiospp], [1.0.0], [d.zhekai.chen@gmail.com])
+AC_CONFIG_SRCDIR([bios])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
