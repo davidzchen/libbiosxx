@@ -1,0 +1,6 @@
+libbiospp
+=========
+
+C++ rewrite of the BIOS bioinformatics library.
+
+Note that the rewrite is still ongoing and nothing really works yet.
