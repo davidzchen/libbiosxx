@@ -1,18 +1,32 @@
-/** 
- *   \file exportPEParser.c Module to parse *_export.txt files, i.e. 
- *   output of Illumina GERALD/ELAND platform.
- *   \author Andrea Sboner (andrea.sboner@yale.edu)
- */
+// This file is free software; you can redistribute it and/or 
+// modify it under the terms of the GNU Lesser General Public 
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This file is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// Lesser General Public License for more details.
+//
+// To obtain a copy of the GNU Lesser General Public License, 
+// please write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
+
+/// @file eland.cc
+/// @author Lukas Habegger <lukas.habegger@yale.edu>
+/// @version 1.0.0
+/// @since 07 Aug 2013
+///
+/// @section DESCRIPTION
+///
+/// Header for module to parse *_export.txt files, i.e. output of Illumina 
+/// GERALD/ELAND platform.
 
 #include "exportpe.hh"
 
 namespace bios {
 
-/** 
- * Write an export entry;
- * @param [in] currEntry: a pointer to the single end entry
- * @return string formatted as an export file
- */
 std::string SingleEnd::ToString() {
   std::stringstream string_buffer;
   string_buffer << machine.c_str() << "\t";
@@ -89,22 +103,12 @@ ExportPEParser::~ExportPEParser() {
   delete stream2_;
 }
 
-/**
- * Initialize the exportPEParser module from a file.
- * @param[in] fileName1 First-end file name
- * @param[in] fileName1 Second-end file name
- */
 void ExportPEParser::InitFromFile(const char* filename1, 
                                   const char* filename2) {
   stream1_ = new FileLineStream(filename1);
   stream2_ = new FileLineStream(filename2);
 }
 
-/**
- * Initialize the exportPEParser module from a command/
- * @param[in] cmd1 command to be executed for the first end
- * @param[in] cmd2 command to be executed for the second end
- */
 void ExportPEParser::InitFromPipe(const char* cmd1, const char* cmd2) {
   stream1_ = new PipeLineStream(cmd1);
   stream2_ = new PipeLineStream(cmd2);
@@ -186,9 +190,6 @@ ExportPE* ExportPEParser::ProcessNextEntry() {
   }
 }
 
-/**
- * Read an entry in the export file;
- */
 ExportPE* ExportPEParser::NextEntry() {
   return ExportPEParser::ProcessNextEntry();
 }

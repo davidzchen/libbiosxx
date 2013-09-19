@@ -115,22 +115,15 @@ void trim(std::string& str) {
   ltrim(str);
 }
 
-// XXX
 void erase_whitespace(std::string& str) {
-  char* in, *out;
-  char c;
-  
-  in = out = s;
-  for (;;) {
-    c = *in++;
-    if (c == 0) {
-      break;
-    }
+  std::string::iterator s = str.begin();
+  for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+    char c = *it;
     if (!isspace(c)) {
-      *out++ = c;
+      *s = c;
     }
   }
-  *out++ = 0;
+  str.erase(s, str.end());
 }
 
 std::string first_word_in_line(std::string& line, size_t pos) {
@@ -301,7 +294,6 @@ int translate(std::string& str, const char* from_chars, const char* to_chars) {
   return count;
 }
 
-// XXX
 void trim_chars(std::string& str, const char* left, const char* right) { 
   size_t len = str.size();
   // Move to the last character of the sequence, then run as long as there are
@@ -312,49 +304,19 @@ void trim_chars(std::string& str, const char* left, const char* right) {
       str.remove(it);
       --it;
     }
-
+    len = std::distance(str.begin(), it) + 1;
   }
-  // Move to the first character not in 'left' then start shuffling
-  // characters from this position onward down to the beginning of the string.
+  // Move to the first character not in 'left' then erase all characters from
+  // the beginning of the string to this character.
   if (str.empty() == false && left != NULL) {
-
+    std::string::iterator it = str.begin();
+    while (it != str.end() && strchr(left, *it) != NULL) {
+      ++it;
+    }
+    len -= std::distance(str.begin(), it);
+    str.erase(str.begin(), it);
   }
   return len;
-}
-
-{
-  int len ;
-  char *cp ;
-  if (!s) {
-    return 0;
-  }
-  len = strlen(s);
-  if (len && right) {
-    /* move to last char of sequence, then run as long as
-       there are only chars from 'right' or we bump into the
-       beginning of the string */
-    cp = s + len - 1;  
-    while( cp >= s && strchr(right, *cp)) {
-      *cp-- = '\0';
-    }
-    len = cp - s + 1;
-  }
-
-  if (len && left) {
-    /* move cp to the first char not in 'left'; then start
-       shuffling chars from this position onward down to the beginning
-       of the string */
-    cp = s ;
-    while (*cp && strchr(left, *cp)) {
-      ++cp;
-    }
-    len = len - (cp - s) ;
-    while (*cp) {
-      *s++ = *cp++ ;
-    }
-    *s = '\0' ;
-  }
-  return len ;
 }
 
 void scramble(std::string& str) { 

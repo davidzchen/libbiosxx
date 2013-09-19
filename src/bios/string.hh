@@ -193,8 +193,8 @@ void erase_whitespace(std::string& str);
 /// @param    str        The input string
 ///
 /// @return   true if the string has whitespace characters, false otherwise.
-static bool has_whitespace(std::string& str) {
-  return str.find_first_of(kWhiteSpace) != std::string::npos;
+static inline bool has_whitespace(std::string& str) {
+  return str.find_first_of(kWhiteSpaces) != std::string::npos;
 }
 
 /// @brief Returns whether the input string contains all whitespace characters.
@@ -203,8 +203,8 @@ static bool has_whitespace(std::string& str) {
 ///
 /// @return   true if the string only contains whitespace characters, false
 ///           otherwise.
-static bool is_whitespace(std::string& str) {
-  return str.find_first_not_of(kWhiteSpace) == std::string::npos;
+static inline bool is_whitespace(std::string& str) {
+  return str.find_first_not_of(kWhiteSpaces) == std::string::npos;
 }
 
 /// @brief Returns a copy of the first word in the line.
@@ -255,7 +255,7 @@ void chop_suffix_at(std::string& str, char c);
 /// calling bios::string::chop_suffix_at(str, '.').
 ///
 /// @param    str        The input string.
-static void chop_suffix(std::string& str) {
+static inline void chop_suffix(std::string& str) {
   chop_suffix_at(str, '.');
 }
 
@@ -275,7 +275,7 @@ void chop_prefix_at(std::string& str, char c);
 /// calling bios::string::chop_prefix_at(str, '.').
 ///
 /// @param    str        The input string.
-static void chop_prefix(std::string& str) {
+static inline void chop_prefix(std::string& str) {
   chop_prefix_at(str, '.');
 }
 

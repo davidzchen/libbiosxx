@@ -1,7 +1,26 @@
-/**
- *   \file exportPEParser.h
- *   \author Andrea Sboner (andrea.sboner@yale.edu)
- */
+// This file is free software; you can redistribute it and/or 
+// modify it under the terms of the GNU Lesser General Public 
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This file is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// Lesser General Public License for more details.
+//
+// To obtain a copy of the GNU Lesser General Public License, 
+// please write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
+
+/// @file eland.cc
+/// @author Andrea Sboner <andrea.sboner@yale.edu>
+/// @version 1.0.0
+/// @since 07 Aug 2013
+///
+/// @section DESCRIPTION
+///
+/// This is the header for the module for parsing *_export.txt files.
 
 #ifndef BIOINFO_EXPORTPE_H__
 #define BIOINFO_EXPORTPE_H__
@@ -17,6 +36,9 @@
 namespace bios {
 
 struct SingleEnd {
+  /// Write an export entry;
+  /// @param [in] currEntry: a pointer to the single end entry
+  /// @return string formatted as an export file
   std::string ToString();
 
   std::string machine;            // 1 machine
@@ -56,7 +78,14 @@ class ExportPEParser {
   ExportPEParser();
   ~ExportPEParser();
 
+  /// @brief Initialize the exportPEParser module from a file.
+  /// @param filename1 First-end file name
+  /// @param filename1 Second-end file name
   void InitFromFile(const char* filename1, const char* filename2);
+
+  /// Initialize the exportPEParser module from a command/
+  /// @param cmd1 command to be executed for the first end
+  /// @param cmd2 command to be executed for the second end
   void InitFromPipe(const char* cmd1, const char* cmd2);
 
   ExportPE* NextEntry();
