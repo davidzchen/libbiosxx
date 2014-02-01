@@ -3,4 +3,4 @@ compiler:
   - gcc
   - clang
 
-script: ./configure && make && make check
+script: ./ci/build.sh
