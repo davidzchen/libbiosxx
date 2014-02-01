@@ -11,7 +11,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 #------------------------------------------------------------------------------
 # Initialize automake
 #------------------------------------------------------------------------------
-AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability subdir-objects])
+AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability subdir-objects foreign])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 #------------------------------------------------------------------------------
