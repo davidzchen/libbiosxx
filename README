@@ -1,6 +1,8 @@
 libbiospp
 =========
 
+[![Build Status](https://travis-ci.org/davidzchen/libbiospp.png?branch=master)](https://travis-ci.org/davidzchen/libbiospp)
+
 C++ rewrite of the BIOS bioinformatics library.
 
 Note that the rewrite is still ongoing and nothing really works yet.
