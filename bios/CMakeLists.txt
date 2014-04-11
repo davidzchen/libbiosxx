@@ -1,0 +1,21 @@
+add_library(biosxx
+  bed.cc
+  bedgraph.cc
+  bitfield.cc
+  blast.cc
+  blat.cc
+  bowtie.cc
+  conf.cc
+  eland.cc
+  elandmulti.cc
+  exportpe.cc
+  fasta.cc
+  fastq.cc
+  geneontology.cc
+  interval.cc
+  linestream.cc
+  misc.cc
+  number.cc
+  seq.cc
+  string.cc
+  worditer.cc)
