@@ -1,16 +1,16 @@
-// This file is free software; you can redistribute it and/or 
-// modify it under the terms of the GNU Lesser General Public 
-// License as published by the Free Software Foundation; either 
+// This file is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
 //
-// This file is distributed in the hope that it will be useful, 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// This file is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // Lesser General Public License for more details.
 //
-// To obtain a copy of the GNU Lesser General Public License, 
-// please write to the Free Software 
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// To obtain a copy of the GNU Lesser General Public License,
+// please write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
 
 /// @file string.hh
@@ -20,7 +20,7 @@
 ///
 /// @section DESCRIPTION
 ///
-/// This module implements additional functions for manipulating std::string 
+/// This module implements additional functions for manipulating std::string
 /// strings.
 
 #include "string.hh"
@@ -28,6 +28,8 @@
 namespace bios {
 
 namespace string {
+
+const char* kWhiteSpaces = " \t\n\r\f\v";
 
 bool string_between(std::string& between, std::string& haystack,
                     std::string& start, std::string& end) {
@@ -39,7 +41,7 @@ bool string_between(std::string& between, std::string& haystack,
   if (end_pos == std::string::npos) {
     return false;
   }
-  between = haystack.substr(start_pos + start.size(), 
+  between = haystack.substr(start_pos + start.size(),
                             end_pos - start_pos + start.size());
   return true;
 }
@@ -97,7 +99,7 @@ void rtrim(std::string& str) {
   if (pos == std::string::npos) {
     str.clear();
   } else {
-    str.erase(found + 1);
+    str.erase(pos + 1);
   }
 }
 
@@ -130,7 +132,7 @@ std::string first_word_in_line(std::string& line, size_t pos) {
   std::string word("");
   size_t start = line.find_first_not_of(kWhiteSpaces, pos);
   if (start == std::string::npos) {
-    return false;
+    return word;
   }
   size_t end = line.find_first_of(kWhiteSpaces, start);
   if (end == std::string::npos) {
@@ -182,7 +184,7 @@ size_t first_non_numeric(std::string& str, size_t pos) {
   if (pos >= str.size()) {
     return std::string::npos;
   }
-  while (isdigit(s[pos]) != false) {
+  while (isdigit(str[pos]) != false) {
     ++pos;
   }
   return pos;
@@ -196,7 +198,7 @@ size_t first_numeric(std::string& str, size_t pos) {
   if (pos >= str.size()) {
     return std::string::npos;
   }
-  while (!isdigit(s[pos]) != false) {
+  while (!isdigit(str[pos]) != false) {
     ++pos;
   }
   return pos;
@@ -206,26 +208,26 @@ size_t first_numeric(std::string& str) {
   return first_numeric(str, 0);
 }
 
-std::string& insert_word_every_nth(std::string& str, const char* word, int n) {
+std::string insert_word_every_nth(std::string& str, const char* word, int n) {
   std::stringstream string_buffer;
   int len = str.size();
   int i = 0;
   while (i < len) {
-    string_buffer << string[i];
+    string_buffer << str[i];
     i++;
     if ((i % n) == 0 && i != len) {
       string_buffer << word;
-    }  
+    }
   }
   return std::string(string_buffer.str());
 }
 
-std::string& insert_word_every_nth(std::string& str, std::string& word, 
+std::string insert_word_every_nth(std::string& str, std::string& word,
                                    int n) {
   return insert_word_every_nth(str, word.c_str(), n);
 }
 
-size_t find_case(std::string& haystack, const char* needle, 
+size_t find_case(std::string& haystack, const char* needle,
                  size_t needle_size) {
   if (needle_size == 0 || needle == NULL) {
     return std::string::npos;
@@ -233,7 +235,7 @@ size_t find_case(std::string& haystack, const char* needle,
   for (size_t i = 0; i < haystack.size(); ++i) {
     size_t j = i;
     size_t k = 0;
-    while (j < haystack.size() && k < needle_size && 
+    while (j < haystack.size() && k < needle_size &&
         tolower(haystack[j]) == tolower(needle[j])) {
       ++j;
       ++k;
@@ -253,7 +255,7 @@ size_t find_case(std::string& haystack, std::string& needle) {
   return find_case(haystack, needle.c_str(), needle.size());
 }
 
-size_t copy_substr(std::string& str, char begin, char end, 
+size_t copy_substr(std::string& str, char begin, char end,
                    std::string& substr) {
   size_t substr_begin = str.find(&begin);
   if (substr_begin == std::string::npos) {
@@ -277,12 +279,12 @@ int translate(std::string& str, const char* from_chars, const char* to_chars) {
   std::string::iterator from_it = str.begin();
   std::string::iterator to_it = from_it;
   for ( ; from_it != str.end(); ++from_it) {
-    char* hit = strchr(from_chars, *it);
+    char* hit = strchr(from_chars, *from_it);
     if (hit != NULL) {
       ++count;
       size_t hit_index = hit - from_chars;
       if (hit_index < to_chars_len) {
-        *to = to_chars[hit_index];
+        *to_it = to_chars[hit_index];
         ++to_it;
       }
     } else {
@@ -294,17 +296,15 @@ int translate(std::string& str, const char* from_chars, const char* to_chars) {
   return count;
 }
 
-void trim_chars(std::string& str, const char* left, const char* right) { 
-  size_t len = str.size();
+void trim_chars(std::string& str, const char* left, const char* right) {
   // Move to the last character of the sequence, then run as long as there are
   // only characters from 'right' or the beginning of the string is reached.
   if (str.empty() == false && right != NULL) {
     std::string::iterator it = str.end();
     while (it != str.begin() && strchr(right, *it) != NULL) {
-      str.remove(it);
+      str.erase(it);
       --it;
     }
-    len = std::distance(str.begin(), it) + 1;
   }
   // Move to the first character not in 'left' then erase all characters from
   // the beginning of the string to this character.
@@ -313,23 +313,21 @@ void trim_chars(std::string& str, const char* left, const char* right) {
     while (it != str.end() && strchr(left, *it) != NULL) {
       ++it;
     }
-    len -= std::distance(str.begin(), it);
     str.erase(str.begin(), it);
   }
-  return len;
 }
 
-void scramble(std::string& str) { 
+void scramble(std::string& str) {
   for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
-    if (*it == 255) {
+    if ((unsigned char)*it == 255) {
       std::cerr << "clsv_scramble: cannot scramble 0xFF" << std::endl;
       return;
     }
-    *it = *it ^ 255;
+    *it = (unsigned char)*it ^ 255;
   }
 }
 
-void unscramble(std::string& s) { 
+void unscramble(std::string& s) {
   scramble(s);
 }
 

@@ -1,7 +1,6 @@
-/** 
- *   \file fasta.c Module to handle FASTA sequences
- *   \author Lukas Habegger (lukas.habegger@yale.edu)
- */
+ /// @file fasta.c
+ /// @brief Module to handle FASTA sequences
+ /// @author Lukas Habegger (lukas.habegger@yale.edu)
 
 #include "fasta.hh"
 
@@ -17,11 +16,9 @@ FastaParser::~FastaParser() {
   delete stream_;
 }
 
-/**
- * Initialize the FASTA module using a file name.
- * @note Use "-" to denote stdin.
- * @post FastaParser::nextSequence(), FastaParser::readAllSequences() can be called.
- */
+/// Initialize the FASTA module using a file name.
+/// @note Use "-" to denote stdin.
+/// @post FastaParser::nextSequence(), FastaParser::readAllSequences() can be called.
 void FastaParser::InitFromFile(const char* filename) {
   stream_ = new FileLineStream(filename);
   stream_->SetBuffer(1);
@@ -69,26 +66,22 @@ Seq* FastaParser::ProcessNextSequence(bool truncate_name) {
   seq->sequence = strdup((char*) string_buffer.str().c_str());
   seq->size = string_buffer.str().size();
   return seq;
-} 
+}
 
-/**
- * Returns a pointer to the next FASTA sequence.
- * @param[in] truncate_name If truncate_name > 0, leading spaces of the name 
- *            are skipped. Furthermore, the name is truncated after the first 
- *            white space. If truncate_name == 0, the name is stored as is.
- * @note The memory belongs to this routine.
- */
+/// Returns a pointer to the next FASTA sequence.
+/// @param[in] truncate_name If truncate_name > 0, leading spaces of the name
+///            are skipped. Furthermore, the name is truncated after the first
+///            white space. If truncate_name == 0, the name is stored as is.
+/// @note The memory belongs to this routine.
 Seq* FastaParser::NextSequence(bool truncate_name) {
   return ProcessNextSequence(truncate_name);
 }
 
-/**
- * Returns an Array of FASTA sequences.
- * @param[in] truncate_name If truncate_name > 0, leading spaces of the name 
- *            are skipped. Furthermore, the name is truncated after the first 
- *            white space. If truncate_name == 0, the name is stored as is.
- * @note The memory belongs to this routine.
- */
+/// Returns an Array of FASTA sequences.
+/// @param[in] truncate_name If truncate_name > 0, leading spaces of the name
+///            are skipped. Furthermore, the name is truncated after the first
+///            white space. If truncate_name == 0, the name is stored as is.
+/// @note The memory belongs to this routine.
 std::vector<Seq> FastaParser::ReadAllSequences(bool truncate_name) {
   std::vector<Seq> seqs;
   Seq* seq = NULL;
@@ -98,24 +91,21 @@ std::vector<Seq> FastaParser::ReadAllSequences(bool truncate_name) {
   return seqs;
 }
 
-/**
- * Prints currSeq to stdout.
- */
+/// Prints currSeq to stdout.
 void FastaParser::PrintSequence(Seq& seq) {
-  std::string& str = string::insert_word_every_nth(seq.sequence, "\n",
-                                                   kCharactersPerLine);
-  printf(">%s\n%s\n", seq.name, str.c_str());
+  std::string sequence = std::string(seq.sequence);
+  std::string str = string::insert_word_every_nth(sequence, "\n",
+                                                  kCharactersPerLine);
+  printf(">%s\n%s\n", seq.name.c_str(), str.c_str());
 }
 
-/**
- * Prints seqs to stdout.
- */
+/// Prints seqs to stdout.
 void FastaParser::PrintAllSequences(std::vector<Seq>& seqs) {
   for (std::vector<Seq>::iterator it = seqs.begin(); it != seqs.end(); ++it) {
-    FastaParser::PrintSequence(*it); 
+    FastaParser::PrintSequence(*it);
   }
 }
 
 }; // namespace bios
 
-/* vim: set ai ts=2 sts=2 sw=2 et: */
+// vim: set ai ts=2 sts=2 sw=2 et:

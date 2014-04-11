@@ -1,16 +1,16 @@
-// This file is free software; you can redistribute it and/or 
-// modify it under the terms of the GNU Lesser General Public 
-// License as published by the Free Software Foundation; either 
+// This file is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
 //
-// This file is distributed in the hope that it will be useful, 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// This file is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // Lesser General Public License for more details.
 //
-// To obtain a copy of the GNU Lesser General Public License, 
-// please write to the Free Software 
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// To obtain a copy of the GNU Lesser General Public License,
+// please write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
 
 /// @file geneontology.cc
@@ -32,11 +32,11 @@ GoNode::GoNode() {
 GoNode::~GoNode() {
 }
 
-void GoNode::GetChildrenAtHierarchyLevel(std::vector<GoNode*>& result_nodes, 
-                                         int current_level, 
+void GoNode::GetChildrenAtHierarchyLevel(std::vector<GoNode*>& result_nodes,
+                                         int current_level,
                                          int specified_level) {
   if (current_level == specified_level) {
-    uint32_t i = 0; 
+    uint32_t i = 0;
     while (i < result_nodes.size()) {
       GoNode* node = result_nodes[i];
       if (node == this) {
@@ -50,10 +50,10 @@ void GoNode::GetChildrenAtHierarchyLevel(std::vector<GoNode*>& result_nodes,
     return;
   }
   if (children.empty() == false) {
-    for (std::vector<GoNode*>::iterator it = children.begin(); 
+    for (std::vector<GoNode*>::iterator it = children.begin();
         it != children.end(); ++it) {
       GoNode* node = *it;
-      node->GetChildrenAtHierarchyLevel(result_nodes, current_level + 1, 
+      node->GetChildrenAtHierarchyLevel(result_nodes, current_level + 1,
                                         specified_level);
     }
   }
@@ -67,7 +67,7 @@ std::vector<GoNode*> GoNode::GetChildrenAtSpecifiedHierarchyLevel(int level) {
 
 GeneOntology::GeneOntology(const char* go_filename) {
   ReadGoOntology(go_filename);
-  ConvertGoTermsToGoNodes(); 
+  ConvertGoTermsToGoNodes();
 }
 
 std::vector<GoNode*> GeneOntology::GetGoNodesByNameSpace(
@@ -165,8 +165,9 @@ void GeneOntology::ReadGoOntology(const char* obo_filename) {
       }
       std::string definition = line.substr(0, pos);
       pos = definition.find(' ');
-      string::trim_chars(pos1, " \"", " \"");
-      go_term->definition = pos1;
+      definition = definition.substr(pos);
+      string::trim_chars(definition, " \"", " \"");
+      go_term->definition = definition;
     } else if (string::starts_with(line, "subset:")) {
       size_t pos = line.find(' ');
       std::string subset = line.substr(pos + 1, line.size() - pos);
@@ -238,7 +239,7 @@ GoNode* GeneOntology::FindGoNode(const char* id) {
 }
 
 void GeneOntology::AddGoNode(std::vector<GoNode*>& go_nodes, GoNode* go_node) {
-  std::vector<GoNode*>::iterator it = std::find(go_nodes.begin(), 
+  std::vector<GoNode*>::iterator it = std::find(go_nodes.begin(),
                                                 go_nodes.end(), go_node);
   if (it == go_nodes.end()) {
     return;
@@ -247,7 +248,7 @@ void GeneOntology::AddGoNode(std::vector<GoNode*>& go_nodes, GoNode* go_node) {
 }
 
 void GeneOntology::ConvertGoTermsToGoNodes() {
-  for (std::vector<GoTerm>::iterator it = go_terms_.begin(); 
+  for (std::vector<GoTerm>::iterator it = go_terms_.begin();
       it != go_terms_.end(); ++it) {
     GoTerm& go_term = *it;
     if (go_term.is_obsolete == true) {
@@ -301,7 +302,7 @@ void GeneOntology::ReadGoAnnotations(const char* annotation_filename) {
     association_entry.db_gene_name = w.Next();
     association_entry.gene_name = w.Next();
     // optional column [qualifier], not considered
-    w.Next(); 
+    w.Next();
     association_entry.go_id = w.Next();
     association_entries.push_back(association_entry);
   }
@@ -326,7 +327,7 @@ void GeneOntology::ReadGoAnnotations(const char* annotation_filename) {
       j++;
     }
     i = j;
-    std::unique(association.go_ids.begin(), 
+    std::unique(association.go_ids.begin(),
                 association.go_ids.end());
     go_gene_associations_.push_back(association);
   }
@@ -335,7 +336,7 @@ void GeneOntology::ReadGoAnnotations(const char* annotation_filename) {
 }
 
 void GeneOntology::MapAnnotatedGenesToGoOntology() {
-  for (std::vector<GoGeneAssociation>::iterator it = 
+  for (std::vector<GoGeneAssociation>::iterator it =
       go_gene_associations_.begin(); it != go_gene_associations_.end(); ++it) {
     GoGeneAssociation& go_gene_association = *it;
     std::vector<std::string>& go_ids = go_gene_association.go_ids;
@@ -357,7 +358,7 @@ GoGeneAssociation* GeneOntology::FindGoGeneAssociation(const char* gene_name) {
   GoGeneAssociation test_go_gene_association;
   test_go_gene_association.gene_name = gene_name;
   std::vector<GoGeneAssociation>::iterator it = std::find(
-      go_gene_associations_.begin(), go_gene_associations_.end(), 
+      go_gene_associations_.begin(), go_gene_associations_.end(),
       test_go_gene_association);
   if (it == go_gene_associations_.end()) {
     return NULL;
@@ -397,8 +398,8 @@ void GeneOntology::MapGeneAnnotationsToGeneOntology(
   MapAnnotatedGenesToGoOntology();
 }
 
-void GeneOntology::CountGenes(GoNode* n, 
-    std::vector<std::string>& go_node_annotated_genes, 
+void GeneOntology::CountGenes(GoNode* n,
+    std::vector<std::string>& go_node_annotated_genes,
     std::vector<std::string>& go_node_genes_of_interest) {
   if (n->children.empty() == false) {
     for (std::vector<GoNode*>::iterator it = n->children.begin();
@@ -421,7 +422,7 @@ void GeneOntology::CountGenes(GoNode* n,
   }
 }
 
-double GeneOntology::CalculatePvalueForEnrichment(int k, int n1, int n2, 
+double GeneOntology::CalculatePvalueForEnrichment(int k, int n1, int n2,
                                                   int t) {
   double pvalue = 0.0;
   for (int i = k; i <= n1; ++i) {
@@ -430,7 +431,7 @@ double GeneOntology::CalculatePvalueForEnrichment(int k, int n1, int n2,
   return pvalue;
 }
 
-double GeneOntology::CalculatePvalueForDepletion(int k, int n1, int n2, 
+double GeneOntology::CalculatePvalueForDepletion(int k, int n1, int n2,
                                                  int t) {
   double pvalue = 0.0;
   for (int i = 0; i <= k; ++i) {
@@ -440,18 +441,18 @@ double GeneOntology::CalculatePvalueForDepletion(int k, int n1, int n2,
 }
 
 std::vector<std::string> GeneOntology::CalculateGeneEnrichmentOrDepletionForGoTerm(
-    GoNode* go_node, int* number_of_annotated_genes, 
-    int* number_of_genes_of_interest, double* pvalue, int analysis_mode) { 
+    GoNode* go_node, int* number_of_annotated_genes,
+    int* number_of_genes_of_interest, double* pvalue, int analysis_mode) {
 
   std::vector<std::string> go_node_annotated_genes;
   std::vector<std::string> go_node_genes_of_interest;
 
   CountGenes(go_node, go_node_annotated_genes, go_node_genes_of_interest);
   std::sort(go_node_annotated_genes.begin(), go_node_annotated_genes.end());
-  std::sort(go_node_genes_of_interest.begin(), 
+  std::sort(go_node_genes_of_interest.begin(),
             go_node_genes_of_interest.end());
   std::unique(go_node_annotated_genes.begin(), go_node_annotated_genes.end());
-  std::unique(go_node_genes_of_interest.begin(), 
+  std::unique(go_node_genes_of_interest.begin(),
               go_node_genes_of_interest.end());
   *number_of_annotated_genes = go_node_annotated_genes.size();
   *number_of_genes_of_interest = go_node_genes_of_interest.size();
@@ -474,7 +475,7 @@ std::vector<std::string> GeneOntology::CalculateGeneEnrichmentOrDepletionForGoTe
 }
 
 std::vector<GoStatistic> GeneOntology::CalculateGeneEnrichmentOrDepletion(
-   std::vector<GoNode*> go_node_pointers, 
+   std::vector<GoNode*> go_node_pointers,
    int multiple_testing_correction_method, int analysis_mode) {
   std::vector<GoStatistic> go_statistics;
   for (std::vector<GoNode*>::iterator it = go_node_pointers.begin();
@@ -495,15 +496,15 @@ std::vector<GoStatistic> GeneOntology::CalculateGeneEnrichmentOrDepletion(
     go_statistic.genes_of_interest = genes_of_interest;
     go_statistics.push_back(go_statistic);
   }
-  std::sort(go_statistics.begin(), go_statistics.end(), 
+  std::sort(go_statistics.begin(), go_statistics.end(),
             GoStatistic::CompareByPvalue);
   for (uint32_t i = 0; i < go_statistics.size(); ++i) {
     GoStatistic& go_statistic = go_statistics[i];
-    if (multiple_testing_correction_method == 
+    if (multiple_testing_correction_method ==
         kMultipleTestingCorrectionBenjaminiHochberg) {
       go_statistic.pvalue_corrected = std::min<double>(
-          go_statistic.pvalue * go_statistics.size() / (i + 1), 1.0); 
-    } else if (multiple_testing_correction_method == 
+          go_statistic.pvalue * go_statistics.size() / (i + 1), 1.0);
+    } else if (multiple_testing_correction_method ==
         kMultipleTestingCorrectionBonferroni) {
       go_statistic.pvalue_corrected =  std::min<double>(
           go_statistic.pvalue * go_statistics.size(), 1.0);
@@ -517,14 +518,14 @@ std::vector<GoStatistic> GeneOntology::CalculateGeneEnrichmentOrDepletion(
 }
 
 std::vector<GoStatistic> GeneOntology::CalculateGeneEnrichment(
-    std::vector<GoNode*> go_node_pointers, 
+    std::vector<GoNode*> go_node_pointers,
     int multiple_testing_correction_method) {
-  return CalculateGeneEnrichmentOrDepletion(go_node_pointers, 
+  return CalculateGeneEnrichmentOrDepletion(go_node_pointers,
       multiple_testing_correction_method, kAnalysisModeGeneEnrichment);
 }
 
 std::vector<GoStatistic> GeneOntology::CalculateGeneDepletion(
-    std::vector<GoNode*> go_node_pointers, 
+    std::vector<GoNode*> go_node_pointers,
     int multiple_testing_correction_method) {
   return CalculateGeneEnrichmentOrDepletion(go_node_pointers,
       multiple_testing_correction_method, kAnalysisModeGeneDepletion);

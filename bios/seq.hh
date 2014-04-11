@@ -1,22 +1,18 @@
-/*
- * Sequence module. 
- *
- * Assumes that DNA is stored as a character.
- * The DNA it generates will include the bases 
- * as lowercase tcag.  It will generally accept
- * uppercase as well, and also 'n' or 'N' or '-'
- * for unknown bases. 
- *
- * Amino acids are stored as single character upper case. 
- *
- * This file is copyright 2002 Jim Kent, but license is hereby
- * granted for all use - public, private or commercial. 
- */
+/// Sequence module.
+///
+/// Assumes that DNA is stored as a character.
+/// The DNA it generates will include the bases
+/// as lowercase tcag.  It will generally accept
+/// uppercase as well, and also 'n' or 'N' or '-'
+/// for unknown bases.
+///
+/// Amino acids are stored as single character upper case.
+///
+/// This file is copyright 2002 Jim Kent, but license is hereby
+/// granted for all use - public, private or commercial.
 
-/** 
- *   \file seq.h
- *   \author Adapted by Lukas Habegger (lukas.habegger@yale.edu)
- */
+/// @file seq.h
+/// @author Adapted by Lukas Habegger (lukas.habegger@yale.edu)
 
 #ifndef BIOS_SEQ_H__
 #define BIOS_SEQ_H__
@@ -35,30 +31,40 @@ namespace bios {
 struct Seq {
   Seq();
   ~Seq();
-  BitField* MaskFromUpperCase();
+  BitField* MaskFromUpperCase(Seq* seq);
 
-  char *name;           /* Name of sequence. */
-  char *sequence;       /* Sequence base by base. */
-  uint32_t size;             /* Size of sequence. */
-  BitField* mask;           /* Repeat mask (optional) */
-}; 
+  // Name of sequence.
+  std::string name;
 
-typedef Seq dnaSeq;	/* Preferred use if DNA */
-typedef Seq aaSeq;	/* Preferred use if protein. */
+  // Sequence base by base.
+  char *sequence;
+
+  // Size of sequence.
+  uint32_t size;
+
+  // Repeat mask (optional)
+  BitField* mask;
+};
+
+// Preferred use if DNA
+typedef Seq dnaSeq;
+
+// Preferred use if protein.
+typedef Seq aaSeq;
 
 #define MASKED_BASE_BIT 8
 
-/* Numerical values for bases. */
+// Numerical values for bases.
 #define T_BASE_VAL 0
 #define U_BASE_VAL 0
 #define C_BASE_VAL 1
 #define A_BASE_VAL 2
 #define G_BASE_VAL 3
-#define N_BASE_VAL 4   /* Used in 1/2 byte representation. */
+#define N_BASE_VAL 4   // Used in 1/2 byte representation.
 
 typedef char DNA;
 typedef char AA;
-typedef char Codon; 
+typedef char Codon;
 
 class Sequencer {
  public:
@@ -117,20 +123,28 @@ class Sequencer {
   // (which is order aa's are in biochemistry codon tables) and gives -1 for
   // all others.
   int nt_val_[256];
+
   // Nucleotide values only for lower case.
+
   int nt_val_lower_[256];
+
   // Nucleotide values only for up9per case.
   int nt_val_upper_[256];
+
   // Like nt_val_ but with T_BASE_VAL in place of -1 for 'n', 'x', '-', etc.
   int nt_val_5_[256];
+
   // Like nt_val_, but with T_BASE_VAL in place of -1 for nonexistent ones.
   int nt_val_no_n_[256];
+
   // Inverse array - takes X_BASE_VAL int to a DNA char value.
   DNA val_to_nt_[(N_BASE_VAL | MASKED_BASE_BIT) + 1];
+
   // Arrays to convert between lower case indicating repeat masking, and a
   // 1/2 byte representation where the 4th bit indicates if the character
   // is masked. Uses N_BASE_VAL for `n', `x', etc.
   int nt_val_masked_[256];
+
   DNA val_to_nt_masked_[256];
 
  private:
@@ -143,8 +157,10 @@ class Sequencer {
   // convert it to lower case. Contains zeroes for characters that are not used
   // in DNA sequence.
   char nt_chars_[256];
+
   // A similar array that doesn't convert to lower case.
   char nt_mixed_case_chars_[256];
+
   // Another array to help do complement of DNA.
   DNA nt_comp_table_[256];
 

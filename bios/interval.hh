@@ -1,16 +1,16 @@
-// This file is free software; you can redistribute it and/or 
-// modify it under the terms of the GNU Lesser General Public 
-// License as published by the Free Software Foundation; either 
+// This file is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
 //
-// This file is distributed in the hope that it will be useful, 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// This file is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // Lesser General Public License for more details.
 //
-// To obtain a copy of the GNU Lesser General Public License, 
-// please write to the Free Software 
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// To obtain a copy of the GNU Lesser General Public License,
+// please write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
 
 /// @file interval.hh
@@ -22,20 +22,20 @@
 ///
 /// This is the header for the gene ontology (GO) module.
 /// Module to efficiently find intervals that overlap with a query interval.
-/// The algorithm is based on containment sublists. 
-/// See Alekseyenko, A.V., Lee, C.J. (2007) Nested Containment List (NCList): 
-/// A new algorithm for accelerating interval query of genome alignment and 
+/// The algorithm is based on containment sublists.
+/// See Alekseyenko, A.V., Lee, C.J. (2007) Nested Containment List (NCList):
+/// A new algorithm for accelerating interval query of genome alignment and
 /// interval databases. Bioinformatics 23: 1386-1393.
 /// (http://bioinformatics.oxfordjournals.org/cgi/content/abstract/23/11/1386)
 /// Note: The Interval format is zero-based and half-open.
 ///
-/// This tab-delimited file must have the 
+/// This tab-delimited file must have the
 /// following format:
-/// 
+///
 /// @verbatim
 /// Column:   Description:
 /// 1         Name of the interval
-/// 2         Chromosome 
+/// 2         Chromosome
 /// 3         Strand
 /// 4         Interval start
 /// 5         Interval end
@@ -53,7 +53,7 @@
 /// uc001aba.1  chr1  +  558011  558705  1  558011  558705
 /// @endverbatim
 ///
-/// Note in this example the intervals represent a transcripts, while the 
+/// Note in this example the intervals represent a transcripts, while the
 /// subintervals denote exons.
 
 #ifndef BIOS_INTERVAL_H__
@@ -86,12 +86,12 @@ struct SubInterval {
 struct Interval {
   Interval();
 
-  /// @brief Parse a line in the Interval format. 
+  /// @brief Parse a line in the Interval format.
   ///
-  /// @param[in] thisInterval Pointer to an Interval. Must be allocated and 
+  /// @param[in] thisInterval Pointer to an Interval. Must be allocated and
   ///            deallocated externally.\n
   /// @param[in] line Line in Interval format\n
-  /// @param[in] source An integer that specifies the source. This is useful when 
+  /// @param[in] source An integer that specifies the source. This is useful when
   ///            multiple files are used.
   /// See IntervalFind::addIntervalsToSearchSpace() for details.
   Interval(std::string& line, int source);
@@ -103,7 +103,7 @@ struct Interval {
   /// @return A char* representing the Interval in tab-delimited format
   std::string ToString();
 
-  /// Get size of an Interval. This is done by summing up the size of the 
+  /// Get size of an Interval. This is done by summing up the size of the
   /// subIntervals
   /// @param[in] currInterval Pointer to an Interval
   /// @return An integer representing the size
@@ -127,7 +127,7 @@ struct Interval {
   int start;
   int end;
   int sub_interval_count;
-  std::vector<SubInterval> sub_intervals; 
+  std::vector<SubInterval> sub_intervals;
 };
 
 /// @struct SuperInterval
@@ -168,29 +168,29 @@ class IntervalFind {
 
   /// Get the total number of intervals that have been added to the search space.
   /// @return The total number of intervals in the search space.
-  /// @pre Intervals were added to the search space using 
+  /// @pre Intervals were added to the search space using
   ///      IntervalFind::addIntervalsToSearchSpace()
   int GetNumberOfIntervals();
 
   /// Retrieve all the intervals that have been added to the search space.
   /// @return An Array of type Interval.
-  /// @note This function generates a copy of the intervals array. 
-  /// @pre Intervals were added to the search space using 
+  /// @note This function generates a copy of the intervals array.
+  /// @pre Intervals were added to the search space using
   ///      IntervalFind::addIntervalsToSearchSpace().
   std::vector<Interval> GetAllIntervals();
 
   /// Get an array of Interval pointers from the intervals that have been added to
   /// the search space.
   /// @return An Array of type Interval pointers.
-  /// @note The user is not allowed to modify the content of the array. 
-  /// @pre Intervals were added to the search space using 
+  /// @note The user is not allowed to modify the content of the array.
+  /// @pre Intervals were added to the search space using
   ///      IntervalFind::addIntervalsToSearchSpace().
   std::vector<Interval*> GetIntervalPointers();
 
-  /// Add intervals to the search space. 
-  /// @param[in] fileName File name of the file that contains the interval and 
+  /// Add intervals to the search space.
+  /// @param[in] fileName File name of the file that contains the interval and
   ///             subintervals to search against.
-  /// @param[in] source An integer that specifies the source. This is useful when 
+  /// @param[in] source An integer that specifies the source. This is useful when
   ///            multiple files are used.
   void AddIntervalsToSearchSpace(const char* filename, int source);
 
@@ -198,22 +198,22 @@ class IntervalFind {
   /// @param[in] chromosome Chromosome of the query interval
   /// @param[in] start Start of the query interval
   /// @param[in] end End of the query interval
-  /// @return An Array of Interval pointers. If no overlapping intervals are found, 
+  /// @return An Array of Interval pointers. If no overlapping intervals are found,
   /// then an empty Array is returned
-  /// @note The user is not allowed to modify the content of the array. 
-  /// @pre Intervals were added to the search space, see 
+  /// @note The user is not allowed to modify the content of the array.
+  /// @pre Intervals were added to the search space, see
   ///      IntervalFind::addIntervalsToSearchSpace()
   std::vector<Interval*> GetOverlappingIntervals(char* chromosome, int start,
                                                  int end);
- 
-  /// Parse a file in the Interval format. 
-  /// @param[in] fileName File name of the file that contains the interval and 
+
+  /// Parse a file in the Interval format.
+  /// @param[in] fileName File name of the file that contains the interval and
   ///            subintervals.\n
-  /// @param[in] source An integer that specifies the source. This is useful when 
+  /// @param[in] source An integer that specifies the source. This is useful when
   ///            multiple files are used.
   /// See IntervalFind::addIntervalsToSearchSpace() for details.
-  /// @return Array of intervals. The user is responsible to free up the memory. 
-  ///         The user can modify the returned Array. 
+  /// @return Array of intervals. The user is responsible to free up the memory.
+  ///         The user can modify the returned Array.
   /// @pre None.
   static std::vector<Interval> ParseFile(const char* filename, int source);
 
@@ -221,7 +221,7 @@ class IntervalFind {
   ///
   /// @param results
   /// @param str the string to process.
-  static void ProcessCommaSeparatedList(std::vector<int>& results, 
+  static void ProcessCommaSeparatedList(std::vector<int>& results,
                                         std::string& str);
 
  private:

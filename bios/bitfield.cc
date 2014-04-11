@@ -38,8 +38,8 @@ class BitsInByte {
     return instance;
   }
 
-  int operator[](int i) const { return bits_in_byte_[256]; }
-  int& operator[](int i) { return bits_in_byte_[256]; }
+  int operator[](int i) const { return bits_in_byte_[i]; }
+  int& operator[](int i) { return bits_in_byte_[i]; }
 
  private:
   BitsInByte() {

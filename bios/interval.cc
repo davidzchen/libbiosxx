@@ -1,16 +1,16 @@
-// This file is free software; you can redistribute it and/or 
-// modify it under the terms of the GNU Lesser General Public 
-// License as published by the Free Software Foundation; either 
+// This file is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
 //
-// This file is distributed in the hope that it will be useful, 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// This file is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // Lesser General Public License for more details.
 //
-// To obtain a copy of the GNU Lesser General Public License, 
-// please write to the Free Software 
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// To obtain a copy of the GNU Lesser General Public License,
+// please write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
 
 /// @file interval.hh
@@ -29,9 +29,9 @@ namespace bios {
 Interval::Interval() {
 }
 
-Interval::Interval(std::string& line, int source) {
+Interval::Interval(std::string& line, int source)
+    : source(source) {
   WordIter w(line, "\t", false);
-  source = source;
   name = w.Next();
   chromosome = w.Next();
   strand = w.Next()[0];
@@ -116,7 +116,7 @@ std::vector<Interval*> IntervalFind::GetIntervalPointers() {
   return intervals;
 }
 
-void IntervalFind::ProcessCommaSeparatedList(std::vector<int>& results, 
+void IntervalFind::ProcessCommaSeparatedList(std::vector<int>& results,
                                              std::string& str) {
   WordIter w(str, ",", false);
   for (char* tok = NULL; (tok = w.Next()) != NULL; ) {
@@ -127,7 +127,7 @@ void IntervalFind::ProcessCommaSeparatedList(std::vector<int>& results,
   }
 }
 
-void IntervalFind::ParseFileContent(std::vector<Interval>& intervals, 
+void IntervalFind::ParseFileContent(std::vector<Interval>& intervals,
                                     const char* filename, int source) {
   FileLineStream ls(filename);
   for (std::string line; ls.GetLine(line); ) {
@@ -139,12 +139,12 @@ void IntervalFind::ParseFileContent(std::vector<Interval>& intervals,
   }
 }
 
-void IntervalFind::AddIntervalsToSearchSpace(const char* filename, 
+void IntervalFind::AddIntervalsToSearchSpace(const char* filename,
                                              int source) {
   ParseFileContent(intervals_, filename, source);
 }
 
-std::vector<Interval> IntervalFind::ParseFile(const char* filename, 
+std::vector<Interval> IntervalFind::ParseFile(const char* filename,
                                               int source) {
   std::vector<Interval> intervals;
   ParseFileContent(intervals, filename, source);
@@ -161,7 +161,7 @@ void IntervalFind::AssignSuperIntervals() {
     Interval& interval = intervals_[i];
     SuperInterval super_interval;
     super_interval.chromosome = interval.chromosome;
-    super_interval.start = interval.start; 
+    super_interval.start = interval.start;
     super_interval.end = interval.end;
     super_interval.sublist.push_back(&interval);
     uint32_t j = i + 1;
@@ -179,18 +179,18 @@ void IntervalFind::AssignSuperIntervals() {
     i = j;
     super_intervals_.push_back(super_interval);
   }
-  std::sort(super_intervals_.begin(), super_intervals_.end(), 
+  std::sort(super_intervals_.begin(), super_intervals_.end(),
             SuperInterval::Compare);
   super_intervals_assigned_ = true;
 }
 
-void IntervalFind::AddIntervals(std::vector<Interval*> matching_intervals, 
-                                std::vector<Interval*> sublist, int start, 
+void IntervalFind::AddIntervals(std::vector<Interval*> matching_intervals,
+                                std::vector<Interval*> sublist, int start,
                                 int end) {
-  for (std::vector<Interval*>::iterator it = sublist.begin(); 
+  for (std::vector<Interval*>::iterator it = sublist.begin();
       it != sublist.end(); ++it) {
     Interval* interval = *it;
-    int intersection = num::range_intersection(interval->start, interval->end, 
+    int intersection = num::range_intersection(interval->start, interval->end,
                                                start, end);
     if (intersection >= 0) {
       matching_intervals.push_back(interval);
@@ -212,10 +212,10 @@ std::vector<Interval*> IntervalFind::GetOverlappingIntervals(
       super_intervals_.begin(), super_intervals_.end(), test_super_interval);
   // Index points to the location where test_super_interval would be inserted
   int index = std::distance(super_intervals_.begin(), it);
-  uint32_t i = index;
+  int32_t i = index;
   while (i >= 0) {
     SuperInterval& super_interval = super_intervals_[i];
-    if (super_interval.chromosome != chromosome || 
+    if (super_interval.chromosome != chromosome ||
         super_interval.end < start) {
       break;
     }
@@ -229,7 +229,7 @@ std::vector<Interval*> IntervalFind::GetOverlappingIntervals(
         super_interval.start > end) {
       break;
     }
-    AddIntervals(matching_intervals, super_interval.sublist, start, end); 
+    AddIntervals(matching_intervals, super_interval.sublist, start, end);
     i++;
   }
   return matching_intervals;

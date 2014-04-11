@@ -78,7 +78,7 @@ class Bed {
   void set_score(uint32_t score) { score_ = score; }
   void set_strand(char strand) { strand_ = strand; }
   void set_thick_start(uint32_t thick_start) { thick_start_ = thick_start; }
-  void set_thick_end(uint32_t thick_end) { thick_end_ = thick_end_; }
+  void set_thick_end(uint32_t thick_end) { thick_end_ = thick_end; }
   void set_item_rgb(std::string item_rgb) { item_rgb_ = item_rgb; }
   void set_block_count(uint32_t block_count) { block_count_ = block_count; }
 

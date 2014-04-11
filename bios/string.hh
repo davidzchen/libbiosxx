@@ -1,16 +1,16 @@
-// This file is free software; you can redistribute it and/or 
-// modify it under the terms of the GNU Lesser General Public 
-// License as published by the Free Software Foundation; either 
+// This file is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License, or (at your option) any later version.
 //
-// This file is distributed in the hope that it will be useful, 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+// This file is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // Lesser General Public License for more details.
 //
-// To obtain a copy of the GNU Lesser General Public License, 
-// please write to the Free Software 
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+// To obtain a copy of the GNU Lesser General Public License,
+// please write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // or visit the WWW site http://www.gnu.org/copyleft/lesser.txt
 
 /// @file string.hh
@@ -46,7 +46,7 @@
 /// emptyForNull
 /// nullIfAllSpace - replaced with is_whitespace
 
-#ifndef BIOS_STRING_H__ 
+#ifndef BIOS_STRING_H__
 #define BIOS_STRING_H__
 
 #include <cctype>
@@ -61,7 +61,7 @@ namespace bios {
 
 namespace string {
 
-const char* kWhiteSpaces = " \t\n\r\f\v";
+extern const char* kWhiteSpaces;
 
 /// @brief Returns whether the haystack begins with the substring needle.
 ///
@@ -88,15 +88,15 @@ static inline bool starts_with(std::string& haystack, const char* needle) {
 /// This function creates a new std::string object that is a copy of the
 /// substring contained between the given start and end strings.
 ///
-/// @param    between    The substring between the start and end string 
+/// @param    between    The substring between the start and end string
 ///                      returned to the caller.
 /// @param    haystack   The string to search in.
 /// @param    start      The start string.
 /// @param    end        The end string.
-/// 
+///
 /// @return   true if the string between the start and end was successfully
 ///           found and returned, or false otherwise.
-bool string_between(std::string& bewteen, std::string& haystack, 
+bool string_between(std::string& bewteen, std::string& haystack,
                     std::string& start, std::string& end);
 
 /// @brief Toggles the upper and lower case characters in a string.
@@ -259,7 +259,7 @@ static inline void chop_suffix(std::string& str) {
   chop_suffix_at(str, '.');
 }
 
-/// @brief Removes the beginning of the input string starting at the first 
+/// @brief Removes the beginning of the input string starting at the first
 ///        occurrence of char c.
 ///
 /// This function modifies the input string.
@@ -327,7 +327,7 @@ std::string insert_word_every_nth(std::string& str, const char* word, int n);
 ///
 /// @return   A new string consisting of the input string with the word
 ///           inserted at every nth position.
-std::string insert_word_every_nth(std::string& str, std::string& word, 
+std::string insert_word_every_nth(std::string& str, std::string& word,
                                   int n);
 
 /// @brief Case insensitive version of find.
@@ -356,13 +356,13 @@ size_t find_case(std::string& haystack, std::string& needle);
 ///        characters.
 ///
 /// @param    str        The input string.
-/// @param    begin      The character that delimits the start of the 
+/// @param    begin      The character that delimits the start of the
 ///                      substring.
 /// @param    end        The character that delimits the end of the substring.
 ///
 /// @return   The index after the location of end, or std::string::npos if no
 ///           substring extracted.
-size_t copy_substr(std::string& str, char begin, char end, 
+size_t copy_substr(std::string& str, char begin, char end,
                    std::string& substr);
 
 /// @brief Translates each character in the input string using the provided
@@ -382,7 +382,7 @@ size_t copy_substr(std::string& str, char begin, char end,
 /// @param    str        The input string.
 /// @param    from_chars The characters to translate from.
 /// @param    to_chars   The characters to translate to.
-/// 
+///
 /// @return   The number of characters translated or modified.
 int translate(std::string& str, const char* from_chars, const char* to_chars);
 
