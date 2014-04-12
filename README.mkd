@@ -1,4 +1,4 @@
-libbiospp
+libbios++
 =========
 
 [![Build Status](https://travis-ci.org/davidzchen/libbiospp.png?branch=master)](https://travis-ci.org/davidzchen/libbiospp)
